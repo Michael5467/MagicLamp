@@ -38,20 +38,20 @@ typedef struct {
 } snow_parameters_t;
 
     // "Balls"
-#define BALLS_MAX_AMOUNT   32  // Maximum amount of balls
-#define BALLS_AMOUNT        5  // Amount of balls
-#define BALLS_USE_TRACK     1  // ON/OFF tracks (traces) of balls
+#define BALLS_MAX_AMOUNT    32  // Maximum amount of balls
+#define BALLS_AMOUNT         5  // Amount of balls
+#define BALLS_USE_TRACK      1  // ON/OFF tracks (traces) of balls
 #define BALLS_TRACK_LENGTH 128  // Length of balls track (in range [1:255])
-#define BALLS_MIN_SPEED     4  // 
-#define BALLS_MAX_SPEED    24  // 
-//#define BALLS_DRAW_WALLS  0  // режим с рисованием препятствий для шаров (не работает на ESP и STM32)
+#define BALLS_MIN_SPEED      4  // 
+#define BALLS_MAX_SPEED     24  // 
+//#define BALLS_DRAW_WALLS   0  // режим с рисованием препятствий для шаров (не работает на ESP и STM32)
     // "Fire"
 #define FIRE_SPARKLES 1        // ON/OFF emitting coals
 #define FIRE_HUE_ADD  0        // Adding a color to fire  (in range [0:230] - changes the whole color of the fire)
     // "Flare"
-#define FLARE_DENSITY      5  // density
-#define FLARE_COLOR_STEP 0x18  // unit gradient of color (0x101010)
-#define FLARE_COLOR_STEP_LIB 48
+#define FLARE_DENSITY           5  // density
+#define FLARE_COLOR_STEP     0x18  // unit gradient of color (0x101010)
+#define FLARE_COLOR_STEP_LIB   48
 //random color fading flash
     // "The Matrix"
 #define THE_MATRIX_COLOR      0x00FF00 // color: Green
@@ -98,11 +98,11 @@ typedef struct {
 #define RAINBOW_STR_SCALE 30
 
 // Games configuration
-#define SNAKE_START_LENGTH 4    // начальная длина змейки
-#define SNAKE_MAX_LENGTH 80     // максимальная длина змейки
-#define SNAKE_FIELD_COLOR    CRGB::Black    // Field's color
-#define SNAKE_GLOBAL_COLOR_1 CRGB::Green    // основной цвет №1 для игр
-#define SNAKE_GLOBAL_COLOR_2 CRGB::Orange   // основной цвет №2 для игр
+#define SNAKE_START_LENGTH   4              // Initial length of snake
+#define SNAKE_MAX_LENGTH     80             // Mmaximum length of snake
+#define SNAKE_FIELD_COLOR    CRGB::Black    // Color of field
+#define SNAKE_BODY_COLOR     CRGB::Green    // Color of snake
+#define SNAKE_APPLE_COLOR    CRGB::Orange   // Color of apple
     // Snake's vector
 typedef enum {
     s_v_Right=0,    // x++

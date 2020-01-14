@@ -46,8 +46,9 @@
 
 #define USE_NOISE_EFFECTS 1        // fullscreen effects are uses
 
-// // Games
-// #define USE_SNAKE 1           // игра змейка (0 нет, 1 да)
+// Games
+#define USE_SNAKE 1           // игра змейка (0 нет, 1 да)
+
 // #define USE_TETRIS 0          // игра тетрис (0 нет, 1 да)
 // #define USE_MAZE 0            // игра лабиринт (0 нет, 1 да)
 // #define USE_RUNNER 0          // игра бегалка-прыгалка (0 нет, 1 да)
