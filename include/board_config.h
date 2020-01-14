@@ -5,6 +5,6 @@
 
 // Board configuration (used pins)
     // Matrix control pin
-#define LED_PIN D4 //8 //D7          // пин ленты
+#define LED_PIN D4 //8 //D7
 
 #endif // __INC_BOARD_CONFIG_H

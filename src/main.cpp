@@ -33,9 +33,7 @@ boolean loadingFlag = true; // TODO: global variable, remove to local...
 
 #include "Michael_MinimalTimer.h"
 M_MinimalTimer effectTimer(EFFECT_SPEED);
-#ifdef DEBUG_PRINT
 M_MinimalTimer idleTimer((long)IDLE_TIME * 10000);
-#endif
 
 // void init() {
 //     effect_snow.dencity = SNOW_DENSE;
