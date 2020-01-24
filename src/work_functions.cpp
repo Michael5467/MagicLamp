@@ -76,12 +76,16 @@ int32_t parse_request(the_lamp_state_t *lamp_state, get_command_t *command/*, St
 
     if ( strcmp(command->type, "CNN") == 0 ) {
         // response="Connection: done!";
+#ifdef DEBUG_PRINT
         Serial.println("> CONNECT ");
+#endif
         return 0;
     }
     else if ( strcmp(command->type, "STS") == 0 ) {
         // response=lamp_state_2_string(lamp_state);
+#ifdef DEBUG_PRINT
         Serial.println("> STATUS ");
+#endif
         return 1;
     }
     else if ( strcmp(command->type, "PWR") == 0 ) {
@@ -136,8 +140,30 @@ int32_t parse_request(the_lamp_state_t *lamp_state, get_command_t *command/*, St
         Serial.println(temp_var);
 #endif
         lamp_state->scale_raw = temp_var;
-        if ((7 <= lamp_state->effect) && (lamp_state->effect <= 16)) {
-            temp_var = 10 * temp_var;
+        switch (lamp_state->effect) {
+            case (EFF_CODE_SNOW):
+            case (EFF_CODE_BALLS):
+            case (EFF_CODE_FIRE):
+            case (EFF_CODE_SPARKLES):
+            case (EFF_CODE_MATRIX):
+                break;
+            case (EFF_CODE_STARFALL):
+                temp_var = 5 * temp_var;
+                break;
+            case (EFF_CODE_SNAKE):
+                break;
+            case (EFF_CODE_LAVA):
+            case (EFF_CODE_CLOUD):
+            case (EFF_CODE_ZEBRA):
+            case (EFF_CODE_FOREST):
+            case (EFF_CODE_OCEAN):
+            case (EFF_CODE_PLASMA):
+            case (EFF_CODE_PLUM):
+            case (EFF_CODE_RANDOM):
+            case (EFF_CODE_RAINBOW):
+            case (EFF_CODE_RAINBOW_STRIPE):
+            	temp_var = 10 * temp_var;
+                break;
         }
         lamp_state->scale = temp_var;
         updateMode(lamp_state);

@@ -10,7 +10,7 @@
 #define WIDTH            16             // matrix width (X coordinate)
 #define HEIGHT           16             // matrix height (Y coordinate)
 #define NUM_LEDS         WIDTH * HEIGHT // The number of LEDs in the matrix (in the strip)
-#define COLOR_ORDER      GRB            // Color order ()
+#define COLOR_ORDER      GRB            // Color order
 
     // Physical implementation
 #define MATRIX_TYPE      0              // Matrix type (by control): 0 - zigzag, 1 - parallel

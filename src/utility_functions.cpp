@@ -22,45 +22,17 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state) {
   result += ";";
   result += lamp_state->scale_raw;
 
-// #ifdef DEBUG_PRINT
-//   Serial.print("lamp_state_2_string: {");
-//   Serial.print(result);
-//   Serial.println("}");
-// #endif
+#ifdef DEBUG_PRINT
+	Serial.print("lamp_state_2_string: {");
+	Serial.print(result);
+	Serial.println("}");
+#endif
 
   return result;
 }
 //////////////////////////////////////////////////////
 // Internal functions, use they through 'API' only! //
 //////////////////////////////////////////////////////
-
-// Function to convert unsigned integer to string.
-String int2str(uint32_t value) {
-#ifdef DEBUG_PRINT
-  Serial.print("int2str: value=");
-  Serial.print(value);
-#endif
-
-  if (value == 0) {
-    return "0";
-  }
-
-  String result = "";
-  while (value != 0) {
-    uint8_t digit = value % 10;
-    result += (digit +'0');
-    value /= 10;
-  }
-  std::reverse(result.begin(), result.end());
-
-#ifdef DEBUG_PRINT
-  Serial.print("   Result= {");
-  Serial.print(result.begin());
-  Serial.println("}");
-#endif
-
-  return result;
-}
 
 uint32_t str2int(char *str, uint8_t len) {
     uint32_t res = 0;
