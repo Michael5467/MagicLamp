@@ -8,6 +8,8 @@
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 
+#include <NTPClient.h>
+
 #include <FastLED.h>
 
 #include "Michael_MinimalTimer.h"
@@ -15,6 +17,15 @@
 #include "project_config.h"
 #include "effects.h"
 #include "matrix.h"
+
+typedef struct {
+    boolean  synchronized = false;
+    uint8_t  day          = 0;
+    uint8_t  hour         = 0;
+    uint8_t  minute       = 0;
+    uint8_t  second       = 0;
+    time_t   local_time   = 0;
+} local_date_time_t;
 
 typedef struct {
     boolean  state          = false; // ON/OFF
@@ -26,11 +37,13 @@ typedef struct {
     uint16_t scale          = 0;     // Current effect scale
     uint8_t  scale_raw      = 0;     // Raw scale value (from GUI)
 
-    String   IP          = "";    // IP
-    boolean  loadingFlag = false; // First-run/redrawing efffect flag
 
-    M_MinimalTimer *effectTimer = NULL; // Effect timer for rendering
-    CRGB           *leds        = NULL;
+    String   IP             = "";    // IP
+    boolean  loadingFlag    = false; // First-run/redrawing efffect flag
+
+    local_date_time_t *date_time   = NULL;
+    M_MinimalTimer    *effectTimer = NULL; // Effect timer for rendering
+    CRGB              *leds        = NULL;
 
     snow_parameters_t *effect_snow = NULL;
 } the_lamp_state_t;
@@ -101,7 +114,11 @@ void     shiftMatrixRight(CRGB *leds);                                      // S
 void     shiftMatrixLeft(CRGB *leds);                                       // Shift matrix left  on 1 by X
 void     shiftMatrixDownRight(CRGB *leds);                                  // Shift matrix down-right on 1 by X an dY
 
-    // effects
+    // Time
+boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time);
+boolean CheckInternetAccess();
+
+    // Effects
         // Three auxiliary functions for fire 
 void generateLine();
 void shiftUp();

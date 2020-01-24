@@ -3,6 +3,7 @@
 
 #include "board_config.h"
 #include "effects.h"
+#include "ntp_config.h"
 #include "Michael_MinimalTimer.h"
 
 #define DEBUG_PRINT
@@ -39,6 +40,9 @@
 
 // Interval between "idle" print and WDT timer updates (in seconds)
 #define IDLE_TIME 60
+
+// Interval between dawn-time checking
+#define DAWN_CHECK_TIME 60
 
 // Total amount of modes
 #define MODES_AMOUNT 17
