@@ -5,8 +5,8 @@
 
 // Snake: length, head, motion vector, body and tail:
 uint16_t snakeLength;
-uint16_t head;    // Pointer to the head element in the 'body array'
-uint16_t tail;    // Pointer to the tail element in the 'body array'
+uint16_t p_head;    // Pointer to the p_head element in the 'body array'
+uint16_t p_tail;    // Pointer to the tail element in the 'body array'
 int8_t headX;
 int8_t headY;
 int8_t tailX;
@@ -41,14 +41,14 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
   Serial.print(tailX);
   Serial.print("   tailY=");
   Serial.print(tailY);
-  Serial.print("   head=");
-  Serial.print(head);
-  Serial.print("   tail=");
-  Serial.println(tail);
+  Serial.print("   p_head=");
+  Serial.print(p_head);
+  Serial.print("   p_tail=");
+  Serial.println(p_tail);
 #endif
 
   newApple(lamp_state->leds);
-  calculate_new_coordinate(&headX, &headY, body_vector[head]);  // The snake movement: save the head turn and move it
+  calculate_new_coordinate(&headX, &headY, body_vector[p_head]);  // The snake movement: save the head turn and move it
  
   gameFail = check_fail(lamp_state->leds, headX, headY);
 
@@ -67,7 +67,7 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
     Serial.print("Eating the apple!");
 #endif
 
-    if (shift_pointer(head) == tail) {
+    if (shift_pointer(p_head) == p_tail) {
       lamp_state->loadingFlag = true;
       delay(3000);
       return;
@@ -81,12 +81,12 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
   // Redraw the snake:
   // A 'new' head
   drawPixelXY(lamp_state->leds, headX, headY, SNAKE_BODY_COLOR);
-  head = shift_pointer(head);
+  p_head = shift_pointer(p_head);
   
 #ifdef DEBUG_PRINT_SNAKE
-  Serial.print("shift_pointer(head): ");
-  Serial.print("   head=");
-  Serial.println(head);
+  Serial.print("shift_pointer(p_head): ");
+  Serial.print("   p_head=");
+  Serial.println(p_head);
 #endif
 
   // A 'new' tail: paint over it or not
@@ -96,20 +96,18 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
 #endif
   if (!snake_increase) {
     drawPixelXY(lamp_state->leds, tailX, tailY, SNAKE_FIELD_COLOR);
-    calculate_new_coordinate(&tailX, &tailY, body_vector[tail]);
-    tail = shift_pointer(tail);
+    calculate_new_coordinate(&tailX, &tailY, body_vector[p_tail]);
+    p_tail = shift_pointer(p_tail);
 
 #ifdef DEBUG_PRINT_SNAKE
-    Serial.print("shift_pointer(tail): ");
-    Serial.print("   tail=");
-    Serial.println(tail);
+    Serial.print("shift_pointer(p_tail): ");
+    Serial.print("   p_tail=");
+    Serial.println(p_tail);
 #endif
   }
   snake_increase = false;
 
-  body_vector[head]=snake_brain(lamp_state->leds);
-
-  FastLED.show();
+  body_vector[p_head]=snake_brain(lamp_state->leds);
 }
 
 // Calculate new coordinates from passed parameters with motion vector
@@ -268,8 +266,8 @@ void newSnake(CRGB *leds) {
   randomSeed(millis());
 
   snakeLength = SNAKE_START_LENGTH;
-  head = snakeLength - 1;
-  tail = 0;
+  p_head = snakeLength - 1;
+  p_tail = 0;
   snake_increase = false;
 
   // Head: centre of the matrix
