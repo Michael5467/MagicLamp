@@ -3,7 +3,67 @@
 #include "functions.h"
 
 // ****************************** Meteor Shower ****************************
+void debugPrintStarts(uint8_t x, uint8_t y) {
+#ifdef DEBUG_PRINT
+  Serial.print("createStars: x=");
+  Serial.print(x);
+  Serial.print(", y=");
+  Serial.print(y);
+  Serial.print("; pixel number = ");
+  Serial.println(getPixelNumber(x, y));
+#endif
+}
+
+void createStars(the_lamp_state_t *lamp_state) {
+  // lamp_state->leds[getPixelNumber(0, 0)] = CRGB::Red;
+  // debugPrintStarts(0, 0);
+
+  // lamp_state->leds[getPixelNumber(0, 15)] = CRGB::Green;
+  // debugPrintStarts(0, 15);
+
+  // lamp_state->leds[getPixelNumber(15, 0)] = CRGB::Blue;
+  // debugPrintStarts(15, 0);
+
+  // lamp_state->leds[getPixelNumber(15, 15)] = CRGB::PaleVioletRed;
+  // debugPrintStarts(15, 15);
+
+  // Axis Y: from 'HEIGHT / 4' to 'HEIGHT - 2' ({0, i})
+  for (uint8_t i = HEIGHT/4; i <= HEIGHT - 2; i++) {
+    if (getPixelColorXY(lamp_state->leds, 0, i) == 0
+        && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
+        && getPixelColorXY(lamp_state->leds, 0, i + 1) == 0
+        && getPixelColorXY(lamp_state->leds, 0, i - 1) == 0) {
+      lamp_state->leds[getPixelNumber(0, i)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+      debugPrintStarts(0, i);
+    }
+  }
+  // Upper left corner: {0, HEIGHT-1}
+  if (getPixelColorXY(lamp_state->leds, 0, HEIGHT-1) == 0
+      && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
+      && getPixelColorXY(lamp_state->leds, 0, HEIGHT-2) == 0
+      && getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0) {
+    lamp_state->leds[getPixelNumber(0, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+    debugPrintStarts(0, HEIGHT - 1);
+  }
+
+  // Axis X: from '1' to 'WIDTH * 3 / 4' ({i, HEIGHT-1})
+  for (uint8_t i = 1; i <= WIDTH * 3 / 4; i++) {
+    if (getPixelColorXY(lamp_state->leds, i, HEIGHT - 1) == 0
+        && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
+        && getPixelColorXY(lamp_state->leds, i + 1, HEIGHT - 1) == 0
+        && getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0) {
+      lamp_state->leds[getPixelNumber(i, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+      debugPrintStarts(0, HEIGHT - 1);
+    }
+  }
+}
+
 void starfallRoutine(the_lamp_state_t *lamp_state) {
+  if (lamp_state->loadingFlag) {
+    lamp_state->loadingFlag = false;
+    createStars(lamp_state);
+  }
+
   // // Diagonally shift matrix
   // for (uint8_t y = 0; y < HEIGHT - 1; y++)
   //   for (uint8_t x = WIDTH - 1; x > 0; x--)
@@ -20,29 +80,44 @@ void starfallRoutine(the_lamp_state_t *lamp_state) {
     // fadePixelManually(lamp_state->leds, i, HEIGHT - 1, METEOR_TAIL_LENGTH);
   }
 
+  // for (uint8_t i = 0; i <= HEIGHT - 1; i++) {
+  //   lamp_state->leds[getPixelNumber(0, i)] = CRGB::Black;
+  // }
+  // for (uint8_t i = 0; i <= WIDTH - 1; i++) {
+  //   lamp_state->leds[getPixelNumber(0, i)] = CRGB::Black;
+  // }
+
+
   // Fill left and top lines with comets' heads
-    // Axis Y: from 'HEIGHT / 4' to 'HEIGHT - 2' ({0, i})
-  for (uint8_t i = HEIGHT / 4; i <= HEIGHT-2; i++) {
+  
+  // Axis Y: from 'HEIGHT / 4' to 'HEIGHT - 2' ({0, i})
+  for (uint8_t i = HEIGHT/4; i <= HEIGHT - 2; i++) {
     if (getPixelColorXY(lamp_state->leds, 0, i) == 0
         && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
         && getPixelColorXY(lamp_state->leds, 0, i + 1) == 0
-        && getPixelColorXY(lamp_state->leds, 0, i - 1) == 0)
+        && getPixelColorXY(lamp_state->leds, 0, i - 1) == 0) {
       lamp_state->leds[getPixelNumber(0, i)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+      debugPrintStarts(0, i);
+    }
   }
-    // Upper left corner: {0, HEIGHT-1}
+  // Upper left corner: {0, HEIGHT-1}
   if (getPixelColorXY(lamp_state->leds, 0, HEIGHT-1) == 0
       && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
       && getPixelColorXY(lamp_state->leds, 0, HEIGHT-2) == 0
-      && getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0)
+      && getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0) {
     lamp_state->leds[getPixelNumber(0, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+    debugPrintStarts(0, HEIGHT - 1);
+  }
 
-    // Axis X: from '1' to 'WIDTH * 3 / 4' ({i, HEIGHT-1})
+  // Axis X: from '1' to 'WIDTH * 3 / 4' ({i, HEIGHT-1})
   for (uint8_t i = 1; i <= WIDTH * 3 / 4; i++) {
     if (getPixelColorXY(lamp_state->leds, i, HEIGHT - 1) == 0
         && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
         && getPixelColorXY(lamp_state->leds, i + 1, HEIGHT - 1) == 0
-        && getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0)
+        && getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0) {
       lamp_state->leds[getPixelNumber(i, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+      debugPrintStarts(i, HEIGHT - 1);
+    }
   }
 }
 

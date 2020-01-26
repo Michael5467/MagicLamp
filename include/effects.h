@@ -61,7 +61,7 @@ typedef struct {
     // "Meteor Shower"
 #define METEOR_DENSITY       64  // density: min 2, max 32
 #define METEOR_SATURATION   255  // color saturation (in range [32:255])
-#define METEOR_TAIL_LENGTH 0x18  // unit gradient of color (0x181818)
+#define METEOR_TAIL_LENGTH   64  // unit gradient of color (0x181818)
 
 // Fullscreen effects' configuration
     // Main parameters: 'scale' and 'speed';
