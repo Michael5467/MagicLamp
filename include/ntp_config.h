@@ -3,7 +3,7 @@
 
 // --- ВРЕМЯ ---------------------------
 #define NTP_ADDRESS            "ru.pool.ntp.org"           // NTP servet
-#define NTP_INITIAL_INTERVAL    1 * 60 * 1000              // Interval of a initial time synchronization (after rest) (1 minute)
+#define NTP_INITIAL_INTERVAL         5 * 1000              // Interval of a initial time synchronization (after rest) (1 minute)
 #define NTP_INTERVAL           60 * 60 * 1000              // Interval of a time synchronization (60 minutes)
 #define NTP_RESOLVE_TIMEOUT          2 * 1000              // Internet connection timeout in milliseconds (2 seconds)
 

@@ -25,6 +25,7 @@ typedef struct {
     uint8_t  minute       = 0;
     uint8_t  second       = 0;
     time_t   local_time   = 0;
+    uint32_t local_millis = 0;
 } local_date_time_t;
 
 typedef struct {

@@ -16,8 +16,6 @@ Timezone localTimeZone(localTime);
 #endif
 
 boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time) {
-    boolean result = false;
-
     if (!CheckInternetAccess()) {
         date_time->synchronized = false;
         return false;
@@ -39,6 +37,7 @@ boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time)
     thisDay -= 2;
     
     date_time->synchronized = true;
+    date_time->local_millis = millis();
     date_time->local_time   = currentLocalTime;
     date_time->day          = thisDay;
     date_time->hour         = hour(currentLocalTime);
@@ -54,6 +53,8 @@ boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time)
     Serial.print(date_time->minute);
     Serial.print(":");
     Serial.println(date_time->second);
+    Serial.print("currentLocalTime = ");
+    Serial.println(currentLocalTime);
 #endif
 
     return true;
@@ -66,13 +67,13 @@ boolean CheckInternetAccess()
     WiFi.hostByName(NTP_ADDRESS, ntpServerIp, NTP_RESOLVE_TIMEOUT);
     if (ntpServerIp[0] <= 0) {
 #ifdef DEBUG_PRINT
-        Serial.println("Подключение к интернету отсутствует.");
+        Serial.println("Internet connection is broken.");
 #endif
         return false;
     }
     else {
 #ifdef DEBUG_PRINT
-        Serial.println("Подключение к интернету установлено!");
+        Serial.println("Internet connection established!");
 #endif
         return true;
     }
