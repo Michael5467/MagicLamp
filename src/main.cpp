@@ -46,25 +46,6 @@ WiFiManager wifiManager;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
-// #ifdef SUMMER_WINTER_TIME
-// TimeChangeRule summerTime = { SUMMER_TIMEZONE_NAME, SUMMER_WEEK_NUM, SUMMER_WEEKDAY, SUMMER_MONTH, SUMMER_HOUR, SUMMER_OFFSET };
-// TimeChangeRule winterTime = { WINTER_TIMEZONE_NAME, WINTER_WEEK_NUM, WINTER_WEEKDAY, WINTER_MONTH, WINTER_HOUR, WINTER_OFFSET };
-// Timezone localTimeZone(summerTime, winterTime);
-// #else
-// TimeChangeRule localTime = { LOCAL_TIMEZONE_NAME, LOCAL_WEEK_NUM, LOCAL_WEEKDAY, LOCAL_MONTH, LOCAL_HOUR, LOCAL_OFFSET };
-// Timezone localTimeZone(localTime);
-// #endif
-
-// static const uint8_t dawnOffsets[] PROGMEM = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};   // опции для выпадающего списка параметра "время перед 'рассветом'" (будильник); синхронизировано с android приложением
-// uint8_t dawnMode;
-// bool dawnFlag = false;
-// uint32_t thisTime;
-// bool manualOff = false;
-
-// void init() {
-//     effect_snow.dencity = SNOW_DENSE;
-//     effect_snow.color   = 
-// }
 
 void setup() {
 #ifdef DEBUG_PRINT
@@ -169,6 +150,8 @@ void loop() {
 #ifdef DEBUG_PRINT
         Serial.println("idleTimer.isReady()");
 #endif
+        printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
+
         ESP.wdtFeed();
     }
 }

@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <Timezone.h>
+
 #include "functions.h"
 
 // Prepare string with current state of the lamp.
@@ -30,6 +32,46 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state) {
 
   return result;
 }
+
+void printDecNum(uint32_t num) {
+  Serial.print((num<10) ? "0" : "");
+  Serial.print(num);
+}
+
+//void printCurrentDateTime(local_date_time_t *date_time) {
+void printDateTimeStruct(local_date_time_t *date_time) {
+#ifdef DEBUG_PRINT
+    Serial.println("printCurrentDateTime()");
+    Serial.print("Current day: ");
+    Serial.println(date_time->day);
+    Serial.print("Current time: ");
+    Serial.print(date_time->hour);
+    Serial.print(":");
+    Serial.print(date_time->minute);
+    Serial.print(":");
+    Serial.println(date_time->second);
+    Serial.print("local_time = ");
+    Serial.println(date_time->local_time);
+    Serial.print("local_millis = ");
+    Serial.println(date_time->local_millis);
+#endif
+}
+
+void printTime(time_t currentLocalTime) {
+#ifdef DEBUG_PRINT
+    Serial.println("printCurrentLocalTime()");
+    Serial.print("currentLocalTime = ");
+    Serial.println(currentLocalTime);
+    Serial.print("Current time: ");
+    printDecNum(hour(currentLocalTime));
+    Serial.print(":");
+    printDecNum(minute(currentLocalTime));
+    Serial.print(":");
+    printDecNum(second(currentLocalTime));
+    Serial.println("");
+#endif
+}
+
 //////////////////////////////////////////////////////
 // Internal functions, use they through 'API' only! //
 //////////////////////////////////////////////////////

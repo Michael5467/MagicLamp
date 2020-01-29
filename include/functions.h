@@ -88,7 +88,9 @@ void setEffectsSpeed(the_lamp_state_t *lamp_state, uint32_t Value);
 void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 
     // utility functions declaration
-String   int2str(uint32_t value);
+void     printDecNum(uint32_t num);
+void     printDateTimeStruct(local_date_time_t *date_time);
+void     printTime(time_t currentLocalTime);
 uint32_t str2int(char *str, uint8_t len);
 String   lamp_state_2_string(the_lamp_state_t *lamp_state);
 uint16_t ChangeParameterValue(uint16_t value, int8_t delta, uint16_t limit=255, boolean saturation = true); // Change the parameter's value by signed delta

@@ -2,6 +2,7 @@
 
 #include <NTPClient.h>
 #include <Timezone.h>
+#include <TimeLib.h>
 
 #include "project_config.h"
 #include "functions.h"
@@ -44,19 +45,7 @@ boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time)
     date_time->minute       = minute(currentLocalTime);
     date_time->second       = second(currentLocalTime);
 
-#ifdef DEBUG_PRINT
-    Serial.print("Current day: ");
-    Serial.println(date_time->day);
-    Serial.print("Current time: ");
-    Serial.print(date_time->hour);
-    Serial.print(":");
-    Serial.print(date_time->minute);
-    Serial.print(":");
-    Serial.println(date_time->second);
-    Serial.print("currentLocalTime = ");
-    Serial.println(currentLocalTime);
-#endif
-
+    printDateTimeStruct(date_time);
     return true;
 }
 
