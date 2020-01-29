@@ -13,6 +13,10 @@ uint32_t M_MinimalTimer::getInterval() {
     return _interval;
 }
 
+uint32_t M_MinimalTimer::getMillis() {
+    return _millis;
+}
+
 // boolean M_MinimalTimer::isReady() {
 //   if ((long)millis() - _timer >= _interval) {
 //     _timer = millis();
@@ -35,13 +39,13 @@ uint32_t M_MinimalTimer::getInterval() {
 // }
 
 boolean M_MinimalTimer::isReady() {
-    uint32_t thisMls = millis();
+	_millis = millis();
     uint32_t delta = 0;
-    if (thisMls < _timer) {
-        delta = 0xFFFFFFFF - _timer + thisMls + 1;
+    if (_millis < _timer) {
+        delta = 0xFFFFFFFF - _timer + _millis + 1;
     }
     else {
-        delta = thisMls - _timer;
+        delta = _millis - _timer;
     }
     if (delta >= _interval) {
         _timer += _interval;
