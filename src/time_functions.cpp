@@ -55,15 +55,11 @@ boolean CheckInternetAccess()
 
     WiFi.hostByName(NTP_ADDRESS, ntpServerIp, NTP_RESOLVE_TIMEOUT);
     if (ntpServerIp[0] <= 0) {
-#ifdef DEBUG_PRINT
-        Serial.println("Internet connection is broken.");
-#endif
+        DPRINTLN("Internet connection is broken.");
         return false;
     }
     else {
-#ifdef DEBUG_PRINT
-        Serial.println("Internet connection established!");
-#endif
+        DPRINTLN("Internet connection established!");
         return true;
     }
 }

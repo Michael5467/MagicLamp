@@ -6,8 +6,7 @@
 #include "ntp_config.h"
 #include "Michael_MinimalTimer.h"
 
-#define DEBUG_PRINT
-#define DEBUG_PRINT_SNAKE
+#include "debug_macros.h"
 
 // ESP32 config:
 // 0 - derect WIFI access

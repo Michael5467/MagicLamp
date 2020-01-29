@@ -24,52 +24,46 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state) {
   result += ";";
   result += lamp_state->scale_raw;
 
-#ifdef DEBUG_PRINT
-	Serial.print("lamp_state_2_string: {");
-	Serial.print(result);
-	Serial.println("}");
-#endif
+  DPRINT("lamp_state_2_string: {");
+  DPRINT(result);
+  DPRINTLN("}");
 
   return result;
 }
 
 void printDecNum(uint32_t num) {
-  Serial.print((num<10) ? "0" : "");
-  Serial.print(num);
+  DPRINT((num<10) ? "0" : "");
+  DPRINT(num);
 }
 
 //void printCurrentDateTime(local_date_time_t *date_time) {
 void printDateTimeStruct(local_date_time_t *date_time) {
-#ifdef DEBUG_PRINT
-    Serial.println("printCurrentDateTime()");
-    Serial.print("Current day: ");
-    Serial.println(date_time->day);
-    Serial.print("Current time: ");
-    Serial.print(date_time->hour);
-    Serial.print(":");
-    Serial.print(date_time->minute);
-    Serial.print(":");
-    Serial.println(date_time->second);
-    Serial.print("local_time = ");
-    Serial.println(date_time->local_time);
-    Serial.print("local_millis = ");
-    Serial.println(date_time->local_millis);
-#endif
+    DPRINTLN("printCurrentDateTime()");
+    DPRINT("Current day: ");
+    DPRINTLN(date_time->day);
+    DPRINT("Current time: ");
+    DPRINT(date_time->hour);
+    DPRINT(":");
+    DPRINT(date_time->minute);
+    DPRINT(":");
+    DPRINTLN(date_time->second);
+    DPRINT("local_time = ");
+    DPRINTLN(date_time->local_time);
+    DPRINT("local_millis = ");
+    DPRINTLN(date_time->local_millis);
 }
 
 void printTime(time_t currentLocalTime) {
-#ifdef DEBUG_PRINT
-    Serial.println("printCurrentLocalTime()");
-    Serial.print("currentLocalTime = ");
-    Serial.println(currentLocalTime);
-    Serial.print("Current time: ");
+    DPRINTLN("printCurrentLocalTime()");
+    DPRINT("currentLocalTime = ");
+    DPRINTLN(currentLocalTime);
+    DPRINT("Current time: ");
     printDecNum(hour(currentLocalTime));
-    Serial.print(":");
+    DPRINT(":");
     printDecNum(minute(currentLocalTime));
-    Serial.print(":");
+    DPRINT(":");
     printDecNum(second(currentLocalTime));
-    Serial.println("");
-#endif
+    DPRINTLN("");
 }
 
 //////////////////////////////////////////////////////

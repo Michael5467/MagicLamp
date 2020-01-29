@@ -48,10 +48,9 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 
 void setup() {
-#ifdef DEBUG_PRINT
+    // Serial port setup
     Serial.begin(74880);
-    Serial.println("NodeMCU v3...............................");
-#endif
+    DPRINTLN("NodeMCU v3...............................");
 
     // Initial lamp state
     lamp_state.state        = true;
@@ -78,22 +77,16 @@ void setup() {
 
     // WIFI
     if (ESP_MODE == 0) {
-#ifdef DEBUG_PRINT
-        Serial.print("Connecting to ");
-        Serial.println(autoConnectSSID);
-#endif
+        DPRINT("Connecting to ");
+        DPRINTLN(autoConnectSSID);
         WiFi.begin(autoConnectSSID, autoConnectPass);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
-#ifdef DEBUG_PRINT
-            Serial.print(".");
-#endif
+            DPRINT(".");
         }
     }
     else {    
-#ifdef DEBUG_PRINT
-        Serial.print("WiFi manager");
-#endif
+        DPRINT("WiFi manager ");
         wifiManager.setDebugOutput(false);
 #if (USE_BUTTON == 1)
         if (digitalRead(BTN_PIN))
@@ -101,10 +94,8 @@ void setup() {
 #endif
 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
     }
-#ifdef DEBUG_PRINT
-    Serial.print("Connected! IP address: ");
-    Serial.println(WiFi.localIP());
-#endif
+    DPRINT("Connected! IP address: ");
+    DPRINTLN(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
     // HTTP server
@@ -139,19 +130,14 @@ void loop() {
         } else {
             NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
         }
-#ifdef DEBUG_PRINT
-        Serial.print("NTP_Timer _interval = ");
-        Serial.println(NTP_Timer.getInterval());
-#endif
+        DPRINT("NTP_Timer _interval = ");
+        DPRINTLN(NTP_Timer.getInterval());
     }
 
     // Idle timer: for WDT and debug
     if (Idle_Timer.isReady()) {      
-#ifdef DEBUG_PRINT
-        Serial.println("idleTimer.isReady()");
-#endif
+        DPRINTLN("idleTimer.isReady()");
         printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
-
         ESP.wdtFeed();
     }
 }

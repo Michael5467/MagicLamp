@@ -31,21 +31,13 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
     newGameSnake(lamp_state->leds);
   }  
 
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("snakeRoutine()");
-  Serial.print("   headX=");
-  Serial.print(headX);
-  Serial.print("   headY=");
-  Serial.print(headY);
-  Serial.print("   tailX=");
-  Serial.print(tailX);
-  Serial.print("   tailY=");
-  Serial.print(tailY);
-  Serial.print("   p_head=");
-  Serial.print(p_head);
-  Serial.print("   p_tail=");
-  Serial.println(p_tail);
-#endif
+  DPRINT("snakeRoutine() ");
+  DPRINT_FULL(headX);
+  DPRINT_FULL(headY);
+  DPRINT_FULL(tailX);
+  DPRINT_FULL(tailY);
+  DPRINT_FULL(p_head);
+  DPRINTLN_FULL(p_tail);
 
   newApple(lamp_state->leds);
   calculate_new_coordinate(&headX, &headY, body_vector[p_head]);  // The snake movement: save the head turn and move it
@@ -63,9 +55,7 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
 
   // Check whether we are eating an apple or not
   if (getPixelColorXY(lamp_state->leds, headX, headY) == SNAKE_APPLE_COLOR) {
-#ifdef DEBUG_PRINT_SNAKE
-    Serial.print("Eating the apple!");
-#endif
+    DPRINTLN("Eating the apple!");
 
     if (shift_pointer(p_head) == p_tail) {
       lamp_state->loadingFlag = true;
@@ -83,27 +73,18 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
   drawPixelXY(lamp_state->leds, headX, headY, SNAKE_BODY_COLOR);
   p_head = shift_pointer(p_head);
   
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("shift_pointer(p_head): ");
-  Serial.print("   p_head=");
-  Serial.println(p_head);
-#endif
+  DPRINT("shift_pointer(p_head): ");
+  DPRINTLN_FULL(p_head);
 
   // A 'new' tail: paint over it or not
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("snake_increase=");
-  Serial.println(snake_increase);
-#endif
+  DPRINTLN_FULL(snake_increase);
   if (!snake_increase) {
     drawPixelXY(lamp_state->leds, tailX, tailY, SNAKE_FIELD_COLOR);
     calculate_new_coordinate(&tailX, &tailY, body_vector[p_tail]);
     p_tail = shift_pointer(p_tail);
 
-#ifdef DEBUG_PRINT_SNAKE
-    Serial.print("shift_pointer(p_tail): ");
-    Serial.print("   p_tail=");
-    Serial.println(p_tail);
-#endif
+    DPRINT("shift_pointer(p_tail): ");
+    DPRINTLN_FULL(p_tail);
   }
   snake_increase = false;
 
@@ -150,25 +131,16 @@ boolean check_fail(CRGB *leds, int8_t x, int8_t y) {
 
 // Shift the pointer with rotation through an array boundary
 uint16_t shift_pointer(uint16_t pointer) {
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("shift_pointer(): ");
-  Serial.print("   pointer=");
-  Serial.print(pointer);
-#endif
+  DPRINT("shift_pointer(): ");
+  DPRINTLN_FULL(pointer);
 
   if (pointer == SNAKE_MAX_LENGTH - 1) {
-#ifdef DEBUG_PRINT_SNAKE
-    Serial.println("   return 0");
-#endif
-
+    DPRINTLN("   return 0");
     return 0;
   }
   
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("   return ");
-  Serial.println(pointer+1);
-#endif
-
+  DPRINT("   return ");
+  DPRINTLN(pointer+1);
   return (pointer+1);
 }
 
@@ -235,11 +207,8 @@ snake_motion_t snake_brain(CRGB *leds) {
 
 // Creating a new apple
 void newApple(CRGB *leds) {
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("newApple()");
-  Serial.print("   apple_flag=");
-  Serial.print(apple_flag);
-#endif
+  DPRINT("newApple() ");
+  DPRINT_FULL(apple_flag);
 
   while (!apple_flag) {
     // Randomly generate coordinates of the apple
@@ -253,12 +222,8 @@ void newApple(CRGB *leds) {
     }
   }
   
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("   appleX=");
-  Serial.print(appleX);
-  Serial.print("   appleY=");
-  Serial.println(appleY);
-#endif
+  DPRINT_FULL(appleX);
+  DPRINTLN_FULL(appleY);
 }
 
 // Creating a new snake in the matrix's centre
@@ -288,17 +253,11 @@ void newSnake(CRGB *leds) {
   // Motion vector of head: up
   head_vector = s_v_Up;
 
-#ifdef DEBUG_PRINT_SNAKE
-  Serial.print("newSnake()");
-  Serial.print("   headX=");
-  Serial.print(headX);
-  Serial.print("   headY=");
-  Serial.print(headY);
-  Serial.print("   tailX=");
-  Serial.print(tailX);
-  Serial.print("   tailY=");
-  Serial.println(tailY);
-#endif
+  DPRINT("newSnake() ");
+  DPRINT_FULL(headX);
+  DPRINT_FULL(headY);
+  DPRINT_FULL(tailX);
+  DPRINTLN_FULL(tailY);
 }
 
 // Creating a new game: new snake, new appel and show the matrix

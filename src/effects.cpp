@@ -4,14 +4,11 @@
 
 // ****************************** Meteor Shower ****************************
 void debugPrintStarts(uint8_t x, uint8_t y) {
-#ifdef DEBUG_PRINT
-  Serial.print("createStars: x=");
-  Serial.print(x);
-  Serial.print(", y=");
-  Serial.print(y);
-  Serial.print("; pixel number = ");
-  Serial.println(getPixelNumber(x, y));
-#endif
+  DPRINT("createStars: ");
+  DPRINT_FULL(x);
+  DPRINT_FULL(y);
+  DPRINT("; pixel number = ");
+  DPRINTLN(getPixelNumber(x, y));
 }
 
 void createStars(the_lamp_state_t *lamp_state) {
@@ -400,25 +397,15 @@ void ballsRoutine(the_lamp_state_t *lamp_state)
   }
 }
 
-// void debugBalls()
-// {
-// #ifdef DEBUG_PRINT
-//   for (uint8_t i = 0; i< BALLS_AMOUNT; i++) 
-//   {
-//     Serial.print("Ball #");
-//     Serial.print(i);
-//     Serial.print("; x=");
-//     Serial.print(ball_coord[i][0]);
-//     Serial.print("; y=");
-//     Serial.print(ball_coord[i][1]);
-//     Serial.println("");
+// void debugBalls() {
+//   for (uint8_t i = 0; i< BALLS_AMOUNT; i++) {
+//     DPRINT("Ball #");
+//     DPRINT(i);
+//     DPRINT("; x=");
+//     DPRINT(ball_coord[i][0]);
+//     DPRINT("; y=");
+//     DPRINTLN(ball_coord[i][1]);
 //   }
-
-//   // Serial.print("prevMode: CurrentEffect=");
-//   // Serial.println(CurrentEffect);
-// #else
-//   return;
-// #endif
 // }
 
 // ********************************** SNOW **********************************
