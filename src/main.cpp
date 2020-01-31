@@ -38,14 +38,18 @@ WiFiServer server(HTTP_PORT);
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
 M_MinimalTimer Effect_Timer(EFFECT_SPEED);
+M_MinimalTimer Clock_Timer(CLOCK_TIME * 1000);
 M_MinimalTimer Idle_Timer(IDLE_TIME * 1000);
-M_MinimalTimer Dawn_Timer(DAWN_CHECK_TIME);
+// M_MinimalTimer Dawn_Timer(DAWN_CHECK_TIME * 1000);
 M_MinimalTimer NTP_Timer(NTP_INITIAL_INTERVAL);
 
 WiFiManager wifiManager;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
+
+alarm_t awake_alarm_arr[7];
+alarm_t sleep_alarm;
 
 void setup() {
     // Serial port setup
@@ -118,10 +122,10 @@ void loop() {
         FastLED.show();             // Show matrix
     }
 
-    // // Dawn check
-    // if (Dawn_Timer.isReady(&lamp_state)) {      
-        
-    // }
+    // Dawn check
+    if (Clock_Timer.isReady()) {
+        lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+    }
 
     // NTP connection and date/time update
     if (NTP_Timer.isReady()) {      
@@ -137,7 +141,7 @@ void loop() {
     // Idle timer: for WDT and debug
     if (Idle_Timer.isReady()) {      
         DPRINTLN("idleTimer.isReady()");
-        printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
+        printTime(lamp_state.date_time->local_time);
         ESP.wdtFeed();
     }
 }

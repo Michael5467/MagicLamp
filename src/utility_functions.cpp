@@ -29,57 +29,77 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state) {
   DPRINTLN("}");
 
   return result;
-}
+  }
 
-void printDecNum(uint32_t num) {
+  void printDecNum(uint32_t num) {
   DPRINT((num<10) ? "0" : "");
   DPRINT(num);
 }
 
 //void printCurrentDateTime(local_date_time_t *date_time) {
 void printDateTimeStruct(local_date_time_t *date_time) {
-    DPRINTLN("printCurrentDateTime()");
-    DPRINT("Current day: ");
-    DPRINTLN(date_time->day);
-    DPRINT("Current time: ");
-    DPRINT(date_time->hour);
-    DPRINT(":");
-    DPRINT(date_time->minute);
-    DPRINT(":");
-    DPRINTLN(date_time->second);
-    DPRINT("local_time = ");
-    DPRINTLN(date_time->local_time);
-    DPRINT("local_millis = ");
-    DPRINTLN(date_time->local_millis);
+  DPRINTLN("printCurrentDateTime()");
+  DPRINT("Current day: ");
+  DPRINTLN(date_time->day);
+  DPRINT("Current time: ");
+  DPRINT(date_time->hour);
+  DPRINT(":");
+  DPRINT(date_time->minute);
+  DPRINT(":");
+  DPRINTLN(date_time->second);
+  DPRINT("local_time = ");
+  DPRINTLN(date_time->local_time);
+  DPRINT("local_millis = ");
+  DPRINTLN(date_time->local_millis);
 }
 
 void printTime(time_t currentLocalTime) {
-    DPRINTLN("printCurrentLocalTime()");
-    DPRINT("currentLocalTime = ");
-    DPRINTLN(currentLocalTime);
-    DPRINT("Current time: ");
-    printDecNum(hour(currentLocalTime));
-    DPRINT(":");
-    printDecNum(minute(currentLocalTime));
-    DPRINT(":");
-    printDecNum(second(currentLocalTime));
-    DPRINTLN("");
+  DPRINTLN("printCurrentLocalTime()");
+  DPRINT("currentLocalTime = ");
+  DPRINTLN(currentLocalTime);
+  DPRINT("Current time: ");
+  printDecNum(hour(currentLocalTime));
+  DPRINT(":");
+  printDecNum(minute(currentLocalTime));
+  DPRINT(":");
+  printDecNum(second(currentLocalTime));
+  DPRINTLN("");
 }
 
 //////////////////////////////////////////////////////
 // Internal functions, use they through 'API' only! //
 //////////////////////////////////////////////////////
 
-uint32_t str2int(char *str, uint8_t len) {
-    uint32_t res = 0;
+// The Time library uses day of the week in the European numbering (days numbered from Sunday). 
+// So we have to convert it into the standard russian form (also compatible with ISO-8601).
+uint8_t convert_to_ISO8601(uint8_t EuropeanDay) {
+  uint8_t thisDay = EuropeanDay;
+  if (thisDay == 1) {
+    thisDay = 8;
+  }
+  thisDay -= 2;
+  return thisDay;
+}
 
-    for (byte i = 0; i < len; i++) {
-        if (('0' <= str[i]) && (str[i] <= '9'))
-            res = 10 * res + (str[i] - '0');
-        else
-            return res;
-    }
-    return res;
+uint8_t convert_from_ISO8601(uint8_t ISO8601Day) {
+  uint8_t thisDay = ISO8601Day;
+  thisDay += 2;
+  if (thisDay == 8) {
+    thisDay = 1;
+  }
+  return thisDay;
+}
+
+uint32_t str2int(char *str, uint8_t len) {
+  uint32_t res = 0;
+
+  for (byte i = 0; i < len; i++) {
+    if (('0' <= str[i]) && (str[i] <= '9'))
+      res = 10 * res + (str[i] - '0');
+    else
+      return res;
+  }
+  return res;
 }
 
 // Change the parameter's value

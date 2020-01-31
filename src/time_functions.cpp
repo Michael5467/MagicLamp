@@ -29,18 +29,10 @@ boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time)
 
     time_t currentLocalTime = localTimeZone.toLocal(timeClient->getEpochTime());
 
-    // The Time library uses day of the week in the European numbering (days numbered from Sunday). 
-    // So we have to convert it into the standard russian form (also compatible with ISO-8601).
-    uint8_t thisDay = dayOfWeek(currentLocalTime);
-    if (thisDay == 1) {
-        thisDay = 8;
-    }
-    thisDay -= 2;
-    
     date_time->synchronized = true;
     date_time->local_millis = millis();
     date_time->local_time   = currentLocalTime;
-    date_time->day          = thisDay;
+    date_time->day          = convert_to_ISO8601(dayOfWeek(currentLocalTime)); // convert day of week into the standard russian form
     date_time->hour         = hour(currentLocalTime);
     date_time->minute       = minute(currentLocalTime);
     date_time->second       = second(currentLocalTime);

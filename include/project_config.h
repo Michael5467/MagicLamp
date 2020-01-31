@@ -37,11 +37,10 @@
 // #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
 // #define FASTLED_ESP8266_D1_PIN_ORDER
 
-// Interval between "idle" print and WDT timer updates (in seconds)
-#define IDLE_TIME 60
-
-// Interval between dawn-time checking
-#define DAWN_CHECK_TIME 60
+// Timers' delay parameters (in seconds)
+#define IDLE_TIME  60    // Interval between "idle" print and WDT timer updates
+#define CLOCK_TIME 10    // Interval between clock updates (and dan checking)
+// #define DAWN_CHECK_TIME 10 // Interval between dawn-time checking
 
 // Total amount of modes
 #define MODES_AMOUNT 17

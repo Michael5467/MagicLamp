@@ -18,6 +18,15 @@
 #include "effects.h"
 #include "matrix.h"
 
+// typedef enum {
+//     LAMP_OFF=0,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+// } lampState_t;
+
 typedef struct {
     boolean  synchronized = false;
     uint8_t  day          = 0;
@@ -70,6 +79,12 @@ typedef struct {
     char param[4];
 } post_command_t;
 
+typedef struct {
+  boolean  state = false;
+  uint8_t  hour  = 0;
+  uint8_t  min   = 0;
+} alarm_t;
+
 // Functions
     // work API
 void changePower(the_lamp_state_t *lamp_state);
@@ -91,6 +106,8 @@ void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 void     printDecNum(uint32_t num);
 void     printDateTimeStruct(local_date_time_t *date_time);
 void     printTime(time_t currentLocalTime);
+uint8_t  convert_to_ISO8601(uint8_t EuropeanDay);
+uint8_t  convert_from_ISO8601(uint8_t ISO8601Day);
 uint32_t str2int(char *str, uint8_t len);
 String   lamp_state_2_string(the_lamp_state_t *lamp_state);
 uint16_t ChangeParameterValue(uint16_t value, int8_t delta, uint16_t limit=255, boolean saturation = true); // Change the parameter's value by signed delta
