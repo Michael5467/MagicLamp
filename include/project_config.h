@@ -2,9 +2,11 @@
 #define __INC_PROJECT_CONFIG_H
 
 #include "board_config.h"
+#include "effects.h"
+#include "ntp_config.h"
 #include "Michael_MinimalTimer.h"
 
-#define DEBUG_PRINT
+#include "debug_macros.h"
 
 // ESP32 config:
 // 0 - derect WIFI access
@@ -35,29 +37,22 @@
 // #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
 // #define FASTLED_ESP8266_D1_PIN_ORDER
 
+// Timers' delay parameters (in seconds)
+#define IDLE_TIME  60    // Interval between "idle" print and WDT timer updates
+#define CLOCK_TIME 10    // Interval between clock updates (and dan checking)
+// #define DAWN_CHECK_TIME 10 // Interval between dawn-time checking
+
 // Total amount of modes
-#define MODES_AMOUNT 17       
+#define MODES_AMOUNT 17
 
 // Effects configurations: delays, timeout, speed...
-#define START_EFFECT 0        // brightness
-#define EFFECT_SPEED 180      // скорость эффектов по умолчанию (мс)
+#define START_EFFECT EFF_CODE_SNOW // start effect
+#define EFFECT_SPEED 180           // default effects speed (ms)
 
-#define USE_NOISE_EFFECTS 1   // fullscreen effects
+#define USE_NOISE_EFFECTS 1        // fullscreen effects are uses
 
 // Games
-#define USE_SNAKE 1           // игра змейка (0 нет, 1 да)
-#define USE_TETRIS 0          // игра тетрис (0 нет, 1 да)
-#define USE_MAZE 0            // игра лабиринт (0 нет, 1 да)
-#define USE_RUNNER 0          // игра бегалка-прыгалка (0 нет, 1 да)
-#define USE_FLAPPY 0          // игра flappy bird
-#define USE_ARKAN 0           // игра арканоид
-
-#define AUTOPLAY 1            // 0 выкл / 1 вкл автоматическую смену режимов (откл. можно со смартфона)
-#define AUTOPLAY_PERIOD 10    // время между авто сменой режимов (секунды)
-#define IDLE_TIME 5           // время бездействия кнопок или Bluetooth (в секундах) после которого запускается автосмена режимов и демо в играх
-#define DEMO_GAME_SPEED 60    // скорость игр в демо режиме (мс)
-
-#define PIXEL_SPEED 50        // скорость пикселя (мс)
+#define USE_SNAKE 1
 
 //#define USE_PARAMS_CHECK
 

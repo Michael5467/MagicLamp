@@ -9,15 +9,21 @@
 
 #include <WiFiUdp.h>
 
+#include <NTPClient.h>
+#include <Timezone.h>
+
+#include <FastLED.h>
+
 #include "project_config.h"
 #include "functions.h"
 #include "effects.h"
 #include "matrix.h"
+#include "Michael_MinimalTimer.h"
 
 snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
+local_date_time_t date_time;
 the_lamp_state_t lamp_state;
 
-#include "FastLED.h"
 CRGB leds[NUM_LEDS];
 
 const char *autoConnectSSID = DA_SSID;
@@ -31,22 +37,24 @@ WiFiServer server(HTTP_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
-#include "Michael_MinimalTimer.h"
-M_MinimalTimer effectTimer(EFFECT_SPEED);
-#ifdef DEBUG_PRINT
-M_MinimalTimer idleTimer((long)IDLE_TIME * 10000);
-#endif
+M_MinimalTimer Effect_Timer(EFFECT_SPEED);
+M_MinimalTimer Clock_Timer(CLOCK_TIME * 1000);
+M_MinimalTimer Idle_Timer(IDLE_TIME * 1000);
+// M_MinimalTimer Dawn_Timer(DAWN_CHECK_TIME * 1000);
+M_MinimalTimer NTP_Timer(NTP_INITIAL_INTERVAL);
 
-// void init() {
-//     effect_snow.dencity = SNOW_DENSE;
-//     effect_snow.color   = 
-// }
+WiFiManager wifiManager;
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
+
+alarm_t awake_alarm_arr[7];
+alarm_t sleep_alarm;
 
 void setup() {
-#ifdef DEBUG_PRINT
+    // Serial port setup
     Serial.begin(74880);
-    Serial.println("NodeMCU v3...............................");
-#endif
+    DPRINTLN("NodeMCU v3...............................");
 
     // Initial lamp state
     lamp_state.state        = true;
@@ -56,7 +64,8 @@ void setup() {
     lamp_state.scale        = 5;
     lamp_state.IP           = "";
     lamp_state.loadingFlag  = false;
-    lamp_state.effectTimer  = &effectTimer;
+    lamp_state.date_time    = &date_time;
+    lamp_state.effectTimer  = &Effect_Timer;
     lamp_state.leds         = leds;
     lamp_state.effect_snow  = &effect_snow;
 
@@ -72,55 +81,67 @@ void setup() {
 
     // WIFI
     if (ESP_MODE == 0) {
-#ifdef DEBUG_PRINT
-        Serial.print("Connecting to ");
-        Serial.println(autoConnectSSID);
-#endif
+        DPRINT("Connecting to ");
+        DPRINTLN(autoConnectSSID);
         WiFi.begin(autoConnectSSID, autoConnectPass);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
-#ifdef DEBUG_PRINT
-            Serial.print(".");
-#endif
+            DPRINT(".");
         }
     }
     else {    
-#ifdef DEBUG_PRINT
-        Serial.print("WiFi manager");
-#endif
-        WiFiManager wifiManager;
+        DPRINT("WiFi manager ");
         wifiManager.setDebugOutput(false);
 #if (USE_BUTTON == 1)
         if (digitalRead(BTN_PIN))
             wifiManager.resetSettings();
 #endif
-        wifiManager.autoConnect(accesspointSSID, accesspointPass);
+		wifiManager.autoConnect(accesspointSSID, accesspointPass);
     }
-#ifdef DEBUG_PRINT
-    Serial.print("Connected! IP address: ");
-    Serial.println(WiFi.localIP());
-#endif
+    DPRINT("Connected! IP address: ");
+    DPRINTLN(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
     // HTTP server
     server.begin();
+
+    // NTP client
+    timeClient.begin();
+
+    // WDT
+    ESP.wdtFeed();
+    updateMode(&lamp_state);
 }
 
 void loop() {
     ServerLoop(&server, &lamp_state);
 
     // Working with matrix
-    if (lamp_state.state && effectTimer.isReady()) {
+    if (lamp_state.state && Effect_Timer.isReady()) {
         SelectEffect(&lamp_state);  // Current effect drawing
         FastLED.show();             // Show matrix
     }
 
-    // Idle timer: for debug only
-    if (idleTimer.isReady()) {      
-#ifdef DEBUG_PRINT
-        Serial.println("idleTimer.isReady()");
-#endif
+    // Dawn check
+    if (Clock_Timer.isReady()) {
+        lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+    }
+
+    // NTP connection and date/time update
+    if (NTP_Timer.isReady()) {      
+        if (NTP_Synchronization(&timeClient, lamp_state.date_time)) {
+            NTP_Timer.setInterval(NTP_INTERVAL);
+        } else {
+            NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
+        }
+        DPRINT("NTP_Timer _interval = ");
+        DPRINTLN(NTP_Timer.getInterval());
+    }
+
+    // Idle timer: for WDT and debug
+    if (Idle_Timer.isReady()) {      
+        DPRINTLN("idleTimer.isReady()");
+        printTime(lamp_state.date_time->local_time);
         ESP.wdtFeed();
-        // yield();  // ещё раз пнуть собаку
     }
 }

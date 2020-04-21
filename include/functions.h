@@ -8,6 +8,8 @@
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 
+#include <NTPClient.h>
+
 #include <FastLED.h>
 
 #include "Michael_MinimalTimer.h"
@@ -15,6 +17,25 @@
 #include "project_config.h"
 #include "effects.h"
 #include "matrix.h"
+
+// typedef enum {
+//     LAMP_OFF=0,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+//     LAMP_OFF=1,
+// } lampState_t;
+
+typedef struct {
+    boolean  synchronized = false;
+    uint8_t  day          = 0;
+    uint8_t  hour         = 0;
+    uint8_t  minute       = 0;
+    uint8_t  second       = 0;
+    time_t   local_time   = 0;
+    uint32_t local_millis = 0;
+} local_date_time_t;
 
 typedef struct {
     boolean  state          = false; // ON/OFF
@@ -26,11 +47,13 @@ typedef struct {
     uint16_t scale          = 0;     // Current effect scale
     uint8_t  scale_raw      = 0;     // Raw scale value (from GUI)
 
-    String   IP          = "";    // IP
-    boolean  loadingFlag = false; // First-run/redrawing efffect flag
 
-    M_MinimalTimer *effectTimer = NULL; // Effect timer for rendering
-    CRGB           *leds        = NULL;
+    String   IP             = "";    // IP
+    boolean  loadingFlag    = false; // First-run/redrawing efffect flag
+
+    local_date_time_t *date_time   = NULL;
+    M_MinimalTimer    *effectTimer = NULL; // Effect timer for rendering
+    CRGB              *leds        = NULL;
 
     snow_parameters_t *effect_snow = NULL;
 } the_lamp_state_t;
@@ -56,6 +79,12 @@ typedef struct {
     char param[4];
 } post_command_t;
 
+typedef struct {
+  boolean  state = false;
+  uint8_t  hour  = 0;
+  uint8_t  min   = 0;
+} alarm_t;
+
 // Functions
     // work API
 void changePower(the_lamp_state_t *lamp_state);
@@ -74,7 +103,11 @@ void setEffectsSpeed(the_lamp_state_t *lamp_state, uint32_t Value);
 void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 
     // utility functions declaration
-String   int2str(uint32_t value);
+void     printDecNum(uint32_t num);
+void     printDateTimeStruct(local_date_time_t *date_time);
+void     printTime(time_t currentLocalTime);
+uint8_t  convert_to_ISO8601(uint8_t EuropeanDay);
+uint8_t  convert_from_ISO8601(uint8_t ISO8601Day);
 uint32_t str2int(char *str, uint8_t len);
 String   lamp_state_2_string(the_lamp_state_t *lamp_state);
 uint16_t ChangeParameterValue(uint16_t value, int8_t delta, uint16_t limit=255, boolean saturation = true); // Change the parameter's value by signed delta
@@ -101,7 +134,11 @@ void     shiftMatrixRight(CRGB *leds);                                      // S
 void     shiftMatrixLeft(CRGB *leds);                                       // Shift matrix left  on 1 by X
 void     shiftMatrixDownRight(CRGB *leds);                                  // Shift matrix down-right on 1 by X an dY
 
-    // effects
+    // Time
+boolean NTP_Synchronization(NTPClient *timeClient, local_date_time_t *date_time);
+boolean CheckInternetAccess();
+
+    // Effects
         // Three auxiliary functions for fire 
 void generateLine();
 void shiftUp();

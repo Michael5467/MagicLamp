@@ -1,16 +1,12 @@
 #include <Arduino.h>
 #include "functions.h"
 
-// игра змейка!
 #if (USE_SNAKE == 1)
-
-#include "Michael_MinimalTimer.h"
-M_MinimalTimer gameTimer(DEMO_GAME_SPEED);
 
 // Snake: length, head, motion vector, body and tail:
 uint16_t snakeLength;
-uint16_t head;    // Pointer to the head element in the 'body array'
-uint16_t tail;    // Pointer to the tail element in the 'body array'
+uint16_t p_head;    // Pointer to the p_head element in the 'body array'
+uint16_t p_tail;    // Pointer to the tail element in the 'body array'
 int8_t headX;
 int8_t headY;
 int8_t tailX;
@@ -20,10 +16,6 @@ int8_t tailY;
 snake_motion_t head_vector;
 snake_motion_t body_vector[SNAKE_MAX_LENGTH];
 boolean snake_increase;
-uint8_t turn_count;
-uint8_t left_count;
-uint8_t right_count;
-boolean turn_direction;
 
 // Apple: coordinates and flags
 uint8_t appleX;
@@ -39,8 +31,16 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
     newGameSnake(lamp_state->leds);
   }  
 
+  DPRINT("snakeRoutine() ");
+  DPRINT_FULL(headX);
+  DPRINT_FULL(headY);
+  DPRINT_FULL(tailX);
+  DPRINT_FULL(tailY);
+  DPRINT_FULL(p_head);
+  DPRINTLN_FULL(p_tail);
+
   newApple(lamp_state->leds);
-  calculate_new_coordinate(&headX, &headY, body_vector[head]);  // The snake movement: save the head turn and move it
+  calculate_new_coordinate(&headX, &headY, body_vector[p_head]);  // The snake movement: save the head turn and move it
  
   gameFail = check_fail(lamp_state->leds, headX, headY);
 
@@ -54,12 +54,10 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
   // If we are here - the snake is still alive and moves!
 
   // Check whether we are eating an apple or not
-  if (getPixelColorXY(lamp_state->leds, headX, headY) == (uint32_t)SNAKE_GLOBAL_COLOR_2)
-  {
-    // Serial.print("Eating the apple!");
+  if (getPixelColorXY(lamp_state->leds, headX, headY) == SNAKE_APPLE_COLOR) {
+    DPRINTLN("Eating the apple!");
 
-    if (shift_pointer(head) == tail)
-    {
+    if (shift_pointer(p_head) == p_tail) {
       lamp_state->loadingFlag = true;
       delay(3000);
       return;
@@ -72,41 +70,30 @@ void snakeRoutine(the_lamp_state_t *lamp_state) {
 
   // Redraw the snake:
   // A 'new' head
-  drawPixelXY(lamp_state->leds, headX, headY, SNAKE_GLOBAL_COLOR_1);
-  head = shift_pointer(head);
+  drawPixelXY(lamp_state->leds, headX, headY, SNAKE_BODY_COLOR);
+  p_head = shift_pointer(p_head);
   
+  DPRINT("shift_pointer(p_head): ");
+  DPRINTLN_FULL(p_head);
+
   // A 'new' tail: paint over it or not
+  DPRINTLN_FULL(snake_increase);
   if (!snake_increase) {
     drawPixelXY(lamp_state->leds, tailX, tailY, SNAKE_FIELD_COLOR);
-    calculate_new_coordinate(&tailX, &tailY, body_vector[tail]);
-    tail = shift_pointer(tail);
+    calculate_new_coordinate(&tailX, &tailY, body_vector[p_tail]);
+    p_tail = shift_pointer(p_tail);
+
+    DPRINT("shift_pointer(p_tail): ");
+    DPRINTLN_FULL(p_tail);
   }
   snake_increase = false;
 
-  body_vector[head]=snake_brain(lamp_state->leds);
-
-  switch (body_vector[head]) {
-    case s_v_Left: 
-      left_count++;
-      right_count=0;
-      break;
-    case s_v_Right:
-      left_count=0;
-      right_count++;
-      break;
-  }
-  if ((right_count == 1) || (left_count == 1)) {
-    turn_direction = !turn_direction;
-  }
-
-  FastLED.show();
+  body_vector[p_head]=snake_brain(lamp_state->leds);
 }
 
 // Calculate new coordinates from passed parameters with motion vector
-void calculate_new_coordinate(int8_t* x, int8_t* y, snake_motion_t vector)
-{
-  switch (vector)
-  {
+void calculate_new_coordinate(int8_t* x, int8_t* y, snake_motion_t vector) {
+  switch (vector) {
     case s_v_Right: 
       (*x)++;
       break;
@@ -128,73 +115,56 @@ boolean check_fail(CRGB *leds, int8_t x, int8_t y) {
   uint32_t color_under_head;
 
   // Check boundaries
-  if (x < 0 || x > WIDTH - 1 || y < 0 || y > HEIGHT - 1)
+  if (x < 0 || x > WIDTH - 1 || y < 0 || y > HEIGHT - 1) {
     return true;
+  }
 
   // Check the snake crashes into something but not into an apple
   color_under_head = getPixelColorXY(leds, x, y);
-  if (color_under_head != SNAKE_FIELD_COLOR && color_under_head != SNAKE_GLOBAL_COLOR_2)
+  if (color_under_head != SNAKE_FIELD_COLOR && color_under_head != SNAKE_APPLE_COLOR) {
     return true;
+  }
 
   // No problems
   return false;
 }
 
 // Shift the pointer with rotation through an array boundary
-uint16_t shift_pointer(uint16_t pointer)
-{
-  // Serial.print("shift_pointer(): ");
-  // Serial.print("   pointer=");
-  // Serial.print(pointer);
-  if (pointer == SNAKE_MAX_LENGTH - 1)
-  {
-    // Serial.println("   return 0");
+uint16_t shift_pointer(uint16_t pointer) {
+  DPRINT("shift_pointer(): ");
+  DPRINTLN_FULL(pointer);
+
+  if (pointer == SNAKE_MAX_LENGTH - 1) {
+    DPRINTLN("   return 0");
     return 0;
   }
   
-  // Serial.print("   return ");
-  // Serial.println(pointer+1);
+  DPRINT("   return ");
+  DPRINTLN(pointer+1);
   return (pointer+1);
 }
 
 // Change direction if the current course is wrong
 // The changing occurs clockwise
-snake_motion_t change_direction(snake_motion_t current_direction)
-{
-  turn_count++;
-  if (turn_direction)
-    switch (current_direction)
-    {
-      case s_v_Up: 
-        return s_v_Left;
-      case s_v_Left: 
-        return s_v_Down;
-      case s_v_Down:
-        return s_v_Right;
-      case s_v_Right:
-        return s_v_Up;
-    }
-  else
-    switch (current_direction)
-    {
-      case s_v_Up: 
-        return s_v_Right;
-      case s_v_Right: 
-        return s_v_Down;
-      case s_v_Down:
-        return s_v_Left;
-      case s_v_Left:
-        return s_v_Up;
-    }
+snake_motion_t change_direction(snake_motion_t current_direction) {
+	switch (current_direction) {
+	  case s_v_Up: 
+	    return s_v_Right;
+	  case s_v_Right: 
+	    return s_v_Down;
+	  case s_v_Down:
+	    return s_v_Left;
+	  case s_v_Left:
+	    return s_v_Up;
+	}
 
   // Impossible! We should not have been here...
-  // Return something
+  // Return something...
   return s_v_Up;
 }
 
 // The snake is thinking about next motion
-snake_motion_t snake_brain(CRGB *leds)
-{
+snake_motion_t snake_brain(CRGB *leds) {
   snake_motion_t desire_direction = s_v_Up;
   int8_t nextX = headX;
   int8_t nextY = headY;
@@ -236,40 +206,33 @@ snake_motion_t snake_brain(CRGB *leds)
 }
 
 // Creating a new apple
-void newApple(CRGB *leds)
-{
-  // Serial.print("newApple()");
-  // Serial.print("   apple_flag=");
-  // Serial.print(apple_flag);
+void newApple(CRGB *leds) {
+  DPRINT("newApple() ");
+  DPRINT_FULL(apple_flag);
 
-  while (!apple_flag)
-  {
+  while (!apple_flag) {
     // Randomly generate coordinates of the apple
     appleX = random(0, WIDTH);
     appleY = random(0, HEIGHT);
 
     // Check that the apple's coordinate doesn't match with the snake's body
-    if (getPixelColorXY(leds, appleX, appleY) == 0)
-    {
+    if (getPixelColorXY(leds, appleX, appleY) == SNAKE_FIELD_COLOR) {
       apple_flag = true;
-      drawPixelXY(leds, appleX, appleY, SNAKE_GLOBAL_COLOR_2);
+      drawPixelXY(leds, appleX, appleY, SNAKE_APPLE_COLOR);
     }
   }
   
-  // Serial.print("   appleX=");
-  // Serial.print(appleX);
-  // Serial.print("   appleY=");
-  // Serial.println(appleY);
+  DPRINT_FULL(appleX);
+  DPRINTLN_FULL(appleY);
 }
 
 // Creating a new snake in the matrix's centre
-void newSnake(CRGB *leds)
-{
+void newSnake(CRGB *leds) {
   randomSeed(millis());
 
   snakeLength = SNAKE_START_LENGTH;
-  head = snakeLength - 1;
-  tail = 0;
+  p_head = snakeLength - 1;
+  p_tail = 0;
   snake_increase = false;
 
   // Head: centre of the matrix
@@ -279,7 +242,7 @@ void newSnake(CRGB *leds)
   // Body: vertical down
   // Motion vector: up
   for (uint8_t i = 0; i < snakeLength; i++) {
-    drawPixelXY(leds, headX, headY - i, SNAKE_GLOBAL_COLOR_1);
+    drawPixelXY(leds, headX, headY - i, SNAKE_BODY_COLOR);
     body_vector[i] = s_v_Up;
   }
 
@@ -289,22 +252,22 @@ void newSnake(CRGB *leds)
 
   // Motion vector of head: up
   head_vector = s_v_Up;
+
+  DPRINT("newSnake() ");
+  DPRINT_FULL(headX);
+  DPRINT_FULL(headY);
+  DPRINT_FULL(tailX);
+  DPRINTLN_FULL(tailY);
 }
 
 // Creating a new game: new snake, new appel and show the matrix
-void newGameSnake(CRGB *leds)
-{
+void newGameSnake(CRGB *leds) {
   randomSeed(analogRead(0) + analogRead(1) + analogRead(2) + analogRead(3) + millis());
   gameFail = false;
   apple_flag = false;
-  turn_count = 0;
-  turn_direction = false;
-  left_count = 0;
-  right_count = 0;
   fillAllbyColor(leds, SNAKE_FIELD_COLOR);
   newSnake(leds);
   newApple(leds);
-  gameTimer.reset();
   FastLED.show();
 }
 

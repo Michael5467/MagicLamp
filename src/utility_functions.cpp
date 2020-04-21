@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <Timezone.h>
+
 #include "functions.h"
 
 // Prepare string with current state of the lamp.
@@ -22,56 +24,82 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state) {
   result += ";";
   result += lamp_state->scale_raw;
 
-// #ifdef DEBUG_PRINT
-//   Serial.print("lamp_state_2_string: {");
-//   Serial.print(result);
-//   Serial.println("}");
-// #endif
+  DPRINT("lamp_state_2_string: {");
+  DPRINT(result);
+  DPRINTLN("}");
 
   return result;
+  }
+
+  void printDecNum(uint32_t num) {
+  DPRINT((num<10) ? "0" : "");
+  DPRINT(num);
 }
+
+//void printCurrentDateTime(local_date_time_t *date_time) {
+void printDateTimeStruct(local_date_time_t *date_time) {
+  DPRINTLN("printCurrentDateTime()");
+  DPRINT("Current day: ");
+  DPRINTLN(date_time->day);
+  DPRINT("Current time: ");
+  DPRINT(date_time->hour);
+  DPRINT(":");
+  DPRINT(date_time->minute);
+  DPRINT(":");
+  DPRINTLN(date_time->second);
+  DPRINT("local_time = ");
+  DPRINTLN(date_time->local_time);
+  DPRINT("local_millis = ");
+  DPRINTLN(date_time->local_millis);
+}
+
+void printTime(time_t currentLocalTime) {
+  DPRINTLN("printCurrentLocalTime()");
+  DPRINT("currentLocalTime = ");
+  DPRINTLN(currentLocalTime);
+  DPRINT("Current time: ");
+  printDecNum(hour(currentLocalTime));
+  DPRINT(":");
+  printDecNum(minute(currentLocalTime));
+  DPRINT(":");
+  printDecNum(second(currentLocalTime));
+  DPRINTLN("");
+}
+
 //////////////////////////////////////////////////////
 // Internal functions, use they through 'API' only! //
 //////////////////////////////////////////////////////
 
-// Function to convert unsigned integer to string.
-String int2str(uint32_t value) {
-#ifdef DEBUG_PRINT
-  Serial.print("int2str: value=");
-  Serial.print(value);
-#endif
-
-  if (value == 0) {
-    return "0";
+// The Time library uses day of the week in the European numbering (days numbered from Sunday). 
+// So we have to convert it into the standard russian form (also compatible with ISO-8601).
+uint8_t convert_to_ISO8601(uint8_t EuropeanDay) {
+  uint8_t thisDay = EuropeanDay;
+  if (thisDay == 1) {
+    thisDay = 8;
   }
+  thisDay -= 2;
+  return thisDay;
+}
 
-  String result = "";
-  while (value != 0) {
-    uint8_t digit = value % 10;
-    result += (digit +'0');
-    value /= 10;
+uint8_t convert_from_ISO8601(uint8_t ISO8601Day) {
+  uint8_t thisDay = ISO8601Day;
+  thisDay += 2;
+  if (thisDay == 8) {
+    thisDay = 1;
   }
-  std::reverse(result.begin(), result.end());
-
-#ifdef DEBUG_PRINT
-  Serial.print("   Result= {");
-  Serial.print(result.begin());
-  Serial.println("}");
-#endif
-
-  return result;
+  return thisDay;
 }
 
 uint32_t str2int(char *str, uint8_t len) {
-    uint32_t res = 0;
+  uint32_t res = 0;
 
-    for (byte i = 0; i < len; i++) {
-        if (('0' <= str[i]) && (str[i] <= '9'))
-            res = 10 * res + (str[i] - '0');
-        else
-            return res;
-    }
-    return res;
+  for (byte i = 0; i < len; i++) {
+    if (('0' <= str[i]) && (str[i] <= '9'))
+      res = 10 * res + (str[i] - '0');
+    else
+      return res;
+  }
+  return res;
 }
 
 // Change the parameter's value
