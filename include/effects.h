@@ -55,13 +55,24 @@ typedef struct {
 //random color fading flash
     // "The Matrix"
 #define THE_MATRIX_COLOR      0x00FF00 // color: Green
-#define THE_MATRIX_DENSITY           5 // density: min 1, max 10
+#define THE_MATRIX_DENSITY          10 // density: min 1, max 10
 #define THE_MATRIX_LENGTH           12 // Length of 'line' track (in range [4:16])
 // #define THE_MATRIX_COLOR_STEP 256/THE_MATRIX_LENGTH  // unit gradient of color
     // "Meteor Shower"
-#define METEOR_DENSITY       64  // density: min 2, max 32
+#define METEOR_MAX_OBJECTS   32  // absolute maximum meteors in matrix
+#define METEOR_DENSITY        8  // density of meteors (maximum meteors in matrix at the same time): min 1, max METEOR_MAX_OBJECTS
 #define METEOR_SATURATION   255  // color saturation (in range [32:255])
-#define METEOR_TAIL_LENGTH   64  // unit gradient of color (0x181818)
+#define METEOR_TAIL_LENGTH   96  // unit gradient of color (0x181818)
+
+typedef struct {
+    int32_t  x;
+    int32_t  y;
+    int32_t  speed_vector_x;
+    int32_t  speed_vector_y;
+    uint8_t  tail;
+    CRGB     color;
+    boolean  exist;
+} meteor_object_t;
 
 // Fullscreen effects' configuration
     // Main parameters: 'scale' and 'speed';
