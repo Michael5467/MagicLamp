@@ -54,7 +54,7 @@ void printDateTimeStruct(local_date_time_t *date_time) {
 }
 
 void printTime(time_t currentLocalTime) {
-  DPRINTLN("printCurrentLocalTime()");
+  // DPRINTLN("printCurrentLocalTime()");
   DPRINT("currentLocalTime = ");
   DPRINTLN(currentLocalTime);
   DPRINT("Current time: ");

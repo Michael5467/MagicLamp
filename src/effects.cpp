@@ -11,55 +11,28 @@ void debugPrintStarts(uint8_t x, uint8_t y) {
   DPRINTLN(getPixelNumber(x, y));
 }
 
-void createStars(the_lamp_state_t *lamp_state) {
-  // lamp_state->leds[getPixelNumber(0, 0)] = CRGB::Red;
-  // debugPrintStarts(0, 0);
+// meteor_object_t meteors[METEOR_MAX_OBJECTS];
+// uint8_t meteors_count;
+// void starfallRoutine_new(the_lamp_state_t *lamp_state) {
+//   if (lamp_state->loadingFlag) {
+//     lamp_state->loadingFlag = false;
+//     for (uint8_t i = 0; i < METEOR_MAX_OBJECTS; i++) {
+//       meteors[i].exist = 0;
+//     }
+//     meteors_count = 0;
+//   }
 
-  // lamp_state->leds[getPixelNumber(0, 15)] = CRGB::Green;
-  // debugPrintStarts(0, 15);
+//   // Let's try to create a few new meteors if we have free place for it
+//   if (meteors_count < METEOR_DENSITY) {
 
-  // lamp_state->leds[getPixelNumber(15, 0)] = CRGB::Blue;
-  // debugPrintStarts(15, 0);
-
-  // lamp_state->leds[getPixelNumber(15, 15)] = CRGB::PaleVioletRed;
-  // debugPrintStarts(15, 15);
-
-  // Axis Y: from 'HEIGHT / 4' to 'HEIGHT - 2' ({0, i})
-  for (uint8_t i = HEIGHT/4; i <= HEIGHT - 2; i++) {
-    if (getPixelColorXY(lamp_state->leds, 0, i) == 0
-        && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
-        && getPixelColorXY(lamp_state->leds, 0, i + 1) == 0
-        && getPixelColorXY(lamp_state->leds, 0, i - 1) == 0) {
-      lamp_state->leds[getPixelNumber(0, i)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-      debugPrintStarts(0, i);
-    }
-  }
-  // Upper left corner: {0, HEIGHT-1}
-  if (getPixelColorXY(lamp_state->leds, 0, HEIGHT-1) == 0
-      && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
-      && getPixelColorXY(lamp_state->leds, 0, HEIGHT-2) == 0
-      && getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0) {
-    lamp_state->leds[getPixelNumber(0, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-    debugPrintStarts(0, HEIGHT - 1);
-  }
-
-  // Axis X: from '1' to 'WIDTH * 3 / 4' ({i, HEIGHT-1})
-  for (uint8_t i = 1; i <= WIDTH * 3 / 4; i++) {
-    if (getPixelColorXY(lamp_state->leds, i, HEIGHT - 1) == 0
-        && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
-        && getPixelColorXY(lamp_state->leds, i + 1, HEIGHT - 1) == 0
-        && getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0) {
-      lamp_state->leds[getPixelNumber(i, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-      debugPrintStarts(0, HEIGHT - 1);
-    }
-  }
-}
+//   }
+// }
 
 void starfallRoutine(the_lamp_state_t *lamp_state) {
-  if (lamp_state->loadingFlag) {
-    lamp_state->loadingFlag = false;
-    createStars(lamp_state);
-  }
+  // if (lamp_state->loadingFlag) {
+  //   lamp_state->loadingFlag = false;
+  //   createStars(lamp_state);
+  // }
 
   // // Diagonally shift matrix
   // for (uint8_t y = 0; y < HEIGHT - 1; y++)
@@ -89,31 +62,33 @@ void starfallRoutine(the_lamp_state_t *lamp_state) {
   
   // Axis Y: from 'HEIGHT / 4' to 'HEIGHT - 2' ({0, i})
   for (uint8_t i = HEIGHT/4; i <= HEIGHT - 2; i++) {
-    if (getPixelColorXY(lamp_state->leds, 0, i) == 0
-        && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
-        && getPixelColorXY(lamp_state->leds, 0, i + 1) == 0
-        && getPixelColorXY(lamp_state->leds, 0, i - 1) == 0) {
-      lamp_state->leds[getPixelNumber(0, i)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-      debugPrintStarts(0, i);
+    if (getPixelColorXY(lamp_state->leds, 0, i) == 0) {
+      if ((random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0) && 
+          (getPixelColorXY(lamp_state->leds, 0, i + 1) == 0) &&
+          (getPixelColorXY(lamp_state->leds, 0, i - 1) == 0)) {
+        lamp_state->leds[getPixelNumber(0, i)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+        // debugPrintStarts(0, i);
+      }
     }
   }
   // Upper left corner: {0, HEIGHT-1}
-  if (getPixelColorXY(lamp_state->leds, 0, HEIGHT-1) == 0
-      && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
-      && getPixelColorXY(lamp_state->leds, 0, HEIGHT-2) == 0
-      && getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0) {
-    lamp_state->leds[getPixelNumber(0, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-    debugPrintStarts(0, HEIGHT - 1);
+  if (getPixelColorXY(lamp_state->leds, 0, HEIGHT-1) == 0) {
+    if ( (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0) &&
+         (getPixelColorXY(lamp_state->leds, 0, HEIGHT-2) == 0) &&
+         (getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0)) {
+        lamp_state->leds[getPixelNumber(0, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+        // debugPrintStarts(0, HEIGHT - 1);
+    }
   }
-
   // Axis X: from '1' to 'WIDTH * 3 / 4' ({i, HEIGHT-1})
   for (uint8_t i = 1; i <= WIDTH * 3 / 4; i++) {
-    if (getPixelColorXY(lamp_state->leds, i, HEIGHT - 1) == 0
-        && (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0)
-        && getPixelColorXY(lamp_state->leds, i + 1, HEIGHT - 1) == 0
-        && getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0) {
-      lamp_state->leds[getPixelNumber(i, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-      debugPrintStarts(i, HEIGHT - 1);
+    if (getPixelColorXY(lamp_state->leds, i, HEIGHT - 1) == 0) {
+      if ( (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0) &&
+           (getPixelColorXY(lamp_state->leds, i + 1, HEIGHT - 1) == 0) &&
+           (getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0)) {
+        lamp_state->leds[getPixelNumber(i, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
+        // debugPrintStarts(i, HEIGHT - 1);
+      }
     }
   }
 }
@@ -131,12 +106,11 @@ void matrixRoutine(the_lamp_state_t *lamp_state) {
     lamp_state->loadingFlag = false;
     for (uint8_t x = 0; x < WIDTH; x++)
       usedLine[x] = 0;
-    totalLines = 0;
   }
 
   shiftMatrixDown(lamp_state->leds);
 
-  // Check, who many empty rows are  we have
+  // Check, who many empty rows are we have
   totalLines = 0;
   for (uint8_t x = 0; x < WIDTH; x++) {
     if (usedLine[x] == 0)
@@ -147,43 +121,39 @@ void matrixRoutine(the_lamp_state_t *lamp_state) {
   // continue the existing line or randomly generate a new one
   for (uint8_t x = 0; x < WIDTH; x++) {
     if (usedLine[x] > 0) {
-      fadePixelManually(lamp_state->leds, x, HEIGHT - 1, usedLine[x]);
+      fadePixel(lamp_state->leds, x, HEIGHT - 1, usedLine[x]);
 
       // Clear faded pixels 
-      if (getPixelColorXY(lamp_state->leds, x, HEIGHT - 1) == 0)
+      if (getPixelColorXY(lamp_state->leds, x, HEIGHT - 1) == 0) {
         usedLine[x] = 0;
+      }
     }
     else {
-      if (random(0, /*lamp_state->scale*/ THE_MATRIX_DENSITY) == 0) {
+      if (random(0, lamp_state->scale /*THE_MATRIX_DENSITY*/) == 0) {
         drawPixelXY(lamp_state->leds, x, HEIGHT - 1, THE_MATRIX_COLOR);
-        uint8_t step = random(1,  lamp_state->scale /*THE_MATRIX_LENGTH*/);
-        usedLine[x] = 256/step;
+        usedLine[x] = 255 - 16 * random(3,  /*(lamp_state->scale + 3)*/ THE_MATRIX_LENGTH);
       }
     }
   }
-  randomSeed(analogRead(2) + analogRead(3) + millis());
 }
 
 // ********************************* FLASH *********************************
-void sparklesRoutine(the_lamp_state_t *lamp_state)
-{
+void sparklesRoutine(the_lamp_state_t *lamp_state) {
   uint8_t count = 0;
   uint8_t try_count = 0;
-  while ((count < lamp_state->scale /*FLARE_DENSITY*/) && (try_count < 255))
-  {
+
+  // Decreasing the matrix brightness: sparks will be faded automatically
+  fadeMatrix(lamp_state->leds, FLARE_COLOR_STEP_LIB);
+
+  while ((count < lamp_state->scale) && (try_count < 255)) {
     uint8_t x = random(0, WIDTH);
     uint8_t y = random(0, HEIGHT);
-    if (getPixelColorXY(lamp_state->leds, x, y) == 0)
-    {
+    if (getPixelColorXY(lamp_state->leds, x, y) == 0) {
       lamp_state->leds[getPixelNumber(x, y)] = CHSV(random(0, 256), 255, 255);
       count++;
     }
     try_count++;
   }
-
-  // Decreasing the matrix brightness: sparks will be faded automatically
-  fadeMatrix(lamp_state->leds, FLARE_COLOR_STEP_LIB);
-  // fadeMatrixManually(lamp_state->leds, FLARE_COLOR_STEP);
 }
 
 // ********************************* FIRE **********************************
@@ -206,8 +176,7 @@ const unsigned char valueMask[8][16] PROGMEM =
 
 //these are the hues for the fire,
 //should be between 0 (red) to about 25 (yellow)
-const unsigned char hueMask[8][16] PROGMEM = 
-{
+const unsigned char hueMask[8][16] PROGMEM = {
   {1 , 11, 19, 25, 25, 22, 11, 1 , 1 , 11, 19, 25, 25, 22, 11, 1 },
   {1 , 8 , 13, 19, 25, 19, 8 , 1 , 1 , 8 , 13, 19, 25, 19, 8 , 1 },
   {1 , 8 , 13, 16, 19, 16, 8 , 1 , 1 , 8 , 13, 16, 19, 16, 8 , 1 },
@@ -218,16 +187,13 @@ const unsigned char hueMask[8][16] PROGMEM =
   {0 , 0 , 0 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 0 , 0 , 0 }
 };
 
-void fireRoutine(the_lamp_state_t *lamp_state)
-{
-  if (lamp_state->loadingFlag) 
-  {
+void fireRoutine(the_lamp_state_t *lamp_state) {
+  if (lamp_state->loadingFlag) {
     lamp_state->loadingFlag = false;
     generateLine();
     memset(matrixValue, 0, sizeof(matrixValue));
   }
-  if (pcnt >= 100)
-  {
+  if (pcnt >= 100) {
     shiftUp();
     generateLine();
     pcnt = 0;
@@ -237,18 +203,15 @@ void fireRoutine(the_lamp_state_t *lamp_state)
 }
 
 // Randomly generate the next line (matrix row)
-void generateLine()
-{
+void generateLine() {
   for (uint8_t x = 0; x < WIDTH; x++)
     line[x] = random(64, 255);
 }
 
 //shift all values in the matrix up one row
-void shiftUp()
-{
-  for (uint8_t y = HEIGHT - 1; y > 0; y--)
-    for (uint8_t x = 0; x < WIDTH; x++)
-    {
+void shiftUp() {
+  for (uint8_t y = HEIGHT - 1; y > 0; y--) {
+    for (uint8_t x = 0; x < WIDTH; x++) {
       uint8_t newX = x;
       if (x > 15) 
         newX = x - 15;
@@ -256,12 +219,13 @@ void shiftUp()
         continue;
       matrixValue[y][newX] = matrixValue[y - 1][newX];
     }
+  }
 
-  for (uint8_t x = 0; x < WIDTH; x++)
-  {
+  for (uint8_t x = 0; x < WIDTH; x++) {
     uint8_t newX = x;
-    if (x > 15) 
+    if (x > 15) {
       newX = x - 15;
+    }
     matrixValue[0][newX] = line[newX];
   }
 }
@@ -327,68 +291,66 @@ int32_t  ball_coord[BALLS_MAX_AMOUNT][2];  // Current coordinates: [ball][x,y]
 int8_t   ball_vector[BALLS_MAX_AMOUNT][2]; // Speed with sign: [ball][x,y]
 CRGB     ball_color[BALLS_MAX_AMOUNT];
 
-void ballsRoutine(the_lamp_state_t *lamp_state)
-{
+void ballsRoutine(the_lamp_state_t *lamp_state) {
   // Balls' vectors and colors initialization by random before start
-  if (lamp_state->loadingFlag)
-  {
+  if (lamp_state->loadingFlag) {
     lamp_state->loadingFlag = false;
 
-    for (byte i = 0; i < lamp_state->scale; i++)
-    {
+    for (byte i = 0; i < lamp_state->scale; i++) {
       uint8_t sign;
 
       // Axis X
       ball_coord[i][0] = WIDTH / 2 * 16;  // Middle of matrix by X
       sign = random(0, 2);                // Speed sign: 0 - is positive; 1 - is negative
-      if (sign == 0)
+      if (sign == 0) {
         ball_vector[i][0] =  random(BALLS_MIN_SPEED, BALLS_MAX_SPEED);
-      else
+      }
+      else {
         ball_vector[i][0] = -random(BALLS_MIN_SPEED, BALLS_MAX_SPEED);
+      }
 
       // Axis Y
       ball_coord[i][1] = HEIGHT / 2 * 16; // Middle of matrix by Y
       sign = random(0, 2);                // Speed sign: 0 - is positive; 1 - is negative
-      if (sign == 0)
+      if (sign == 0) {
         ball_vector[i][1] =  random(BALLS_MIN_SPEED, BALLS_MAX_SPEED);
-      else
+      }
+      else {
         ball_vector[i][1] = -random(BALLS_MIN_SPEED, BALLS_MAX_SPEED);
+      }
 
       // Color
       ball_color[i] = CHSV( (random(1, 17) * 16 - 1), 255, 255);
     }
   }
 
-  if (BALLS_USE_TRACK)
+  if (BALLS_USE_TRACK) {
     fadeMatrix(lamp_state->leds, BALLS_TRACK_LENGTH); // Decreasing the matrix brightness: track will be faded automatically
-  else
+  }
+  else {
     FastLED.clear();        // Without tracks just clear the matrix 
+  }
 
   // Balls movement
-  for (uint8_t i = 0; i < lamp_state->scale /*BALLS_AMOUNT*/; i++) 
-  {
-    for (uint8_t j = 0; j < 2; j++) 
-    {
+  for (uint8_t i = 0; i < lamp_state->scale /*BALLS_AMOUNT*/; i++) {
+    for (uint8_t j = 0; j < 2; j++) {
       ball_coord[i][j] += ball_vector[i][j];
 
       // Check bottom boundaries by X and Y
-      if (ball_coord[i][j] < 0)
-      {
+      if (ball_coord[i][j] < 0) {
         ball_coord[i][j] = 0;
         ball_vector[i][j] = -ball_vector[i][j];
       }
     }
 
     // Check the top boundary by X
-    if (ball_coord[i][0] > (WIDTH - 1) * 16)
-    {
+    if (ball_coord[i][0] > (WIDTH - 1) * 16) {
       ball_coord[i][0] = (WIDTH - 1) * 16;
       ball_vector[i][0] = -ball_vector[i][0];
     }
 
     // Check the top boundary by Y
-    if (ball_coord[i][1] > (HEIGHT - 1) * 16)
-    {
+    if (ball_coord[i][1] > (HEIGHT - 1) * 16) {
       ball_coord[i][1] = (HEIGHT - 1) * 16;
       ball_vector[i][1] = -ball_vector[i][1];
     }
@@ -397,33 +359,18 @@ void ballsRoutine(the_lamp_state_t *lamp_state)
   }
 }
 
-// void debugBalls() {
-//   for (uint8_t i = 0; i< BALLS_AMOUNT; i++) {
-//     DPRINT("Ball #");
-//     DPRINT(i);
-//     DPRINT("; x=");
-//     DPRINT(ball_coord[i][0]);
-//     DPRINT("; y=");
-//     DPRINTLN(ball_coord[i][1]);
-//   }
-// }
-
 // ********************************** SNOW **********************************
-void snowRoutine(the_lamp_state_t *lamp_state)
-{
+void snowRoutine(the_lamp_state_t *lamp_state) {
   // Shift matrix down on Y
-  for (byte x = 0; x < WIDTH; x++)
-  {
-    for (byte y = 0; y < HEIGHT - 1; y++)
-    {
+  for (byte x = 0; x < WIDTH; x++) {
+    for (byte y = 0; y < HEIGHT - 1; y++) {
       lamp_state->leds[getPixelNumber(x, y)]=lamp_state->leds[getPixelNumber(x, y+1)];
       //drawPixelXY(x, y, getPixColorXY(x, y + 1));
     }
   }
 
   // Fill the top line by random ()
-  for (byte x = 0; x < WIDTH; x++) 
-  {
+  for (byte x = 0; x < WIDTH; x++) {
     // two blocks cann't match by vertically
     if ((uint32_t)getPixelColorXY(lamp_state->leds, x, HEIGHT - 2) == 0 && (random(0, lamp_state->effect_snow->density) == 0)) {
       // CRGB local_color;

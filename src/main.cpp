@@ -124,7 +124,12 @@ void loop() {
 
     // Dawn check
     if (Clock_Timer.isReady()) {
-        lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+        uint32_t get_Millis;
+
+        get_Millis = Clock_Timer.getMillis();
+        DPRINTLN_FULL(get_Millis);
+        // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+        lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
     }
 
     // NTP connection and date/time update
