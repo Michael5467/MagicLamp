@@ -38,7 +38,7 @@
 // #define FASTLED_ESP8266_D1_PIN_ORDER
 
 // Timers' delay parameters (in seconds)
-#define IDLE_TIME  60    // Interval between "idle" print and WDT timer updates
+#define IDLE_TIME  15 // 60    // Interval between "idle" print and WDT timer updates
 #define CLOCK_TIME 10    // Interval between clock updates (and dan checking)
 // #define DAWN_CHECK_TIME 10 // Interval between dawn-time checking
 
@@ -46,10 +46,10 @@
 #define MODES_AMOUNT 17
 
 // Effects configurations: delays, timeout, speed...
-#define START_EFFECT EFF_CODE_SNOW // start effect
+#define START_EFFECT EFF_CODE_STARFALL // start effect
 #define EFFECT_SPEED 180           // default effects speed (ms)
 
-#define USE_NOISE_EFFECTS 1        // fullscreen effects are uses
+#define USE_NOISE_EFFECTS 1        // fullscreen effects are used
 
 // Games
 #define USE_SNAKE 1

@@ -24,6 +24,8 @@
 // Also, this works  #define INFO(...)  { Console->printf("INFO: "); Console->printf(__VA_ARGS__); }   >>>--->   where {} allows multiple lines of code.
 // See: http://forum.arduino.cc/index.php?topic=511393.msg3485833#new
 
+#define DEBUG_STEP
+
 #define DEBUG_PRINT
 
 //examples:
@@ -31,13 +33,13 @@
 
 #ifdef DEBUG_PRINT
 
-#define SERIALBEGIN(...)   Serial.begin(__VA_ARGS__)
+#define SERIALBEGIN(...)   Serial.begin(__VA_ARGS__);
 
-#define DPRINT(...)        Serial.print(__VA_ARGS__)
-#define DPRINTLN(...)      Serial.println(__VA_ARGS__)
-#define DPRINTF(...)       Serial.print(F(__VA_ARGS__))
-#define DPRINTLNF(...)     Serial.println(F(__VA_ARGS__)) //Printing text using the F macro
-#define DPRINT_FULL(...)   Serial.print(F(#__VA_ARGS__" = ")); Serial.print(__VA_ARGS__); Serial.print(F(" "))
+#define DPRINT(...)        Serial.print(__VA_ARGS__);
+#define DPRINTLN(...)      Serial.println(__VA_ARGS__);
+#define DPRINTF(...)       Serial.print(F(__VA_ARGS__));
+#define DPRINTLNF(...)     Serial.println(F(__VA_ARGS__)); //Printing text using the F macro
+#define DPRINT_FULL(...)   Serial.print(F(#__VA_ARGS__" = ")); Serial.print(__VA_ARGS__); Serial.print(F("; "));
 #define DPRINTLN_FULL(...) Serial.print(F(#__VA_ARGS__" = ")); Serial.println(__VA_ARGS__);
 
 #define SERIALWRITE(...)   Serial.write(__VA_ARGS__)

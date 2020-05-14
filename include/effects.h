@@ -59,20 +59,34 @@ typedef struct {
 #define THE_MATRIX_LENGTH           12 // Length of 'line' track (in range [4:16])
 // #define THE_MATRIX_COLOR_STEP 256/THE_MATRIX_LENGTH  // unit gradient of color
     // "Meteor Shower"
-#define METEOR_MAX_OBJECTS   32  // absolute maximum meteors in matrix
+#define METEOR_MAX_OBJECTS   16  // absolute maximum meteors in matrix
 #define METEOR_DENSITY        8  // density of meteors (maximum meteors in matrix at the same time): min 1, max METEOR_MAX_OBJECTS
-#define METEOR_SATURATION   255  // color saturation (in range [32:255])
-#define METEOR_TAIL_LENGTH   96  // unit gradient of color (0x181818)
+#define METEOR_SATURATION   256  // color saturation (in range [32:255])
+#define METEOR_TAIL_LENGTH   12  // unit gradient of color (0x181818)
+
+#define METEOR_MIN_SPEED      4
+#define METEOR_MAX_SPEED     24
+#define METEOR_DELTA_SPEED    6
+#define METEOR_EDGE_NUMBER   HEIGHT * 3 / 4 + WIDTH * 3 / 4 - 1
 
 typedef struct {
     int32_t  x;
     int32_t  y;
     int32_t  speed_vector_x;
     int32_t  speed_vector_y;
-    uint8_t  tail;
+    uint8_t  track_head;
+    uint8_t  track_tail;
+    uint8_t  track_fade;
     CRGB     color;
     boolean  exist;
+    boolean  visible;
 } meteor_object_t;
+
+typedef struct {
+    uint8_t  x;
+    uint8_t  y;
+    boolean   exist;
+} track_object_t;
 
 // Fullscreen effects' configuration
     // Main parameters: 'scale' and 'speed';

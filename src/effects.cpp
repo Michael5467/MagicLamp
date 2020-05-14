@@ -3,93 +3,131 @@
 #include "functions.h"
 
 // ****************************** Meteor Shower ****************************
-void debugPrintStarts(uint8_t x, uint8_t y) {
-  DPRINT("createStars: ");
-  DPRINT_FULL(x);
-  DPRINT_FULL(y);
-  DPRINT("; pixel number = ");
-  DPRINTLN(getPixelNumber(x, y));
-}
+meteor_object_t meteors[METEOR_MAX_OBJECTS];
+track_object_t  tracks [METEOR_MAX_OBJECTS][METEOR_TAIL_LENGTH];
+int8_t meteors_count = 0;
 
-// meteor_object_t meteors[METEOR_MAX_OBJECTS];
-// uint8_t meteors_count;
-// void starfallRoutine_new(the_lamp_state_t *lamp_state) {
-//   if (lamp_state->loadingFlag) {
-//     lamp_state->loadingFlag = false;
-//     for (uint8_t i = 0; i < METEOR_MAX_OBJECTS; i++) {
-//       meteors[i].exist = 0;
-//     }
-//     meteors_count = 0;
-//   }
+void starfallRoutine_new(the_lamp_state_t *lamp_state) {
+uint8_t new_meteors = 0;
+int32_t edge_index = 0;
+int32_t x = 0;
+int32_t y = HEIGHT * 16 - 1;
+uint8_t meteor_index = 0;
 
-//   // Let's try to create a few new meteors if we have free place for it
-//   if (meteors_count < METEOR_DENSITY) {
-
-//   }
-// }
-
-void starfallRoutine(the_lamp_state_t *lamp_state) {
-  // if (lamp_state->loadingFlag) {
-  //   lamp_state->loadingFlag = false;
-  //   createStars(lamp_state);
-  // }
-
-  // // Diagonally shift matrix
-  // for (uint8_t y = 0; y < HEIGHT - 1; y++)
-  //   for (uint8_t x = WIDTH - 1; x > 0; x--)
-  //     drawPixelXY(x, y, getPixelColorXY(x - 1, y + 1));
-  shiftMatrixDownRight(lamp_state->leds);
-
-  // Reduce the brightness of the left and top lines, form comets' tails
-  for (uint8_t i = HEIGHT / 4; i <= HEIGHT-1; i++) {
-    fadePixel(lamp_state->leds, 0, i, METEOR_TAIL_LENGTH);
-    // fadePixelManually(lamp_state->leds, 0, i, METEOR_TAIL_LENGTH);
+  if (lamp_state->loadingFlag) {
+    lamp_state->loadingFlag = false;
+    for (uint8_t i = 0; i < METEOR_MAX_OBJECTS; i++) {
+      meteors[i].exist = false;
+      meteors[i].visible = false;
+      meteors[i].track_head = METEOR_TAIL_LENGTH;
+      meteors[i].track_tail = METEOR_TAIL_LENGTH - 1;
+      for (uint8_t j = 0; j <= METEOR_TAIL_LENGTH - 1; j++) {
+        tracks[i][j].exist = false;
+      }
+    }
+    meteors_count = 0;
   }
-  for (uint8_t i = 0; i <= WIDTH * 3 / 4; i++) {
-    fadePixel(lamp_state->leds, i, HEIGHT - 1, METEOR_TAIL_LENGTH);
-    // fadePixelManually(lamp_state->leds, i, HEIGHT - 1, METEOR_TAIL_LENGTH);
-  }
-
-  // for (uint8_t i = 0; i <= HEIGHT - 1; i++) {
-  //   lamp_state->leds[getPixelNumber(0, i)] = CRGB::Black;
-  // }
-  // for (uint8_t i = 0; i <= WIDTH - 1; i++) {
-  //   lamp_state->leds[getPixelNumber(0, i)] = CRGB::Black;
-  // }
-
-
-  // Fill left and top lines with comets' heads
   
-  // Axis Y: from 'HEIGHT / 4' to 'HEIGHT - 2' ({0, i})
-  for (uint8_t i = HEIGHT/4; i <= HEIGHT - 2; i++) {
-    if (getPixelColorXY(lamp_state->leds, 0, i) == 0) {
-      if ((random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0) && 
-          (getPixelColorXY(lamp_state->leds, 0, i + 1) == 0) &&
-          (getPixelColorXY(lamp_state->leds, 0, i - 1) == 0)) {
-        lamp_state->leds[getPixelNumber(0, i)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-        // debugPrintStarts(0, i);
+  if (meteors_count == 0) {
+      randomSeed(micros());
+  }
+
+  // Move stars and fade tracks
+  for (uint8_t i = 0; i <= METEOR_MAX_OBJECTS - 1; i++) {
+    if (meteors[i].exist) {
+      if (meteors[i].visible) {
+        meteors[i].x += meteors[i].speed_vector_x;
+        meteors[i].y += meteors[i].speed_vector_y;
+        if ((meteors[i].x < 0) || (meteors[i].x > (WIDTH * 16 - 1) || (meteors[i].y < 0)) || (meteors[i].y > (HEIGHT * 16 - 1))) {
+          meteors[i].visible = false;
+        }
+      }
+
+      // Fade tail
+      uint8_t track_index = meteors[i].track_head;
+      do {
+        fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
+        track_index = (uint8_t)ChangeParameterValue(track_index, +1, METEOR_TAIL_LENGTH - 1, false);
+      } while ((track_index != meteors[i].track_tail + 1) &&  
+               !((track_index == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)));
+
+      if (getPixelColorXY(lamp_state->leds, tracks[i][meteors[i].track_tail].x, tracks[i][meteors[i].track_tail].y) == 0) {
+        meteors[i].track_tail = (uint8_t)ChangeParameterValue(meteors[i].track_tail, -1, METEOR_TAIL_LENGTH - 1, false);
+      }
+
+      if ( (meteors[i].track_head == meteors[i].track_tail + 1) ||
+          ((meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) && (!meteors[i].visible) ) {
+        meteors[i].exist = false;
+        meteors_count--;
+      }
+
+      if (meteors[i].visible) {
+        uint8_t x_matrix = (uint8_t)(meteors[i].x >> 4);
+        uint8_t y_matrix = (uint8_t)(meteors[i].y >> 4);
+
+        drawPixelXY(lamp_state->leds, x_matrix, y_matrix, meteors[i].color);
+
+        meteors[i].track_head = (uint8_t)ChangeParameterValue(meteors[i].track_head, -1, METEOR_TAIL_LENGTH - 1, false);
+        tracks[i][meteors[i].track_head].x = x_matrix;
+        tracks[i][meteors[i].track_head].y = y_matrix;
       }
     }
   }
-  // Upper left corner: {0, HEIGHT-1}
-  if (getPixelColorXY(lamp_state->leds, 0, HEIGHT-1) == 0) {
-    if ( (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0) &&
-         (getPixelColorXY(lamp_state->leds, 0, HEIGHT-2) == 0) &&
-         (getPixelColorXY(lamp_state->leds, 1, HEIGHT-1) == 0)) {
-        lamp_state->leds[getPixelNumber(0, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-        // debugPrintStarts(0, HEIGHT - 1);
-    }
+
+  if (meteors_count >= METEOR_MAX_OBJECTS) {
+    return;
   }
-  // Axis X: from '1' to 'WIDTH * 3 / 4' ({i, HEIGHT-1})
-  for (uint8_t i = 1; i <= WIDTH * 3 / 4; i++) {
-    if (getPixelColorXY(lamp_state->leds, i, HEIGHT - 1) == 0) {
-      if ( (random(0, lamp_state->scale /*METEOR_DENSITY*/) == 0) &&
-           (getPixelColorXY(lamp_state->leds, i + 1, HEIGHT - 1) == 0) &&
-           (getPixelColorXY(lamp_state->leds, i - 1, HEIGHT - 1) == 0)) {
-        lamp_state->leds[getPixelNumber(i, HEIGHT - 1)] = CHSV(random(32, 255), random(32, METEOR_SATURATION), 255);
-        // debugPrintStarts(i, HEIGHT - 1);
+
+  if (random(METEOR_DENSITY) == 0) {
+    new_meteors = 1;
+  }
+  else {
+    if (meteors_count == 0) {
+      if (random(METEOR_DENSITY/4) == 0) {
+        new_meteors = 1;
       }
     }
+    new_meteors = 0;
+  }
+
+  while (new_meteors > 0) {
+    edge_index = random((HEIGHT * 3 / 4 + WIDTH * 3 / 4 - 1) * 16);
+    x = 0;
+    y = HEIGHT * 16 - 1;
+
+    if (edge_index < (HEIGHT * 3 / 4) * 16) {
+      y = (HEIGHT / 4) * 16 + edge_index;
+    }
+    else {
+      x = edge_index - (HEIGHT * 3 / 4 + 1) * 16;
+    }
+    uint8_t x_matrix = (uint8_t)(x >> 4);
+    uint8_t y_matrix = (uint8_t)(y >> 4);
+    uint8_t track_length = random(5,  METEOR_TAIL_LENGTH);
+
+    meteor_index = 0;
+    while (meteors[meteor_index].exist) {
+      meteor_index++;
+    }
+
+    meteors[meteor_index].x = x;
+    meteors[meteor_index].y = y;
+    uint8_t speed = random(METEOR_MIN_SPEED, METEOR_MAX_SPEED);
+    meteors[meteor_index].speed_vector_x =   speed + random(METEOR_DELTA_SPEED + 1);
+    meteors[meteor_index].speed_vector_y = -(speed + random(METEOR_DELTA_SPEED + 1));
+    meteors[meteor_index].track_head = METEOR_TAIL_LENGTH - 1;
+    meteors[meteor_index].track_tail = METEOR_TAIL_LENGTH - 1;
+    meteors[meteor_index].track_fade = 255 - (16 * track_length);
+    meteors[meteor_index].color = CHSV(random(32, 256), random(32, METEOR_SATURATION), 255);
+    meteors[meteor_index].exist = true;
+    meteors[meteor_index].visible = true;
+
+    tracks[meteor_index][METEOR_TAIL_LENGTH - 1].x = x_matrix;
+    tracks[meteor_index][METEOR_TAIL_LENGTH - 1].y = y_matrix;
+    drawPixelXY(lamp_state->leds, x_matrix, y_matrix, meteors[meteor_index].color);
+
+    meteors_count++;
+    new_meteors--;
   }
 }
 
@@ -344,14 +382,14 @@ void ballsRoutine(the_lamp_state_t *lamp_state) {
     }
 
     // Check the top boundary by X
-    if (ball_coord[i][0] > (WIDTH - 1) * 16) {
-      ball_coord[i][0] = (WIDTH - 1) * 16;
+    if (ball_coord[i][0] > (WIDTH * 16 - 1)) {
+      ball_coord[i][0] = (WIDTH * 16 - 1);
       ball_vector[i][0] = -ball_vector[i][0];
     }
 
     // Check the top boundary by Y
-    if (ball_coord[i][1] > (HEIGHT - 1) * 16) {
-      ball_coord[i][1] = (HEIGHT - 1) * 16;
+    if (ball_coord[i][1] > (HEIGHT * 16 - 1)) {
+      ball_coord[i][1] = (HEIGHT * 16 - 1);
       ball_vector[i][1] = -ball_vector[i][1];
     }
 
