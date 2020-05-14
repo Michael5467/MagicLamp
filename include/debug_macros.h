@@ -26,7 +26,7 @@
 
 #define DEBUG_STEP
 
-// #define DEBUG_PRINT
+#define DEBUG_PRINT
 
 //examples:
 //#define DPRINT(args...)  Serial.print(args)             //OR use the following syntax:
