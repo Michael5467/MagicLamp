@@ -39,6 +39,8 @@ typedef struct {
 
 typedef struct {
     boolean  state          = false; // ON/OFF
+    boolean  debug          = false; // Debug mode: manual stepping instead of timer if TRUE
+    boolean  step           = false; // Run next step if debug=true
     uint8_t  effect         = 0;     // Current effect number
     uint8_t  brightness     = 0;     // Matrix brightness
     uint8_t  brightness_raw = 0;     // Raw brightness value (from GUI)
@@ -150,6 +152,7 @@ void fireRoutine(the_lamp_state_t *lamp_state);
 void sparklesRoutine(the_lamp_state_t *lamp_state);
 void matrixRoutine(the_lamp_state_t *lamp_state);
 void starfallRoutine(the_lamp_state_t *lamp_state);
+void starfallRoutine_new(the_lamp_state_t *lamp_state);
 
     // fullscreen effects
         // Three auxiliary functions for fullscreen effects

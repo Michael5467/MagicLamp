@@ -92,8 +92,18 @@ int32_t parse_request(the_lamp_state_t *lamp_state, get_command_t *command/*, St
         changePower(lamp_state);
         return 0;
     }
+    else if ( strcmp(command->type, "DBG") == 0 ) {
+        DPRINTLN("> DEBUG ");
+        lamp_state->debug = !(lamp_state->debug);
+        return 0;
+    }
+    else if ( strcmp(command->type, "STP") == 0 ) {
+        DPRINTLN("> DEBUG ");
+        lamp_state->step = true;
+        return 0;
+    }
     else if ( strcmp(command->type, "MOD") == 0 ) {
-        temp_var = str2int(command->param, 2);
+        temp_var = str2int(command->param, 3);
         DPRINT("> MODE ");
         DPRINTLN(temp_var);
         setMode(lamp_state, temp_var);
@@ -242,7 +252,8 @@ void SelectEffect(the_lamp_state_t *lamp_state) {
             matrixRoutine(lamp_state);
             break;
         case EFF_CODE_STARFALL:
-            starfallRoutine(lamp_state);
+            // starfallRoutine(lamp_state);
+            starfallRoutine_new(lamp_state);
             break;
         case EFF_CODE_SNAKE:
             snakeRoutine(lamp_state);

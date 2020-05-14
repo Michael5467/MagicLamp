@@ -11,22 +11,244 @@ void debugPrintStarts(uint8_t x, uint8_t y) {
   DPRINTLN(getPixelNumber(x, y));
 }
 
-// meteor_object_t meteors[METEOR_MAX_OBJECTS];
-// uint8_t meteors_count;
-// void starfallRoutine_new(the_lamp_state_t *lamp_state) {
-//   if (lamp_state->loadingFlag) {
-//     lamp_state->loadingFlag = false;
-//     for (uint8_t i = 0; i < METEOR_MAX_OBJECTS; i++) {
-//       meteors[i].exist = 0;
-//     }
-//     meteors_count = 0;
-//   }
+meteor_object_t meteors[METEOR_MAX_OBJECTS];
+track_object_t  tracks [METEOR_MAX_OBJECTS][METEOR_TAIL_LENGTH];
+int8_t meteors_count = 0;
 
-//   // Let's try to create a few new meteors if we have free place for it
-//   if (meteors_count < METEOR_DENSITY) {
+void starfallRoutine_new(the_lamp_state_t *lamp_state) {
+uint8_t free_meteors = 0;
+uint8_t new_meteors = 0;
+int32_t edge_index = 0;
+int32_t x = 0;
+int32_t y = HEIGHT * 16 - 1;
+uint8_t meteor_index = 0;
 
-//   }
-// }
+  DPRINTLN("starfallRoutine_new()");
+
+  if (lamp_state->loadingFlag) {
+    lamp_state->loadingFlag = false;
+    for (uint8_t i = 0; i < METEOR_MAX_OBJECTS; i++) {
+      meteors[i].exist = false;
+      meteors[i].visible = false;
+      meteors[i].track_head = METEOR_TAIL_LENGTH;
+      meteors[i].track_tail = METEOR_TAIL_LENGTH - 1;
+      for (uint8_t j = 0; j <= METEOR_TAIL_LENGTH - 1; j++) {
+        tracks[i][j].exist = false;
+      }
+    }
+    meteors_count = 0;
+  }
+  
+  DPRINTLN_FULL(meteors_count);
+
+  // Move stars and fade tracks
+  for (uint8_t i = 0; i <= METEOR_MAX_OBJECTS - 1; i++) {
+    DPRINT_FULL(i);
+    DPRINT_FULL(meteors[i].exist);
+    if (meteors[i].exist) {
+      if (meteors[i].visible) {
+        meteors[i].x += meteors[i].speed_vector_x;
+        meteors[i].y += meteors[i].speed_vector_y;
+        uint8_t x_matrix = (uint8_t)(meteors[i].x >> 4);
+        uint8_t y_matrix = (uint8_t)(meteors[i].y >> 4);
+        DPRINT("Move head to: ");
+        DPRINT_FULL(x_matrix);
+        DPRINT_FULL(y_matrix);
+        if ((meteors[i].x > (WIDTH * 16 - 1) || (meteors[i].y < 0))) {
+          DPRINT(" .visible = false ");
+          meteors[i].visible = false;
+        }
+      }
+
+      DPRINT_FULL(meteors[i].track_head);
+      DPRINT_FULL(meteors[i].track_tail);
+
+      // Fade tail
+      uint8_t track_index = meteors[i].track_head;
+      do {
+        DPRINT("fade pixel at index ");
+        DPRINT_FULL(track_index);
+        DPRINT_FULL(tracks[i][track_index].x);
+        DPRINTLN_FULL(tracks[i][track_index].y);
+        fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
+
+        track_index = (uint8_t)ChangeParameterValue(track_index, +1, METEOR_TAIL_LENGTH - 1, false);
+        // if (track_index == METEOR_TAIL_LENGTH - 1) {
+        //   track_index = 0;
+        // }
+        // else {
+        //   track_index++;
+        // }
+      } while ((track_index != meteors[i].track_tail + 1) &&  
+               !((track_index == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)));
+
+      if (getPixelColorXY(lamp_state->leds, tracks[i][meteors[i].track_tail].x, tracks[i][meteors[i].track_tail].y) == 0) {
+        meteors[i].track_tail = (uint8_t)ChangeParameterValue(meteors[i].track_tail, -1, METEOR_TAIL_LENGTH - 1, false);
+        // if (meteors[i].track_tail == 0) {
+        //   meteors[i].track_tail = METEOR_TAIL_LENGTH - 1;
+        // }
+        // else {
+        //   meteors[i].track_tail--;
+        // }
+        DPRINT("new track_tail = ");
+        DPRINT(meteors[i].track_tail);
+        DPRINT("; ");
+      }
+
+      // if ((meteors[i].track_head != meteors[i].track_tail + 1) || 
+      //     (meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) {
+      //   uint8_t track_index = meteors[i].track_head;
+      //   // DPRINT("\n");
+      //   // DPRINTLN_FULL(track_index);
+      //   // while (track_index != meteors[i].track_tail) {
+      //   //   DPRINT("fede pixel at index ");
+      //   //   DPRINT_FULL(track_index);
+      //   //   DPRINT_FULL(tracks[i][track_index].x);
+      //   //   DPRINTLN_FULL(tracks[i][track_index].y);
+      //   //   fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
+      //   //   track_index++;
+      //   //   if (track_index == METEOR_TAIL_LENGTH) {
+      //   //     track_index = 0;
+      //   //   }
+      //   // }
+      //   do {
+      //     track_index++;
+      //     if (track_index == METEOR_TAIL_LENGTH) {
+      //       track_index = 0;
+      //     }
+      //     DPRINT("fade pixel at index ");
+      //     DPRINT_FULL(track_index);
+      //     DPRINT_FULL(tracks[i][track_index].x);
+      //     DPRINTLN_FULL(tracks[i][track_index].y);
+      //     fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
+      //   } while (track_index != meteors[i].track_tail);
+
+
+      //   if (getPixelColorXY(lamp_state->leds, tracks[i][meteors[i].track_tail].x, tracks[i][meteors[i].track_tail].y) == 0) {
+      //     if (meteors[i].track_tail == 0) {
+      //       meteors[i].track_tail = METEOR_TAIL_LENGTH;
+      //     }
+      //     else {
+      //       meteors[i].track_tail--;
+      //     }
+      //     DPRINT("new track_tail = ");
+      //     DPRINT(meteors[i].track_tail);
+      //     DPRINT("; ");
+      //   }
+      // }
+
+      if ( (meteors[i].track_head == meteors[i].track_tail + 1) ||
+          ((meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) && (!meteors[i].visible) ) {
+        meteors[i].exist = false;
+        DPRINT(" .exist = false ");        
+        meteors_count--;
+      }
+
+      if (meteors[i].visible) {
+        uint8_t x_matrix = (uint8_t)(meteors[i].x >> 4);
+        uint8_t y_matrix = (uint8_t)(meteors[i].y >> 4);
+
+        drawPixelXY(lamp_state->leds, x_matrix, y_matrix, meteors[i].color);
+        // fadePixel(lamp_state->leds, x, y, meteors[i].track_fade);
+        DPRINT("drawPixelXY (moved body): ");
+        DPRINT_FULL(x_matrix);
+        DPRINTLN_FULL(y_matrix);
+
+        meteors[i].track_head = (uint8_t)ChangeParameterValue(meteors[i].track_head, -1, METEOR_TAIL_LENGTH - 1, false);
+        // if (meteors[i].track_head == 0) {
+        //   meteors[i].track_head = METEOR_TAIL_LENGTH;
+        // }
+        // else {
+        //   meteors[i].track_head--;
+        // }
+        tracks[i][meteors[i].track_head].x = x_matrix;
+        tracks[i][meteors[i].track_head].y = y_matrix;
+      }
+    }
+    DPRINT("\n");
+  }
+
+  if (meteors_count >= METEOR_MAX_OBJECTS) {
+    DPRINTLN("done...\n");
+    return;
+  }
+
+  // Add new meteors
+  // free_meteors = METEOR_MAX_OBJECTS - meteors_count;
+  // new_meteors = 4;
+  // if (free_meteors >= 3) {
+  //   if (random(10) == 0) {
+  //     new_meteors = 3;
+  //   }
+  // }
+  // if ((free_meteors >= 2) && (new_meteors == 4)) {
+  //   if (random(4) == 0) {
+  //     new_meteors = 2;
+  //   }
+  // }
+  // if (new_meteors == 4) {
+  //   new_meteors = 1;
+  // }
+  new_meteors = 1;
+  while (new_meteors > 0) {
+    DPRINT("new_meteors: ");
+    edge_index = random((HEIGHT * 3 / 4 + WIDTH * 3 / 4 - 1) * 16);
+    x = 0;
+    y = HEIGHT * 16 - 1;
+
+    if (edge_index < (HEIGHT * 3 / 4) * 16) {
+      y = (HEIGHT / 4) * 16 + edge_index;
+    }
+    else {
+      x = edge_index - (HEIGHT * 3 / 4 + 1) * 16;
+    }
+    uint8_t x_matrix = (uint8_t)(x >> 4);
+    uint8_t y_matrix = (uint8_t)(y >> 4);
+    uint8_t track_length = random(3,  METEOR_TAIL_LENGTH);
+    // DPRINT_FULL(edge_index);
+    DPRINT_FULL(x);
+    DPRINT_FULL(y);
+    DPRINT_FULL(track_length);
+
+    meteor_index = 0;
+    // DPRINT_FULL(meteor_index);
+    // DPRINT_FULL(meteors[meteor_index].exist);
+    while (meteors[meteor_index].exist) {
+      meteor_index++;
+      // DPRINT_FULL(meteor_index);
+      // DPRINT_FULL(meteors[meteor_index].exist);
+    }
+
+    DPRINT("\n");
+    DPRINT_FULL(meteor_index);
+    meteors[meteor_index].x = x;
+    meteors[meteor_index].y = y;
+    uint8_t speed = random(METEOR_MIN_SPEED, METEOR_MAX_SPEED);
+    meteors[meteor_index].speed_vector_x =   speed + random(METEOR_DELTA_SPEED + 1) - METEOR_DELTA_SPEED / 2;
+    meteors[meteor_index].speed_vector_y = -(speed + random(METEOR_DELTA_SPEED + 1) - METEOR_DELTA_SPEED / 2);
+    meteors[meteor_index].track_head = METEOR_TAIL_LENGTH - 1;
+    meteors[meteor_index].track_tail = METEOR_TAIL_LENGTH - 1;
+    meteors[meteor_index].track_fade = 255 - (16 * track_length);
+    meteors[meteor_index].color = CHSV(random(32, 256), random(32, METEOR_SATURATION), 255);
+    meteors[meteor_index].exist = true;
+    meteors[meteor_index].visible = true;
+
+    tracks[meteor_index][METEOR_TAIL_LENGTH - 1].x = x_matrix;
+    tracks[meteor_index][METEOR_TAIL_LENGTH - 1].y = y_matrix;
+
+    DPRINT("drawPixelXY (new body): ");
+    DPRINT_FULL(x_matrix);
+    DPRINTLN_FULL(y_matrix);
+    drawPixelXY(lamp_state->leds, x_matrix, y_matrix, meteors[meteor_index].color);
+
+    meteors_count++;
+    new_meteors--;
+    DPRINT("\n");
+  }
+
+  DPRINTLN("done...\n");
+}
+
 
 void starfallRoutine(the_lamp_state_t *lamp_state) {
   // if (lamp_state->loadingFlag) {
@@ -45,7 +267,7 @@ void starfallRoutine(the_lamp_state_t *lamp_state) {
     fadePixel(lamp_state->leds, 0, i, METEOR_TAIL_LENGTH);
     // fadePixelManually(lamp_state->leds, 0, i, METEOR_TAIL_LENGTH);
   }
-  for (uint8_t i = 0; i <= WIDTH * 3 / 4; i++) {
+  for (uint8_t i = 0; i <= WIDTH * 3 / 4 - 1; i++) {
     fadePixel(lamp_state->leds, i, HEIGHT - 1, METEOR_TAIL_LENGTH);
     // fadePixelManually(lamp_state->leds, i, HEIGHT - 1, METEOR_TAIL_LENGTH);
   }
@@ -344,14 +566,14 @@ void ballsRoutine(the_lamp_state_t *lamp_state) {
     }
 
     // Check the top boundary by X
-    if (ball_coord[i][0] > (WIDTH - 1) * 16) {
-      ball_coord[i][0] = (WIDTH - 1) * 16;
+    if (ball_coord[i][0] > (WIDTH * 16 - 1)) {
+      ball_coord[i][0] = (WIDTH * 16 - 1);
       ball_vector[i][0] = -ball_vector[i][0];
     }
 
     // Check the top boundary by Y
-    if (ball_coord[i][1] > (HEIGHT - 1) * 16) {
-      ball_coord[i][1] = (HEIGHT - 1) * 16;
+    if (ball_coord[i][1] > (HEIGHT * 16 - 1)) {
+      ball_coord[i][1] = (HEIGHT * 16 - 1);
       ball_vector[i][1] = -ball_vector[i][1];
     }
 

@@ -37,7 +37,7 @@ WiFiServer server(HTTP_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
-M_MinimalTimer Effect_Timer(EFFECT_SPEED);
+M_MinimalTimer Effect_Timer(EFFECT_SPEED * 10);
 M_MinimalTimer Clock_Timer(CLOCK_TIME * 1000);
 M_MinimalTimer Idle_Timer(IDLE_TIME * 1000);
 // M_MinimalTimer Dawn_Timer(DAWN_CHECK_TIME * 1000);
@@ -117,20 +117,42 @@ void loop() {
     ServerLoop(&server, &lamp_state);
 
     // Working with matrix
+#ifdef DEBUG_STEP
+    if (lamp_state.debug) {
+        if (lamp_state.step) {
+            SelectEffect(&lamp_state);  // Current effect drawing
+            FastLED.show();             // Show matrix
+            lamp_state.step = false;
+        }
+    }
+    else {
+        if (lamp_state.state && Effect_Timer.isReady()) {
+            SelectEffect(&lamp_state);  // Current effect drawing
+            FastLED.show();             // Show matrix
+        }
+    }
+#else
     if (lamp_state.state && Effect_Timer.isReady()) {
         SelectEffect(&lamp_state);  // Current effect drawing
         FastLED.show();             // Show matrix
     }
+#endif
 
-    // Dawn check
-    if (Clock_Timer.isReady()) {
-        uint32_t get_Millis;
+    // // Dawn check
+    // if (Clock_Timer.isReady()) {
+    //     uint32_t get_Millis;
 
-        get_Millis = Clock_Timer.getMillis();
-        DPRINTLN_FULL(get_Millis);
-        // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
-        lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
-    }
+    //     printDateTimeStruct(lamp_state.date_time);
+    //     get_Millis = Clock_Timer.getMillis();
+    //     DPRINTLN_FULL(get_Millis);
+    //     DPRINTLN("");
+    //     // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+
+    //     //lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
+
+    //     printTime(lamp_state.date_time->local_time + (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000);
+    //     DPRINTLN("");
+    // }
 
     // NTP connection and date/time update
     if (NTP_Timer.isReady()) {      
@@ -145,8 +167,8 @@ void loop() {
 
     // Idle timer: for WDT and debug
     if (Idle_Timer.isReady()) {      
-        DPRINTLN("idleTimer.isReady()");
-        printTime(lamp_state.date_time->local_time);
+        DPRINTLN("\nidleTimer.isReady()");
+        printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
         ESP.wdtFeed();
     }
 }

@@ -39,18 +39,18 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state) {
 //void printCurrentDateTime(local_date_time_t *date_time) {
 void printDateTimeStruct(local_date_time_t *date_time) {
   DPRINTLN("printCurrentDateTime()");
-  DPRINT("Current day: ");
-  DPRINTLN(date_time->day);
-  DPRINT("Current time: ");
-  DPRINT(date_time->hour);
-  DPRINT(":");
-  DPRINT(date_time->minute);
-  DPRINT(":");
-  DPRINTLN(date_time->second);
-  DPRINT("local_time = ");
-  DPRINTLN(date_time->local_time);
   DPRINT("local_millis = ");
   DPRINTLN(date_time->local_millis);
+  DPRINT("local_time = ");
+  DPRINTLN(date_time->local_time);
+  // DPRINT("Current day: ");
+  // DPRINTLN(date_time->day);
+  DPRINT("Current time: ");
+  DPRINT(hour(date_time->local_time));
+  DPRINT(":");
+  DPRINT(minute(date_time->local_time));
+  DPRINT(":");
+  DPRINTLN(second(date_time->local_time));
 }
 
 void printTime(time_t currentLocalTime) {
