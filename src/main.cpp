@@ -37,7 +37,7 @@ WiFiServer server(HTTP_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
-M_MinimalTimer Effect_Timer(EFFECT_SPEED * 10);
+M_MinimalTimer Effect_Timer(EFFECT_SPEED);
 M_MinimalTimer Clock_Timer(CLOCK_TIME * 1000);
 M_MinimalTimer Idle_Timer(IDLE_TIME * 1000);
 // M_MinimalTimer Dawn_Timer(DAWN_CHECK_TIME * 1000);

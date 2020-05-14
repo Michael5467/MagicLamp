@@ -16,7 +16,6 @@ track_object_t  tracks [METEOR_MAX_OBJECTS][METEOR_TAIL_LENGTH];
 int8_t meteors_count = 0;
 
 void starfallRoutine_new(the_lamp_state_t *lamp_state) {
-uint8_t free_meteors = 0;
 uint8_t new_meteors = 0;
 int32_t edge_index = 0;
 int32_t x = 0;
@@ -40,6 +39,9 @@ uint8_t meteor_index = 0;
   }
   
   DPRINTLN_FULL(meteors_count);
+  if (meteors_count == 0) {
+      randomSeed(micros());
+  }
 
   // Move stars and fade tracks
   for (uint8_t i = 0; i <= METEOR_MAX_OBJECTS - 1; i++) {
@@ -53,7 +55,13 @@ uint8_t meteor_index = 0;
         uint8_t y_matrix = (uint8_t)(meteors[i].y >> 4);
         DPRINT("Move head to: ");
         DPRINT_FULL(x_matrix);
+        if (x_matrix > WIDTH) {
+          DPRINT("ACHTUNG!!!");
+        }
         DPRINT_FULL(y_matrix);
+        if (y_matrix > HEIGHT) {
+          DPRINT("ACHTUNG!!!");
+        }
         if ((meteors[i].x > (WIDTH * 16 - 1) || (meteors[i].y < 0))) {
           DPRINT(" .visible = false ");
           meteors[i].visible = false;
@@ -61,7 +69,7 @@ uint8_t meteor_index = 0;
       }
 
       DPRINT_FULL(meteors[i].track_head);
-      DPRINT_FULL(meteors[i].track_tail);
+      DPRINTLN_FULL(meteors[i].track_tail);
 
       // Fade tail
       uint8_t track_index = meteors[i].track_head;
@@ -73,69 +81,15 @@ uint8_t meteor_index = 0;
         fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
 
         track_index = (uint8_t)ChangeParameterValue(track_index, +1, METEOR_TAIL_LENGTH - 1, false);
-        // if (track_index == METEOR_TAIL_LENGTH - 1) {
-        //   track_index = 0;
-        // }
-        // else {
-        //   track_index++;
-        // }
       } while ((track_index != meteors[i].track_tail + 1) &&  
                !((track_index == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)));
 
       if (getPixelColorXY(lamp_state->leds, tracks[i][meteors[i].track_tail].x, tracks[i][meteors[i].track_tail].y) == 0) {
         meteors[i].track_tail = (uint8_t)ChangeParameterValue(meteors[i].track_tail, -1, METEOR_TAIL_LENGTH - 1, false);
-        // if (meteors[i].track_tail == 0) {
-        //   meteors[i].track_tail = METEOR_TAIL_LENGTH - 1;
-        // }
-        // else {
-        //   meteors[i].track_tail--;
-        // }
         DPRINT("new track_tail = ");
         DPRINT(meteors[i].track_tail);
         DPRINT("; ");
       }
-
-      // if ((meteors[i].track_head != meteors[i].track_tail + 1) || 
-      //     (meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) {
-      //   uint8_t track_index = meteors[i].track_head;
-      //   // DPRINT("\n");
-      //   // DPRINTLN_FULL(track_index);
-      //   // while (track_index != meteors[i].track_tail) {
-      //   //   DPRINT("fede pixel at index ");
-      //   //   DPRINT_FULL(track_index);
-      //   //   DPRINT_FULL(tracks[i][track_index].x);
-      //   //   DPRINTLN_FULL(tracks[i][track_index].y);
-      //   //   fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
-      //   //   track_index++;
-      //   //   if (track_index == METEOR_TAIL_LENGTH) {
-      //   //     track_index = 0;
-      //   //   }
-      //   // }
-      //   do {
-      //     track_index++;
-      //     if (track_index == METEOR_TAIL_LENGTH) {
-      //       track_index = 0;
-      //     }
-      //     DPRINT("fade pixel at index ");
-      //     DPRINT_FULL(track_index);
-      //     DPRINT_FULL(tracks[i][track_index].x);
-      //     DPRINTLN_FULL(tracks[i][track_index].y);
-      //     fadePixel(lamp_state->leds, tracks[i][track_index].x, tracks[i][track_index].y, meteors[i].track_fade);
-      //   } while (track_index != meteors[i].track_tail);
-
-
-      //   if (getPixelColorXY(lamp_state->leds, tracks[i][meteors[i].track_tail].x, tracks[i][meteors[i].track_tail].y) == 0) {
-      //     if (meteors[i].track_tail == 0) {
-      //       meteors[i].track_tail = METEOR_TAIL_LENGTH;
-      //     }
-      //     else {
-      //       meteors[i].track_tail--;
-      //     }
-      //     DPRINT("new track_tail = ");
-      //     DPRINT(meteors[i].track_tail);
-      //     DPRINT("; ");
-      //   }
-      // }
 
       if ( (meteors[i].track_head == meteors[i].track_tail + 1) ||
           ((meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) && (!meteors[i].visible) ) {
@@ -155,12 +109,6 @@ uint8_t meteor_index = 0;
         DPRINTLN_FULL(y_matrix);
 
         meteors[i].track_head = (uint8_t)ChangeParameterValue(meteors[i].track_head, -1, METEOR_TAIL_LENGTH - 1, false);
-        // if (meteors[i].track_head == 0) {
-        //   meteors[i].track_head = METEOR_TAIL_LENGTH;
-        // }
-        // else {
-        //   meteors[i].track_head--;
-        // }
         tracks[i][meteors[i].track_head].x = x_matrix;
         tracks[i][meteors[i].track_head].y = y_matrix;
       }
@@ -189,7 +137,17 @@ uint8_t meteor_index = 0;
   // if (new_meteors == 4) {
   //   new_meteors = 1;
   // }
-  new_meteors = 1;
+  if (random(METEOR_DENSITY) == 0) {
+    new_meteors = 1;
+  }
+  else {
+    if (meteors_count == 0) {
+      if (random(METEOR_DENSITY/4) == 0) {
+        new_meteors = 1;
+      }
+    }
+    new_meteors = 0;
+  }
   while (new_meteors > 0) {
     DPRINT("new_meteors: ");
     edge_index = random((HEIGHT * 3 / 4 + WIDTH * 3 / 4 - 1) * 16);
@@ -204,19 +162,15 @@ uint8_t meteor_index = 0;
     }
     uint8_t x_matrix = (uint8_t)(x >> 4);
     uint8_t y_matrix = (uint8_t)(y >> 4);
-    uint8_t track_length = random(3,  METEOR_TAIL_LENGTH);
+    uint8_t track_length = random(5,  METEOR_TAIL_LENGTH);
     // DPRINT_FULL(edge_index);
     DPRINT_FULL(x);
     DPRINT_FULL(y);
     DPRINT_FULL(track_length);
 
     meteor_index = 0;
-    // DPRINT_FULL(meteor_index);
-    // DPRINT_FULL(meteors[meteor_index].exist);
     while (meteors[meteor_index].exist) {
       meteor_index++;
-      // DPRINT_FULL(meteor_index);
-      // DPRINT_FULL(meteors[meteor_index].exist);
     }
 
     DPRINT("\n");
@@ -224,8 +178,8 @@ uint8_t meteor_index = 0;
     meteors[meteor_index].x = x;
     meteors[meteor_index].y = y;
     uint8_t speed = random(METEOR_MIN_SPEED, METEOR_MAX_SPEED);
-    meteors[meteor_index].speed_vector_x =   speed + random(METEOR_DELTA_SPEED + 1) - METEOR_DELTA_SPEED / 2;
-    meteors[meteor_index].speed_vector_y = -(speed + random(METEOR_DELTA_SPEED + 1) - METEOR_DELTA_SPEED / 2);
+    meteors[meteor_index].speed_vector_x =   speed + random(METEOR_DELTA_SPEED + 1);
+    meteors[meteor_index].speed_vector_y = -(speed + random(METEOR_DELTA_SPEED + 1));
     meteors[meteor_index].track_head = METEOR_TAIL_LENGTH - 1;
     meteors[meteor_index].track_tail = METEOR_TAIL_LENGTH - 1;
     meteors[meteor_index].track_fade = 255 - (16 * track_length);
