@@ -39,6 +39,7 @@ typedef struct {
 
 typedef struct {
     boolean  state          = false; // ON/OFF
+    boolean  dawn           = false; // Dawn is running or not
     boolean  debug          = false; // Debug mode: manual stepping instead of timer if TRUE
     boolean  step           = false; // Run next step if debug=true
     uint8_t  effect         = 0;     // Current effect number
@@ -48,7 +49,6 @@ typedef struct {
     uint8_t  speed_raw      = 0;     // Raw speed value (from GUI)
     uint16_t scale          = 0;     // Current effect scale
     uint8_t  scale_raw      = 0;     // Raw scale value (from GUI)
-
 
     String   IP             = "";    // IP
     boolean  loadingFlag    = false; // First-run/redrawing efffect flag
@@ -83,6 +83,7 @@ typedef struct {
 
 typedef struct {
   boolean  state = false;
+  uint8_t  day   = 0; // 0 - Mon, ... , 6 - Sun
   uint8_t  hour  = 0;
   uint8_t  min   = 0;
 } alarm_t;
@@ -173,6 +174,8 @@ void plumNoise(the_lamp_state_t *lamp_state);
 void randomNoise(the_lamp_state_t *lamp_state);
 void rainbowNoise(the_lamp_state_t *lamp_state);
 void rainbowStripeNoise(the_lamp_state_t *lamp_state);
+
+void Dawn(the_lamp_state_t *lamp_state);
 
     // Games
         // Snake

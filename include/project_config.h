@@ -20,8 +20,8 @@
 // #define DA_SSID "iPhone (Elena)"
 // #define DA_PASS "ax09280588"
 
-#define DA_SSID "DL-F2-18"
-#define DA_PASS "mgtswifi"
+#define DA_SSID "Keenetic-3366"
+#define DA_PASS "134KMgruzin"
 
 // Access point parameters
 #define AP_SSID "AutoConnectAP"
@@ -39,7 +39,7 @@
 
 // Timers' delay parameters (in seconds)
 #define IDLE_TIME  15 // 60    // Interval between "idle" print and WDT timer updates
-#define CLOCK_TIME 10    // Interval between clock updates (and dan checking)
+#define CLOCK_TIME 10    // Interval between clock updates (and dawn checking)
 // #define DAWN_CHECK_TIME 10 // Interval between dawn-time checking
 
 // Total amount of modes
