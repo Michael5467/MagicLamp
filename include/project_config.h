@@ -39,7 +39,7 @@
 
 // Timers' delay parameters (in seconds)
 #define IDLE_TIME  15 // 60    // Interval between "idle" print and WDT timer updates
-#define CLOCK_TIME 10    // Interval between clock updates (and dan checking)
+#define CLOCK_TIME 10    // Interval between clock updates (and dawn checking)
 // #define DAWN_CHECK_TIME 10 // Interval between dawn-time checking
 
 // Total amount of modes
