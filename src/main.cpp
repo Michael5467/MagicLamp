@@ -12,6 +12,8 @@
 #include <NTPClient.h>
 #include <Timezone.h>
 
+#include <EEPROM.h>
+
 #include <FastLED.h>
 
 #include "project_config.h"
@@ -111,6 +113,9 @@ void setup() {
     // WDT
     ESP.wdtFeed();
     updateMode(&lamp_state);
+
+    // EEPROM
+    EEPROM.begin(512);
 }
 
 void loop() {

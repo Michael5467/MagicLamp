@@ -18,15 +18,6 @@
 #include "effects.h"
 #include "matrix.h"
 
-// typedef enum {
-//     LAMP_OFF=0,
-//     LAMP_OFF=1,
-//     LAMP_OFF=1,
-//     LAMP_OFF=1,
-//     LAMP_OFF=1,
-//     LAMP_OFF=1,
-// } lampState_t;
-
 typedef struct {
     boolean  synchronized = false;
     uint8_t  day          = 0;
@@ -60,6 +51,7 @@ typedef struct {
     snow_parameters_t *effect_snow = NULL;
 } the_lamp_state_t;
 
+// Lamp state machine
 typedef enum {
     FSM_IDLE=0,
     FSM_CHANGE_MODE=1
@@ -81,10 +73,17 @@ typedef struct {
     char param[4];
 } post_command_t;
 
+// Alarm possible state coding
+typedef enum {
+    alarm_off=0,
+    alarm_once=1,
+    alarm_weekly=2
+} alarm_state_t;
+
 typedef struct {
-  boolean  state = false;
-  uint8_t  hour  = 0;
-  uint8_t  min   = 0;
+    alarm_state_t state = alarm_off;
+    uint8_t  hour       = 0;
+    uint8_t  min        = 0;
 } alarm_t;
 
 // Functions
