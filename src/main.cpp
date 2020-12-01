@@ -23,8 +23,6 @@
 snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
 local_date_time_t date_time;
 the_lamp_state_t lamp_state;
-the_lamp_state_t save_lamp_state;
-uint32_t save_Effect_Timer_Interval;
 
 CRGB leds[NUM_LEDS];
 
@@ -113,14 +111,6 @@ void setup() {
     // WDT
     ESP.wdtFeed();
     updateMode(&lamp_state);
-
-    // Alarm Test
-    for (int i = 0; i <= 6; i++) {
-        awake_alarm_arr[i].state = true;
-        awake_alarm_arr[i].day = 3;
-        awake_alarm_arr[i].hour = 15;
-        awake_alarm_arr[i].min = 45;
-    }
 }
 
 void loop() {
@@ -148,24 +138,21 @@ void loop() {
     }
 #endif
 
-    // Dawn check
-    if (Clock_Timer.isReady()) {
-        time_t curr_Time = lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+    // // Dawn check
+    // if (Clock_Timer.isReady()) {
+    //     uint32_t get_Millis;
 
-        uint8_t thisDay = convert_to_ISO8601(dayOfWeek(curr_Time));
-        if (awake_alarm_arr[thisDay].state) {
-            int hour_var = hour(curr_Time);
-            int min_var  = minute(curr_Time);
-            if ((awake_alarm_arr[thisDay].hour == hour_var) and (awake_alarm_arr[thisDay].min == min_var)) {
-                save_lamp_state = lamp_state;
-                save_Effect_Timer_Interval = lamp_state.effectTimer->getInterval();
-                setEffectsSpeed(&lamp_state, EFFECT_SPEED);
-                lamp_state.state = true;
-                lamp_state.dawn = true;
-                setMode(&lamp_state, EFF_DAWN);
-            }
-        }
-    }
+    //     printDateTimeStruct(lamp_state.date_time);
+    //     get_Millis = Clock_Timer.getMillis();
+    //     DPRINTLN_FULL(get_Millis);
+    //     DPRINTLN("");
+    //     // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+
+    //     //lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
+
+    //     printTime(lamp_state.date_time->local_time + (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000);
+    //     DPRINTLN("");
+    // }
 
     // NTP connection and date/time update
     if (NTP_Timer.isReady()) {      
@@ -182,13 +169,6 @@ void loop() {
     if (Idle_Timer.isReady()) {      
         DPRINTLN("\nidleTimer.isReady()");
         printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
-
-        // uint8_t thisDay = dayOfWeek(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
-        // if (thisDay == 1)
-        //     thisDay = 8;
-        // thisDay -= 2;
-        // DPRINTLN_FULL(thisDay);
-        // // uint8_t d = day(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
         ESP.wdtFeed();
     }
 }
