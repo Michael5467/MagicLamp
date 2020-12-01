@@ -20,6 +20,9 @@
 // #define DA_SSID "iPhone (Elena)"
 // #define DA_PASS "ax09280588"
 
+//#define DA_SSID "Keenetic-3366"
+//#define DA_PASS "134KMgruzin"
+
 #define DA_SSID "DL-F2-18"
 #define DA_PASS "mgtswifi"
 

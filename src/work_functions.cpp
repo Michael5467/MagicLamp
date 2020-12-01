@@ -288,6 +288,9 @@ void SelectEffect(the_lamp_state_t *lamp_state) {
         case EFF_CODE_RAINBOW_STRIPE:
             rainbowStripeNoise(lamp_state);
             break;
+        case EFF_DAWN:
+            Dawn(lamp_state);
+            break;
     }
 }
 

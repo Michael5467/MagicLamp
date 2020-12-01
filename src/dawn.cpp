@@ -2,25 +2,6 @@
 #include <FastLED.h>
 #include "functions.h"
 
-// ********************************* Dawn *********************************
-void Dawn(the_lamp_state_t *lamp_state) {
-  uint8_t count = 0;
-  uint8_t try_count = 0;
-
-  // Decreasing the matrix brightness: sparks will be faded automatically
-  fadeMatrix(lamp_state->leds, FLARE_COLOR_STEP_LIB);
-
-  while ((count < lamp_state->scale) && (try_count < 255)) {
-    uint8_t x = random(0, WIDTH);
-    uint8_t y = random(0, HEIGHT);
-    if (getPixelColorXY(lamp_state->leds, x, y) == 0) {
-      lamp_state->leds[getPixelNumber(x, y)] = CHSV(random(0, 256), 255, 255);
-      count++;
-    }
-    try_count++;
-  }
-}
-
 // ****************************** Meteor Shower ****************************
 meteor_object_t meteors[METEOR_MAX_OBJECTS];
 track_object_t  tracks [METEOR_MAX_OBJECTS][METEOR_TAIL_LENGTH];
