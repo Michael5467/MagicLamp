@@ -5,6 +5,7 @@
 //needed for library
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 
 #include <WiFiUdp.h>
@@ -19,6 +20,7 @@
 #include "effects.h"
 #include "matrix.h"
 #include "Michael_MinimalTimer.h"
+#include "web_functions.h"
 
 snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
 local_date_time_t date_time;
@@ -33,7 +35,9 @@ const char *accesspointSSID = AP_SSID;
 const char *accesspointPass = AP_PASS;
 
 // Set web server port number
-WiFiServer server(HTTP_PORT);
+// WiFiServer server(HTTP_PORT);
+ESP8266WebServer server(HTTP_PORT);
+WebSocketsServer webSocket = WebSocketsServer(WEB_SOCKET_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -105,6 +109,10 @@ void setup() {
     // HTTP server
     server.begin();
 
+    // WEB socket
+	webSocket.begin();
+	webSocket.onEvent(webSocketEvent);
+
     // NTP client
     timeClient.begin();
 
@@ -114,7 +122,11 @@ void setup() {
 }
 
 void loop() {
-    ServerLoop(&server, &lamp_state);
+    // ServerLoop(&server, &lamp_state);
+
+    webSocket.loop();
+
+    server.handleClient();
 
     // Working with matrix
 #ifdef DEBUG_STEP

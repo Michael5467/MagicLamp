@@ -1,6 +1,6 @@
-#include "web_server_functions.h"
+#include "web_functions.h"
 
-// File fsUploadFile;
+File fsUploadFile;
 
 void http_server_init()
 {
@@ -94,8 +94,8 @@ bool handleFileRead(String path)
 {
 	//Serial.println("handleFileRead: " + path);
 	DPRINTLN("handleFileRead: " + path)
-	if (path.endsWith("/"))
-		path += "index.htm";
+	// if (path.endsWith("/"))
+	// 	path += "index.htm";
 	String contentType = getContentType(path);
 	String pathWithGz = path + ".gz";
 	if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path))

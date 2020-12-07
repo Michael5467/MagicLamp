@@ -1,14 +1,16 @@
-#ifndef __INC_WEB_SERVER_FUNCTIONS_H
-#define __INC_WEB_SERVER_FUNCTIONS_H
+#ifndef __INC_WEB_FUNCTIONS_H
+#define __INC_WEB_FUNCTIONS_H
 
 #include <Arduino.h>
 #include <FS.h>
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 
 #include "debug_macros.h"
 
 extern ESP8266WebServer server;
-File fsUploadFile;
+extern WebSocketsServer webSocket;
+// File fsUploadFile;
 
 void http_server_init();
 
@@ -21,7 +23,8 @@ void handleFileDelete();
 void handleFileCreate();
 
 String getContentType(String filename);
-
 String formatBytes(size_t bytes);
 
-#endif // __INC_WEB_SERVER_FUNCTIONS_H
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);
+
+#endif // __INC_WEB_FUNCTIONS_H

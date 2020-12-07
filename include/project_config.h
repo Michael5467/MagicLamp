@@ -29,6 +29,8 @@
 
 // WEB port (80 as default)
 #define HTTP_PORT 80
+// WEB SOKET port (81 as default)
+#define WEB_SOKET_PORT 81
 
 // Preset for FastLED library
 // #define FASTLED_INTERRUPT_RETRY_COUNT 0
