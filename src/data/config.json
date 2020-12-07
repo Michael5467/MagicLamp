@@ -1,0 +1,55 @@
+{
+    "product": "MagicLamp",
+    "version": 0.1,
+    "releaseDate": "2020-12-07T00:00:00.000Z",
+    "state": true,
+    "debug": false,
+    "effect": 5,
+    "awake_alarm": [
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        },
+        {
+            "state": false,
+            "hour": 7,
+            "min": 0
+        }
+    ],
+    "sleep_alarm": {
+        "state": false,
+        "hour": 0,
+        "min": 10
+    }
+}
