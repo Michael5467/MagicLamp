@@ -55,8 +55,8 @@ uint8_t meteor_index = 0;
         meteors[i].track_tail = (uint8_t)ChangeParameterValue(meteors[i].track_tail, -1, METEOR_TAIL_LENGTH - 1, false);
       }
 
-      if ( (meteors[i].track_head == meteors[i].track_tail + 1) ||
-          ((meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) && (!meteors[i].visible) ) {
+      if ((meteors[i].track_head == meteors[i].track_tail + 1) ||
+          (((meteors[i].track_head == 0) && (meteors[i].track_tail == METEOR_TAIL_LENGTH - 1)) && (!meteors[i].visible)) ) {
         meteors[i].exist = false;
         meteors_count--;
       }
