@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+// #define DEBUG_ESP_HTTP_SERVER
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 
 //needed for library
@@ -117,11 +118,14 @@ void setup() {
     lamp_state.IP = WiFi.localIP().toString();
 
     // HTTP server
+    http_server_init();
     server.begin();
+    DPRINTLN("HTTP server started")
 
     // WEB socket
 	webSocket.begin();
 	webSocket.onEvent(webSocketEvent);
+    DPRINTLN("Web socket server started")
 
     // NTP client
     timeClient.begin();
@@ -189,8 +193,8 @@ void loop() {
 
     // Idle timer: for WDT and debug
     if (Idle_Timer.isReady()) {      
-        DPRINTLN("\nidleTimer.isReady()");
-        printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
+        // DPRINTLN("\nidleTimer.isReady()");
+        // printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
         ESP.wdtFeed();
     }
 }

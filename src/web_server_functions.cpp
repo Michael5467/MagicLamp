@@ -5,34 +5,31 @@ File fsUploadFile;
 void http_server_init()
 {
 	server.on("/", HTTP_GET, []() {
-		if (!handleFileRead("/index.htm"))
+		if (!handleFileRead("/index.html"))
 			server.send(404, "text/plain", "FileNotFound");
 	}); //list directory
 
-	server.on("/index.htm", HTTP_GET, []() {
-		if (!handleFileRead("/index.htm"))
+	server.on("/index.html", HTTP_GET, []() {
+		if (!handleFileRead("/index.html"))
 			server.send(404, "text/plain", "FileNotFound");
 	}); //list directory
-
-	server.on("/settings.htm", HTTP_GET, []() {
-		if (!handleFileRead("/settings.htm"))
-			server.send(404, "text/plain", "FileNotFound");
-	});
-
-	server.on("/sound.htm", HTTP_GET, []() {
-		if (!handleFileRead("/sound.htm"))
-			server.send(404, "text/plain", "FileNotFound");
-	});
 
 	server.on("/settings", HTTP_GET, []() {
-		if (!handleFileRead("/settings.htm"))
+		if (!handleFileRead("/settings.html"))
 			server.send(404, "text/plain", "FileNotFound");
 	});
 
+	server.on("/settings.html", HTTP_GET, []() {
+		if (!handleFileRead("/settings.html"))
+			server.send(404, "text/plain", "FileNotFound");
+	});
+
+	server.on("/info", HTTP_GET, handleFilesystemInformation);
 	server.on("/list", HTTP_GET, handleFileList);
+
 	//load editor
 	server.on("/edit", HTTP_GET, []() {
-		if (!handleFileRead("/edit.htm"))
+		if (!handleFileRead("/edit.html"))
 			server.send(404, "text/plain", "FileNotFound");
 	});
 
@@ -66,10 +63,6 @@ void http_server_init()
 		server.send(200, "text/json", json);
 		json = String();
 	});
-
-	server.begin();
-	// Serial.println("HTTP server started");
-	DPRINTLN("HTTP server started")
 }
 
 void handleNotFound()
@@ -118,32 +111,32 @@ void handleFilesystemInformation()
 	FSInfo fs_info;
 	LittleFS.info(fs_info);
 
-	String output = "[";
-	output += "{\"Total space\":\"";
+	String output = "{";
+	output += "\"Total space\":\"";
 	output += fs_info.totalBytes;
-	output += "\"}";
+	output += "\",";
 
-	output += "{\"Total space used\":\"";
+	output += "\"Total space used\":\"";
 	output += fs_info.usedBytes;
-	output += "\"}";
+	output += "\",";
 
-	output += "{\"Block size\":\"";
+	output += "\"Block size\":\"";
 	output += fs_info.blockSize;
-	output += "\"}";
+	output += "\",";
 
-	output += "{\"Page size\":\"";
+	output += "\"Page size\":\"";
 	output += fs_info.pageSize;
-	output += "\"}";
+	output += "\",";
 
-	output += "{\"Max open files\":\"";
+	output += "\"Max open files\":\"";
 	output += fs_info.maxOpenFiles;
-	output += "\"}";
+	output += "\",";
 
-	output += "{\"Max path lenght\":\"";
+	output += "\"Max path lenght\":\"";
 	output += fs_info.maxPathLength;
-	output += "\"}";
+	output += "\"";
 
-	output += "]";
+	output += "}";
 	server.send(200, "text/json", output);
 }
 
@@ -171,7 +164,8 @@ void handleFileList()
 		output += "{\"type\":\"";
 		output += (isDir) ? "dir" : "file";
 		output += "\",\"name\":\"";
-		output += String(entry.name()).substring(1);
+		// output += String(entry.name()).substring(1);
+		output += String(entry.name());
 		output += "\"}";
 		entry.close();
 	}
