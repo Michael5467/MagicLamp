@@ -24,6 +24,9 @@ void http_server_init()
 			server.send(404, "text/plain", "FileNotFound");
 	});
 
+	server.on("/action.html", HTTP_GET, handleAction);
+	server.on("/action.html", HTTP_POST, handleAction);
+
 	server.on("/info", HTTP_GET, handleFilesystemInformation);
 	server.on("/list", HTTP_GET, handleFileList);
 
@@ -63,6 +66,23 @@ void http_server_init()
 		server.send(200, "text/json", json);
 		json = String();
 	});
+}
+
+void handleAction()
+{
+	String message = "handleAction!\n\n";
+	message += "URI: ";
+	message += server.uri();
+	message += "\nMethod: ";
+	message += (server.method() == HTTP_GET) ? "GET" : "POST";
+	message += "\nArguments: ";
+	message += server.args();
+	message += "\n";
+	for (uint8_t i = 0; i < server.args(); i++)
+	{
+		message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+	}
+	server.send(200, "text/plain", message);
 }
 
 void handleNotFound()

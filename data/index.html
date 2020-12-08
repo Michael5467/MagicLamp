@@ -27,7 +27,7 @@
 		<div class="container column">
 			<div class="container row">
 				<p class="item label">Effects:</p>
-				<select class="item item_select" aria-label="Effects">
+				<select class="item item_select" aria-label="Effects" formaction="/action.html" formmethod="post">
 					<optgroup label="Simple">
 						<option value="EFF_CODE_SNOW">Snowfall</option>
 						<option value="EFF_CODE_BALLS">Balls</option>
@@ -56,7 +56,7 @@
 			<div class="container row">
 				<p class="item label">Brightness</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="BrightnesSlider">
+					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="BrightnesSlider" formaction="/action.html" formmethod="post">
 				</div>
 			</div>
 			<div class="container row">
@@ -67,7 +67,7 @@
 			<div class="container row">
 				<p class="item label">Speed</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="SpeedSlider">
+					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="SpeedSlider" formaction="/action.html" formmethod="post">
 				</div>
 			</div>
 			<div class="container row">
@@ -78,7 +78,7 @@
 			<div class="container row">
 				<p class="item label">Density</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="100" value="50" step="1" class="slider" id="DensitySlider">
+					<input type="range" min="1" max="100" value="50" step="1" class="slider" id="DensitySlider" formaction="/action.html" formmethod="post">
 				</div>
 			</div>
 			<div class="container row">
@@ -89,6 +89,7 @@
 	<div class="flexbox-body footer">
 		<p class="copyright">Copyrigth &copy; 2020 by Michael</p>
 	</div>
+	
 	<script>
 		var slider1 = document.getElementById("BrightnesSlider");
 		var output1 = document.getElementById("BrightnesValue");

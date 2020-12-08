@@ -23,6 +23,7 @@ bool handleFileRead(String path);
 void handleFileUpload();
 void handleFileDelete();
 void handleFileCreate();
+void handleAction();
 
 String getContentType(String filename);
 String formatBytes(size_t bytes);
