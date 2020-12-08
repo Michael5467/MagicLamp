@@ -17,10 +17,10 @@
 
 #include "project_config.h"
 #include "functions.h"
+#include "web_functions.h"
 #include "effects.h"
 #include "matrix.h"
 #include "Michael_MinimalTimer.h"
-#include "web_functions.h"
 
 snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
 local_date_time_t date_time;
@@ -37,7 +37,8 @@ const char *accesspointPass = AP_PASS;
 // Set web server port number
 // WiFiServer server(HTTP_PORT);
 ESP8266WebServer server(HTTP_PORT);
-WebSocketsServer webSocket = WebSocketsServer(WEB_SOCKET_PORT);
+// WebSocketsServer webSocket = WebSocketsServer(WEB_SOKET_PORT);
+WebSocketsServer webSocket(WEB_SOKET_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -59,6 +60,15 @@ void setup() {
     // Serial port setup
     Serial.begin(74880);
     DPRINTLN("NodeMCU v3...............................");
+
+    // Mount filesystem
+    DPRINT("Inizializing FS...")
+    if (LittleFS.begin()) {
+        DPRINTLN("done.")
+    }
+    else {
+        DPRINTLN("fail.")
+    }
 
     // Initial lamp state
     lamp_state.state        = true;

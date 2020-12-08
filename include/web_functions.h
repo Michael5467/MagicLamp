@@ -2,7 +2,7 @@
 #define __INC_WEB_FUNCTIONS_H
 
 #include <Arduino.h>
-#include <FS.h>
+#include <LittleFS.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
 
@@ -16,9 +16,11 @@ void http_server_init();
 
 void handleOpenPage(String page);
 
+void handleFilesystemInformation();
+void handleFileList();
 void handleNotFound();
 bool handleFileRead(String path);
-void handleFileList();
+void handleFileUpload();
 void handleFileDelete();
 void handleFileCreate();
 

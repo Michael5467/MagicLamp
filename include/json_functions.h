@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <FS.h>
+#include <LittleFS.h>
 
 #include "functions.h"
 #include "debug_macros.h"

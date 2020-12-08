@@ -45,16 +45,16 @@ void http_server_init()
 	//first callback is called after the request has ended with all parsed arguments
 	//second callback handles file uploads at that location
 	server.on("/edit", HTTP_POST, []() {
-		server.send(200, "text/plain", ""); 
+		server.send(200, "text/plain", "");
 	}, handleFileUpload);
 
 	//called when the url is not defined here
-	//use it to load content from SPIFFS
+	//use it to load content from LittleFS
 	server.onNotFound(handleNotFound);
 
-	server.serveStatic("/font", SPIFFS, "/font", "max-age=86400");
-	server.serveStatic("/js", SPIFFS, "/js", "max-age=86400");
-	server.serveStatic("/css", SPIFFS, "/css", "max-age=86400");
+	server.serveStatic("/font", LittleFS, "/font", "max-age=86400");
+	server.serveStatic("/js", LittleFS, "/js", "max-age=86400");
+	server.serveStatic("/css", LittleFS, "/css", "max-age=86400");
 
 	//get heap status, analog input value and all GPIO statuses in one json call
 	server.on("/all", HTTP_GET, []() {
@@ -98,16 +98,53 @@ bool handleFileRead(String path)
 	// 	path += "index.htm";
 	String contentType = getContentType(path);
 	String pathWithGz = path + ".gz";
-	if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path))
+	if (LittleFS.exists(pathWithGz) || LittleFS.exists(path))
 	{
-		if (SPIFFS.exists(pathWithGz))
+		if (LittleFS.exists(pathWithGz))
 			path += ".gz";
-		File file = SPIFFS.open(path, "r");
-		size_t sent = server.streamFile(file, contentType);
+		File file = LittleFS.open(path, "r");
+		// size_t sent = server.streamFile(file, contentType);
+		server.streamFile(file, contentType);
 		file.close();
 		return true;
 	}
 	return false;
+}
+
+void handleFilesystemInformation()
+{
+	DPRINTLN("handleFilesystemInformation")
+
+	FSInfo fs_info;
+	LittleFS.info(fs_info);
+
+	String output = "[";
+	output += "{\"Total space\":\"";
+	output += fs_info.totalBytes;
+	output += "\"}";
+
+	output += "{\"Total space used\":\"";
+	output += fs_info.usedBytes;
+	output += "\"}";
+
+	output += "{\"Block size\":\"";
+	output += fs_info.blockSize;
+	output += "\"}";
+
+	output += "{\"Page size\":\"";
+	output += fs_info.pageSize;
+	output += "\"}";
+
+	output += "{\"Max open files\":\"";
+	output += fs_info.maxOpenFiles;
+	output += "\"}";
+
+	output += "{\"Max path lenght\":\"";
+	output += fs_info.maxPathLength;
+	output += "\"}";
+
+	output += "]";
+	server.send(200, "text/json", output);
 }
 
 void handleFileList()
@@ -121,7 +158,7 @@ void handleFileList()
 	String path = server.arg("dir");
 	// Serial.println("handleFileList: " + path);
 	DPRINTLN("handleFileList: " + path)
-	Dir dir = SPIFFS.openDir(path);
+	Dir dir = LittleFS.openDir(path);
 	path = String();
 
 	String output = "[";
@@ -138,7 +175,6 @@ void handleFileList()
 		output += "\"}";
 		entry.close();
 	}
-
 	output += "]";
 	server.send(200, "text/json", output);
 }
@@ -157,12 +193,12 @@ void handleFileUpload()
 		// Serial.println(filename);
 		DPRINT("handleFileUpload Name: ")
 		DPRINTLN(filename)
-		fsUploadFile = SPIFFS.open(filename, "w");
+		fsUploadFile = LittleFS.open(filename, "w");
 		filename = String();
 	}
 	else if (upload.status == UPLOAD_FILE_WRITE)
 	{
-		// Serial.print("handleFileUpload Data: "); 
+		// Serial.print("handleFileUpload Data: ");
 		// Serial.println(upload.currentSize);
 		DPRINT("handleFileUpload Data: ")
 		DPRINTLN(upload.currentSize)
@@ -189,9 +225,9 @@ void handleFileDelete()
 	DPRINTLN("handleFileDelete: " + path)
 	if (path == "/")
 		return server.send(500, "text/plain", "BAD PATH");
-	if (!SPIFFS.exists(path))
+	if (!LittleFS.exists(path))
 		return server.send(404, "text/plain", "FileNotFound");
-	SPIFFS.remove(path);
+	LittleFS.remove(path);
 	server.send(200, "text/plain", "");
 	path = String();
 }
@@ -205,9 +241,9 @@ void handleFileCreate()
 	DPRINTLN("handleFileCreate: " + path)
 	if (path == "/")
 		return server.send(500, "text/plain", "BAD PATH");
-	if (SPIFFS.exists(path))
+	if (LittleFS.exists(path))
 		return server.send(500, "text/plain", "FILE EXISTS");
-	File file = SPIFFS.open(path, "w");
+	File file = LittleFS.open(path, "w");
 	if (file)
 		file.close();
 	else

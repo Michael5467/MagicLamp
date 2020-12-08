@@ -20,7 +20,7 @@ void debugPrintVariant(const JsonVariant& object, const char* key)
 void loadConfiguration(const char *filename, the_lamp_state_t &config)
 {
     // Open file for reading
-    File file = SPIFFS.open(filename, "r");
+    File file = LittleFS.open(filename, "r");
 
     // Allocate a temporary JsonDocument
     // Don't forget to change the capacity to match your requirements.
@@ -58,7 +58,7 @@ void loadConfiguration(const char *filename, the_lamp_state_t &config)
         }
 
         // https://github.com/nopnop2002/Arduino-Json-Example/blob/master/ArduinoJson-Example2/ArduinoJson-Example2.ino
-        for (int i = 0; i < array.size(); i++)
+        for (size_t i = 0; i < array.size(); i++)
         {
             JsonVariant variant = array[i];
             // parseVariant(variant);
@@ -117,7 +117,7 @@ void saveConfiguration(const char *filename, const the_lamp_state_t &config)
 void printFile(const char *filename)
 {
     // Open file for reading
-    File file = SPIFFS.open(filename, "r");
+    File file = LittleFS.open(filename, "r");
 
     if (!file)
     {
