@@ -18,7 +18,7 @@
 		<div class="header_menu">
 			<ul>
 				<li><a class="cm" href="#">Main</a></li>
-				<li><a href="#">Settings</a></li>
+				<li><a href="alarm.html">Settings</a></li>
 				<li><a href="#">Debug</a></li>
 			</ul>
 		</div>
@@ -27,14 +27,26 @@
 		<div class="container column">
 			<div class="container row">
 				<p class="item label">Effects:</p>
-				<select class="item item_select" aria-label="Effects" formaction="/action.html" formmethod="post">
+				<select class="item item_select" aria-label="Effects" id=effectSelecter>
 					<optgroup label="Simple">
 						<option value="EFF_CODE_SNOW">Snowfall</option>
 						<option value="EFF_CODE_BALLS">Balls</option>
+						<option value="EFF_CODE_FIRE">Fire</option>
+						<option value="EFF_CODE_SPARKLES">Sparkles</option>
+						<option value="EFF_CODE_MATRIX">The Matrix</option>
+						<option value="EFF_CODE_STARFALL">Starfall</option>
 					</optgroup>
 					<optgroup label="Full screen 3D">
 						<option value="EFF_CODE_LAVA">Lava</option>
 						<option value="EFF_CODE_CLOUD">Cloud</option>
+						<option value="EFF_CODE_ZEBRA">Zebra</option>
+						<option value="EFF_CODE_FOREST">Forest</option>
+						<option value="EFF_CODE_OCEAN">Ocean</option>
+						<option value="EFF_CODE_PLASMA">Plasma</option>
+						<option value="EFF_CODE_PLUM">Plum</option>
+						<option value="EFF_CODE_RANDOM">Random</option>
+						<option value="EFF_CODE_RAINBOW">Rainbow</option>
+						<option value="EFF_CODE_RAINBOW_STRIPE">Rainbow stripe</option>
 					</optgroup>
 					<optgroup label="Games">
 						<option value="EFF_CODE_SNAKE">Snake</option>
@@ -56,7 +68,7 @@
 			<div class="container row">
 				<p class="item label">Brightness</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="BrightnesSlider" formaction="/action.html" formmethod="post">
+					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="BrightnesSlider">
 				</div>
 			</div>
 			<div class="container row">
@@ -67,7 +79,7 @@
 			<div class="container row">
 				<p class="item label">Speed</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="SpeedSlider" formaction="/action.html" formmethod="post">
+					<input type="range" min="1" max="100" value="50" step="1" class="item slider" id="SpeedSlider">
 				</div>
 			</div>
 			<div class="container row">
@@ -78,7 +90,7 @@
 			<div class="container row">
 				<p class="item label">Density</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="100" value="50" step="1" class="slider" id="DensitySlider" formaction="/action.html" formmethod="post">
+					<input type="range" min="1" max="100" value="50" step="1" class="slider" id="DensitySlider">
 				</div>
 			</div>
 			<div class="container row">
@@ -90,31 +102,8 @@
 		<p class="copyright">Copyrigth &copy; 2020 by Michael</p>
 	</div>
 	
-	<script>
-		var slider1 = document.getElementById("BrightnesSlider");
-		var output1 = document.getElementById("BrightnesValue");
-		output1.innerHTML = slider1.value;
-		
-		slider1.oninput = function() {
-			output1.innerHTML = this.value;
-		}
-
-		var slider2 = document.getElementById("SpeedSlider");
-		var output2 = document.getElementById("SpeedValue");
-		output2.innerHTML = slider2.value;
-		
-		slider2.oninput = function() {
-			output2.innerHTML = this.value;
-		}
-
-		var slider3 = document.getElementById("DensitySlider");
-		var output3 = document.getElementById("DensityValue");
-		output3.innerHTML = slider3.value;
-		
-		slider3.oninput = function() {
-			output3.innerHTML = this.value;
-		}
-	</script>
+	<script src="js/form_control.js"></script>
+	<script src="js/lamp_control.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MagicLamp">
+    <meta name="author" content="Michael Barskikh">
+    <title>MagicLamp control</title>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+
+<body>
+    <div class="flexbox-body header">
+        <div class="header_title">
+            <h1>Magic Lamp</h1>
+        </div>
+        <div class="header_menu">
+            <ul>
+                <li><a href="index.html">Main</a></li>
+                <li><a class="cm" href="#">Settings</a></li>
+                <li><a href="#">Debug</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="flexbox-body middle">
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Monday</p>
+                <div class="container column">
+                    <input type="checkbox" id="monEn" name="_day_" value="_mon_">
+                </div>
+                <div class="container column label">
+                    <label for="monEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="monTime">
+                </div>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Tuesday</p>
+                <div class="container column">
+                    <input type="checkbox" id="tueEn" name="_day_" value="_tue_">
+                </div>
+                <div class="container column label">
+                    <label for="tueEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="tueTime">
+                </div>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Wednesday</p>
+                <div class="container column">
+                    <input type="checkbox" id="wedEn" name="_day_" value="_wed_">
+                </div>
+                <div class="container column label">
+                    <label for="wedEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="wedTime">
+                </div>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Thursday</p>
+                <div class="container column">
+                    <input type="checkbox" id="thuEn" name="_day_" value="_thu_">
+                </div>
+                <div class="container column label">
+                    <label for="thuEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="thuTime">
+                </div>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Friday</p>
+                <div class="container column">
+                    <input type="checkbox" id="friEn" name="_day_" value="_fri_">
+                </div>
+                <div class="container column label">
+                    <label for="friEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="friTime">
+                </div>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Saturday</p>
+                <div class="container column">
+                    <input type="checkbox" id="satEn" name="_day_" value="_sat_">
+                </div>
+                <div class="container column label">
+                    <label for="satEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="satTime">
+                </div>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <p class="item label">Sunday</p>
+                <div class="container column">
+                    <input type="checkbox" id="sunEn" name="_day_" value="_sun_">
+                </div>
+                <div class="container column label">
+                    <label for="sunEn">Enable</label>
+                </div>
+                <div class="container column">
+                    <input type="time" id="sunTime">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flexbox-body footer">
+        <p class="copyright">Copyrigth &copy; 2020 by Michael</p>
+    </div>
+
+    <script src="js/form_control.js"></script>
+    <script src="js/lamp_control.js"></script>
+</body>
+
+</html>
