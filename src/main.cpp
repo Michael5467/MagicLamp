@@ -60,7 +60,8 @@ alarm_t sleep_alarm;
 void setup() {
     // Serial port setup
     Serial.begin(74880);
-    DPRINTLN("NodeMCU v3...............................");
+    // Serial.begin(115200);
+    DPRINTLNF("\n\n\nNodeMCU v3\n");
 
     // Mount filesystem
     DPRINT("Inizializing FS...")

@@ -14,14 +14,14 @@
 #define ESP_MODE 0
 
 // Parameters for direct WIFI connecting
-// #define DA_SSID "AndroidAP_7811"
-// #define DA_PASS "94d61111"
+#define DA_SSID "AndroidAP_6955"
+#define DA_PASS "12345666"
 
 // #define DA_SSID "iPhone (Elena)"
 // #define DA_PASS "ax09280588"
 
-#define DA_SSID "DL-F2-18"
-#define DA_PASS "mgtswifi"
+// #define DA_SSID "DL-F2-18"
+// #define DA_PASS "mgtswifi"
 
 // Access point parameters
 #define AP_SSID "AutoConnectAP"
