@@ -26,100 +26,51 @@
     <div class="flexbox-body middle">
         <div class="container column">
             <div class="container row">
-                <p class="item label">Monday</p>
-                <div class="container column">
-                    <input type="checkbox" id="monEn" name="_day_" value="_mon_">
-                </div>
-                <div class="container column label">
-                    <label for="monEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="monTime">
-                </div>
+                <input type="checkbox" class="item" id="monEn" name="_day1_" value="_mon_">
+                <label for="monEn" class="item checkbox_label">Monday</label>
+                <input type="time" class="item" id="monTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <p class="item label">Tuesday</p>
-                <div class="container column">
-                    <input type="checkbox" id="tueEn" name="_day_" value="_tue_">
-                </div>
-                <div class="container column label">
-                    <label for="tueEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="tueTime">
-                </div>
+                <input type="checkbox" class="item" id="tueEn" name="_day_" value="_tue_">
+                <label for="tueEn" class="item checkbox_label">Tuesday</label>
+                <input type="time" class="item" id="tueTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <p class="item label">Wednesday</p>
-                <div class="container column">
-                    <input type="checkbox" id="wedEn" name="_day_" value="_wed_">
-                </div>
-                <div class="container column label">
-                    <label for="wedEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="wedTime">
-                </div>
+                <input type="checkbox" class="item" id="wedEn" name="_day_" value="_wed_">
+                <label for="wedEn" class="item checkbox_label">Wednesday</label>
+                <input type="time" class="item" id="wedTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <p class="item label">Thursday</p>
-                <div class="container column">
-                    <input type="checkbox" id="thuEn" name="_day_" value="_thu_">
-                </div>
-                <div class="container column label">
-                    <label for="thuEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="thuTime">
-                </div>
+                <input type="checkbox" class="item" id="thuEn" name="_day_" value="_thu_">
+                <label for="thuEn" class="item checkbox_label">Thursday</label>
+                <input type="time" class="item" id="thuTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <p class="item label">Friday</p>
-                <div class="container column">
-                    <input type="checkbox" id="friEn" name="_day_" value="_fri_">
-                </div>
-                <div class="container column label">
-                    <label for="friEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="friTime">
-                </div>
+                <input type="checkbox" class="item" id="friEn" name="_day_" value="_fri_">
+                <label for="friEn" class="item checkbox_label">Friday</label>
+                <input type="time" class="item" id="friTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <p class="item label">Saturday</p>
-                <div class="container column">
-                    <input type="checkbox" id="satEn" name="_day_" value="_sat_">
-                </div>
-                <div class="container column label">
-                    <label for="satEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="satTime">
-                </div>
+                <input type="checkbox" class="item" id="satEn" name="_day_" value="_sat_">
+                <label for="satEn" class="item checkbox_label">Saturday</label>
+                <input type="time" class="item" id="satTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <p class="item label">Sunday</p>
-                <div class="container column">
-                    <input type="checkbox" id="sunEn" name="_day_" value="_sun_">
-                </div>
-                <div class="container column label">
-                    <label for="sunEn">Enable</label>
-                </div>
-                <div class="container column">
-                    <input type="time" id="sunTime">
-                </div>
+                <input type="checkbox" class="item" id="sunEn" name="_day_" value="_sun_">
+                <label for="sunEn" class="item checkbox_label">Sunday</label>
+                <input type="time" class="item" id="sunTime">
             </div>
         </div>
     </div>
@@ -127,8 +78,20 @@
         <p class="copyright">Copyrigth &copy; 2020 by Michael</p>
     </div>
 
-    <script src="js/form_control.js"></script>
-    <script src="js/lamp_control.js"></script>
+    <script>
+        const selectElement  = document.getElementById("monEn")
+        selectElement.addEventListener("change", (event) => {
+            alert("***");
+        })
+
+        const selectElement  = document.getElementById("thuTime")
+        selectElement.addEventListener("change", (event) => {
+            alert("thuTime");
+        })
+        selectElement.addEventListener("click", (event) => {
+            alert("thuTime");
+        })
+    </script>
 </body>
 
 </html>

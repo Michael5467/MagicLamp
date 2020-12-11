@@ -7,12 +7,17 @@ void http_server_init()
 	server.on("/", HTTP_GET, []() {
 		if (!handleFileRead("/index.html"))
 			server.send(404, "text/plain", "FileNotFound");
-	}); //list directory
+	});
 
 	server.on("/index.html", HTTP_GET, []() {
 		if (!handleFileRead("/index.html"))
 			server.send(404, "text/plain", "FileNotFound");
-	}); //list directory
+	});
+
+	server.on("/alarm.html", HTTP_GET, []() {
+		if (!handleFileRead("/alarm.html"))
+			server.send(404, "text/plain", "FileNotFound");
+	});
 
 	server.on("/settings", HTTP_GET, []() {
 		if (!handleFileRead("/settings.html"))

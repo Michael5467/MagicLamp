@@ -30,10 +30,10 @@ body {
 	color: blue;
 }
 
- /* .header {
-	background-color: #1c87c9;
-	border: none;
-	margin: unset;
+/* .header {
+		background-color: #1c87c9;
+		border: none;
+		margin: unset;
 } */
 
 .middle {
@@ -65,6 +65,12 @@ body {
 	padding: 0px 0px 0px 10px;
 }
 
+.row_item {
+	flex-direction: row;
+	margin: 10px 30px 60px 90px;
+	/* padding: 0px 0px 0px 10px; */
+}
+
 .column {
 	/* border: 3px solid blue; */
 	flex-direction: column;
@@ -73,8 +79,19 @@ body {
 	max-width: 500px;
 }
 
+.column_element {
+	flex-direction: column;
+	margin: 10px 5px 0px 0px;
+}
+
+.debug_item {
+	/* border: 3px solid green; */
+	margin: 0px 10px 0px 0px;
+}
+
 .item {
 	/* border: 3px solid green; */
+	margin: 0px 10px 0px 0px;
 }
 
 /* ----------------------------------------- */
@@ -117,12 +134,12 @@ body {
 	/* border: 3px dashed green; */
 	display: flex;
 	padding: 0;
-    width: 400px;
+	width: 400px;
 }
 
 .slider {
 	padding: 0;
-    width: 100%;
+	width: 100%;
 	background: lightgray;
 	transition: 2ms;
 }
@@ -137,6 +154,10 @@ body {
 	min-width: 110px;
 }
 
+.checkbox_label {
+	min-width: 80px;
+}
+
 .form_toggle {
 	/* border: 3px dashed green; */
 	width: 100%;
@@ -146,21 +167,20 @@ body {
 	/* align-items: stretch; */
 }
 
-
-.form_toggle_item input[type=radio] {
+.form_toggle_item input[type="radio"] {
 	display: none;
 }
 
 .form_toggle_item label {
 	display: inline-block;
-	padding: 0px 15px;   
-	line-height: 24px;    
+	padding: 0px 15px;
+	line-height: 24px;
 	border: 1px solid #999;
 	border-right: none;
 	cursor: pointer;
-	user-select: none;   
+	user-select: none;
 }
- 
+
 .form_toggle .item-1 label {
 	border-radius: 0 6px 6px 0;
 	border-right: 1px solid #999;
@@ -170,11 +190,11 @@ body {
 	border-radius: 6px 0 0 6px;
 }
 
-.form_toggle .item-1 input[type=radio]:checked + label {
+.form_toggle .item-1 input[type="radio"]:checked + label {
 	background: #ffc5c5;
 }
 
-.form_toggle .item-2 input[type=radio]:checked + label {
+.form_toggle .item-2 input[type="radio"]:checked + label {
 	background: #bbffbb;
 }
 
