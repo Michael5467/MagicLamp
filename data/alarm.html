@@ -7,6 +7,7 @@
     <meta name="description" content="MagicLamp">
     <meta name="author" content="Michael Barskikh">
     <title>MagicLamp control</title>
+	<link type="image/x-icon" rel="shortcut icon" href="./favicon.ico">
     <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 
@@ -19,6 +20,7 @@
             <ul>
                 <li><a href="index.html">Main</a></li>
                 <li><a class="cm" href="#">Settings</a></li>
+				<li><a href="#">State</a></li>
                 <li><a href="#">Debug</a></li>
             </ul>
         </div>
@@ -26,51 +28,57 @@
     <div class="flexbox-body middle">
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="monEn" name="_day1_" value="_mon_">
-                <label for="monEn" class="item checkbox_label">Monday</label>
+                <input type="checkbox" class="item item_checkbox" id="monEn" name="_day_" value="mon">
+                <label for="monEn" class="checkbox_label">Monday</label>
                 <input type="time" class="item" id="monTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="tueEn" name="_day_" value="_tue_">
-                <label for="tueEn" class="item checkbox_label">Tuesday</label>
+                <input type="checkbox" class="item item_checkbox" id="tueEn" name="_day_" value="tue">
+                <label for="tueEn" class="checkbox_label">Tuesday</label>
                 <input type="time" class="item" id="tueTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="wedEn" name="_day_" value="_wed_">
-                <label for="wedEn" class="item checkbox_label">Wednesday</label>
+                <input type="checkbox" class="item item_checkbox" id="wedEn" name="_day_" value="wed">
+                <label for="wedEn" class="checkbox_label">Wednesday</label>
                 <input type="time" class="item" id="wedTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="thuEn" name="_day_" value="_thu_">
-                <label for="thuEn" class="item checkbox_label">Thursday</label>
+                <input type="checkbox" class="item item_checkbox" id="thuEn" name="_day_" value="thu">
+                <label for="thuEn" class="checkbox_label">Thursday</label>
                 <input type="time" class="item" id="thuTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="friEn" name="_day_" value="_fri_">
-                <label for="friEn" class="item checkbox_label">Friday</label>
+                <input type="checkbox" class="item item_checkbox" id="friEn" name="_day_" value="fri">
+                <label for="friEn" class="checkbox_label">Friday</label>
                 <input type="time" class="item" id="friTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="satEn" name="_day_" value="_sat_">
-                <label for="satEn" class="item checkbox_label">Saturday</label>
+                <input type="checkbox" class="item item_checkbox" id="satEn" name="_day_" value="sat">
+                <label for="satEn" class="checkbox_label">Saturday</label>
                 <input type="time" class="item" id="satTime">
             </div>
         </div>
         <div class="container column">
             <div class="container row">
-                <input type="checkbox" class="item" id="sunEn" name="_day_" value="_sun_">
-                <label for="sunEn" class="item checkbox_label">Sunday</label>
+                <input type="checkbox" class="item item_checkbox" id="sunEn" name="_day_" value="sun">
+                <label for="sunEn" class="checkbox_label">Sunday</label>
                 <input type="time" class="item" id="sunTime">
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <button class="item item_button">Apply</button>
+                <button class="item item_button">Reset</button>
             </div>
         </div>
     </div>
@@ -78,7 +86,7 @@
         <p class="copyright">Copyrigth &copy; 2020 by Michael</p>
     </div>
 
-    <script>
+    <!-- <script>
         const selectElement  = document.getElementById("monEn")
         selectElement.addEventListener("change", (event) => {
             alert("***");
@@ -91,7 +99,8 @@
         selectElement.addEventListener("click", (event) => {
             alert("thuTime");
         })
-    </script>
+    </script> -->
+    <script src="./js/alarm_control.js"></script>
 </body>
 
 </html>

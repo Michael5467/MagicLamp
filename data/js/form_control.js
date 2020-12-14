@@ -1,25 +1,27 @@
-var slider1 = document.getElementById("BrightnesSlider");
-var output1 = document.getElementById("BrightnesValue");
-output1.innerHTML = slider1.value;
-
-slider1.oninput = function() {
-    output1.innerHTML = this.value;
-    const http = new XMLHttpRequest();
-    http.open("POST", )
+var allSliders = document.getElementsByClassName("slider")
+// console.log(allSliders);
+for (var i = 0; i < allSliders.length; i++) {
+    // console.log(allSliders[i]);
+    allSliders[i].addEventListener("input", inputSlider);
+    var idStr = allSliders[i].id;
+    updateValueTest(idStr.substr(0, idStr.length - 6) + "Value", allSliders[i].value);
 }
 
-var slider2 = document.getElementById("SpeedSlider");
-var output2 = document.getElementById("SpeedValue");
-output2.innerHTML = slider2.value;
+function inputSlider(e) {
+    // console.log(e)
+    // console.log(e.target.value);
+    var idStr = e.target.id;
+    // console.log(idStr);
+    // console.log(idStr.substr(0, idStr.length - 6) + "Value");
+    // var currValueElem = document.getElementById(idStr.substr(0, idStr.length - 6) + "Value");
+    // console.log(currValueElem);
+    // currValueElem.innerHTML = e.target.value;
 
-slider2.oninput = function() {
-    output2.innerHTML = this.value;
+    updateValueTest(idStr.substr(0, idStr.length - 6) + "Value", e.target.value)
 }
 
-var slider3 = document.getElementById("DensitySlider");
-var output3 = document.getElementById("DensityValue");
-output3.innerHTML = slider3.value;
-
-slider3.oninput = function() {
-    output3.innerHTML = this.value;
+function updateValueTest(name, value) {
+    var currValueElem = document.getElementById(name);
+    // console.log(currValueElem);
+    currValueElem.innerHTML = value;
 }

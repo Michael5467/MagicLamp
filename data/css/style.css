@@ -50,6 +50,7 @@ body {
 .container {
 	display: flex;
 	/* justify-content: space-around; */
+	/* align-items: flex-start; */
 	align-items: baseline;
 	justify-items: center;
 	/* margin: 5px 0 0 0; */
@@ -63,6 +64,11 @@ body {
 	flex-direction: row;
 	width: 100%;
 	padding: 0px 0px 0px 10px;
+}
+
+.row_right {
+	/* flex-direction: row-reverse; */
+	align-self: flex-end;
 }
 
 .row_item {
@@ -155,7 +161,10 @@ body {
 }
 
 .checkbox_label {
-	min-width: 80px;
+	min-width: 100px;
+}
+.item_button {
+	min-width: 75px;
 }
 
 .form_toggle {

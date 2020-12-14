@@ -8,6 +8,7 @@
 	<meta name="author" content="Michael Barskikh">
 	<title>MagicLamp control</title>
 	<link rel="stylesheet" type="text/css" href="./css/style.css">
+	<link type="image/x-icon" rel="shortcut icon" href="./favicon.ico">
 </head>
 
 <body>
@@ -19,6 +20,7 @@
 			<ul>
 				<li><a class="cm" href="#">Main</a></li>
 				<li><a href="alarm.html">Settings</a></li>
+				<li><a href="#">State</a></li>
 				<li><a href="#">Debug</a></li>
 			</ul>
 		</div>
@@ -66,7 +68,7 @@
 		</div>
 		<div class="container column">
 			<div class="container row">
-				<p class="label">Brightness</p>
+				<p class="label">Brightnes</p>
 				<div class="slidercontainer">
 					<input type="range" min="1" max="100" value="50" step="1" class="slider" id="BrightnesSlider">
 				</div>
@@ -95,6 +97,11 @@
 			</div>
 			<div class="container row">
 				<p>Value: <span id="DensityValue"></span></p>
+			</div>
+		</div>
+		<div class="container column">
+			<div class="container row_right">
+                <button class="item_button">Reset</button>
 			</div>
 		</div>
 	</div>
