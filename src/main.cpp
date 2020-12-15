@@ -40,7 +40,7 @@ const char *accesspointPass = AP_PASS;
 // WiFiServer server(HTTP_PORT);
 ESP8266WebServer server(HTTP_PORT);
 // WebSocketsServer webSocket = WebSocketsServer(WEB_SOKET_PORT);
-WebSocketsServer webSocket(WEB_SOKET_PORT);
+// WebSocketsServer webSocket(WEB_SOKET_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -86,7 +86,7 @@ void setup() {
     lamp_state.leds         = leds;
     lamp_state.effect_snow  = &effect_snow;
 
-    loadConfiguration("/config.json", lamp_state);
+    // loadConfiguration("/config.json", lamp_state);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -126,10 +126,10 @@ void setup() {
     server.begin();
     DPRINTLN("HTTP server started")
 
-    // WEB socket
-	webSocket.begin();
-	webSocket.onEvent(webSocketEvent);
-    DPRINTLN("Web socket server started")
+    // // WEB socket
+	// webSocket.begin();
+	// webSocket.onEvent(webSocketEvent);
+    // DPRINTLN("Web socket server started")
 
     // NTP client
     timeClient.begin();
@@ -142,7 +142,7 @@ void setup() {
 void loop() {
     // ServerLoop(&server, &lamp_state);
 
-    webSocket.loop();
+    // webSocket.loop();
 
     server.handleClient();
 
