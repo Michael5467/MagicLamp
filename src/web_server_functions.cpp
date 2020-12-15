@@ -87,25 +87,111 @@ void handleAction()
 	{
 		message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
 	}
+
+	// Change lamp_state...
+	message += "";
+	if (server.hasArg("CNN"))
+	{
+		message += ">>> Connection DONE!";
+	}
+	if (server.hasArg("STS"))
+	{
+		message += ">>> Status request...";
+	}
+	if (server.hasArg("PWR"))
+	{
+		String opt = server.arg("dir");
+		if (opt == "0" || opt == "OFF")
+		{
+			lamp_state.state = false;
+			message += ">>> Power OFF";
+		}
+		else if (opt == "1" || opt == "ON")
+		{
+			lamp_state.state = true;
+			message += ">>> Power ON";
+		}		
+	}
+	if (server.hasArg("MOD")) 
+	{
+		String opt = server.arg("MOD");
+        setMode(&lamp_state, opt.toInt());
+		message += ">>> MOD changed";
+	}
+	if (server.hasArg("BRI")) 
+	{
+		String opt = server.arg("BRI");
+		uint8_t raw = opt.toInt();
+        lamp_state.brightness_raw = raw;
+        setBrightness(&lamp_state, (raw<<4)-1);
+		message += ">>> BRI changed";
+	}
+	if (server.hasArg("SPD")) 
+	{
+		String opt = server.arg("SPD");
+		uint32_t raw = opt.toInt();
+        lamp_state.speed_raw = raw;
+        setEffectsSpeed(&lamp_state, (512-((raw-1)<<4)));
+		message += ">>> SPD changed";
+	}
+	if (server.hasArg("DEN")) 
+	{
+		String opt = server.arg("DEN");
+		uint32_t raw = opt.toInt();
+        switch (lamp_state.effect) {
+            case (EFF_CODE_SNOW):
+            case (EFF_CODE_BALLS):
+            case (EFF_CODE_FIRE):
+            case (EFF_CODE_SPARKLES):
+            case (EFF_CODE_MATRIX):
+                break;
+            case (EFF_CODE_STARFALL):
+                raw = 5 * raw;
+                break;
+            case (EFF_CODE_SNAKE):
+                break;
+            case (EFF_CODE_LAVA):
+            case (EFF_CODE_CLOUD):
+            case (EFF_CODE_ZEBRA):
+            case (EFF_CODE_FOREST):
+            case (EFF_CODE_OCEAN):
+            case (EFF_CODE_PLASMA):
+            case (EFF_CODE_PLUM):
+            case (EFF_CODE_RANDOM):
+            case (EFF_CODE_RAINBOW):
+            case (EFF_CODE_RAINBOW_STRIPE):
+            	raw = 10 * raw;
+                break;
+        }
+        lamp_state.scale = raw;
+        updateMode(&lamp_state);
+		message += ">>> DEN changed";
+	}
+
 	server.send(200, "text/plain", message);
 }
 
 void handleNotFound()
 {
-	DPRINTLN("handleNotFound")
-	String message = "File Not Found\n\n";
-	message += "URI: ";
-	message += server.uri();
-	message += "\nMethod: ";
-	message += (server.method() == HTTP_GET) ? "GET" : "POST";
-	message += "\nArguments: ";
-	message += server.args();
-	message += "\n";
-	for (uint8_t i = 0; i < server.args(); i++)
+	// If the client requests any URI - send it if it exists
+	if (!handleFileRead(server.uri()))
 	{
-		message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+		// otherwise, respond with a 404 (Not Found) error
+		DPRINTLN("handleNotFound")
+		String message = "File Not Found\n\n";
+		message += "URI: ";
+		message += server.uri();
+		message += "\nMethod: ";
+		message += (server.method() == HTTP_GET) ? "GET" : "POST";
+		message += "\nArguments: ";
+		message += server.args();
+		message += "\n";
+		for (uint8_t i = 0; i < server.args(); i++)
+		{
+			message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+		}
+		server.send(404, "text/plain", message);
 	}
-	server.send(404, "text/plain", message);
 }
 
 bool handleFileRead(String path)

@@ -7,9 +7,11 @@
 #include <WebSocketsServer.h>
 
 #include "debug_macros.h"
+#include "functions.h"
 
 extern ESP8266WebServer server;
 extern WebSocketsServer webSocket;
+extern the_lamp_state_t lamp_state;
 // File fsUploadFile;
 
 void http_server_init();
