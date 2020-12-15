@@ -16,7 +16,7 @@ void debugPrintVariant(const JsonVariant& object, const char* key)
     }
 }
 
-// Loads the configuration from a file
+// Loads the configuration from file
 void loadConfiguration(const char *filename, the_lamp_state_t &config)
 {
     // Open file for reading
@@ -49,22 +49,26 @@ void loadConfiguration(const char *filename, the_lamp_state_t &config)
     JsonArray array = root.getMember("awake_alarm");
     if (!array.isNull())
     {
-        Serial.print("array.size()=");
-        Serial.println(array.size());
+        Serial.println("=======================================");
+        Serial.printf("array.size()=%d", array.size());
 
         for (JsonVariant var : array)
         {
             Serial.println(var.as<const char *>());
         }
 
-        // https://github.com/nopnop2002/Arduino-Json-Example/blob/master/ArduinoJson-Example2/ArduinoJson-Example2.ino
-        for (size_t i = 0; i < array.size(); i++)
-        {
-            JsonVariant variant = array[i];
-            // parseVariant(variant);
-            // Serial.println();
-            // TODO: write parser
-        }
+        // Serial.println(".......................................");
+
+        // // https://github.com/nopnop2002/Arduino-Json-Example/blob/master/ArduinoJson-Example2/ArduinoJson-Example2.ino
+        // for (size_t i = 0; i < array.size(); i++)
+        // {
+        //     JsonVariant variant = array[i];
+        //     // parseVariant(variant);
+        //     // Serial.println();
+        //     // TODO: write parser
+
+        //     Serial.printf("array[%d] = %d, %0d:%0d ", i, variant["state"], variant["hour"], variant["min"]);
+        // }
     }
 
     // https://forum.arduino.cc/index.php?topic=441243.0
@@ -80,7 +84,7 @@ void loadConfiguration(const char *filename, the_lamp_state_t &config)
     file.close();
 }
 
-// Saves the configuration to a file
+// Saves the configuration to file
 void saveConfiguration(const char *filename, const the_lamp_state_t &config)
 {
     // // Delete existing file, otherwise the configuration is appended to the file

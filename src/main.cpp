@@ -21,6 +21,7 @@
 #include "web_functions.h"
 #include "effects.h"
 #include "matrix.h"
+#include "json_functions.h"
 #include "Michael_MinimalTimer.h"
 
 snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
@@ -84,6 +85,8 @@ void setup() {
     lamp_state.effectTimer  = &Effect_Timer;
     lamp_state.leds         = leds;
     lamp_state.effect_snow  = &effect_snow;
+
+    loadConfiguration("/config.json", lamp_state);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
