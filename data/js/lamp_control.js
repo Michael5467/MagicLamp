@@ -9,8 +9,10 @@ function changeEffect() {
     var effectSelIndex = effectSelVar.selectedIndex;
     console.log("Effect: " + effectSelValue + "=" + effectSelIndex);
 
-    // var data = new FormData();
-    // data.append("effect", effectSelVar.value);
+    var data = new FormData();
+    data.append("MOD", effectSelIndex);
+
+    actionSend(data);
 
     // const http = new XMLHttpRequest();
     // http.open("POST", url, true);
@@ -28,16 +30,18 @@ buttonOn.addEventListener("click", e => {
     // console.log("Button ON clicked.");
 
     var data = new FormData();
-    data.append("power", "ON");
+    data.append("PWR", "ON");
 
-    const http = new XMLHttpRequest();
-    http.open("POST", url, true);
-    http.onreadystatechange = function() {//Call a function when the state changes.
-        if (http.readyState == 4) {
-            console.log(http.responseText);
-        }
-    }
-    http.send(data);
+    actionSend(data);
+
+    // const http = new XMLHttpRequest();
+    // http.open("POST", url, true);
+    // http.onreadystatechange = function() {//Call a function when the state changes.
+    //     if (http.readyState == 4) {
+    //         console.log(http.responseText);
+    //     }
+    // }
+    // http.send(data);
 });
 
 const buttonOff = document.getElementById("fid-1");
@@ -45,8 +49,21 @@ buttonOff.addEventListener("click", e => {
     // console.log("Button OFF clicked.");
 
     var data = new FormData();
-    data.append("power", "OFF");
+    data.append("PWR", "OFF");
 
+    actionSend(data);
+
+    // const http = new XMLHttpRequest();
+    // http.open("POST", url, true);
+    // http.onreadystatechange = function() {//Call a function when the state changes.
+    //     if (http.readyState == 4) {
+    //         console.log(http.responseText);
+    //     }
+    // }
+    // http.send(data);
+});
+
+function actionSend(data) {
     const http = new XMLHttpRequest();
     http.open("POST", url, true);
     http.onreadystatechange = function() {//Call a function when the state changes.
@@ -55,4 +72,4 @@ buttonOff.addEventListener("click", e => {
         }
     }
     http.send(data);
-});
+}

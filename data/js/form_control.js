@@ -1,10 +1,27 @@
+function actionSend(data) {
+    const http = new XMLHttpRequest();
+    http.open("POST", url, true);
+    http.onreadystatechange = function() {//Call a function when the state changes.
+        if (http.readyState == 4) {
+            console.log(http.responseText);
+        }
+    }
+    http.send(data);
+}
+function updateValueText(name, value) {
+    var currValueElem = document.getElementById(name);
+    console.log(currValueElem);
+    currValueElem.innerHTML = value;
+}
+
 var allSliders = document.getElementsByClassName("slider")
 // console.log(allSliders);
 for (var i = 0; i < allSliders.length; i++) {
     // console.log(allSliders[i]);
     allSliders[i].addEventListener("input", inputSlider);
     var idStr = allSliders[i].id;
-    updateValueTest(idStr.substr(0, idStr.length - 6) + "Value", allSliders[i].value);
+    var nameStp = idStr.substr(0, idStr.length - 6);
+    updateValueText(nameStp + "Value", allSliders[i].value);
 }
 
 function inputSlider(e) {
@@ -12,16 +29,93 @@ function inputSlider(e) {
     // console.log(e.target.value);
     var idStr = e.target.id;
     // console.log(idStr);
-    // console.log(idStr.substr(0, idStr.length - 6) + "Value");
-    // var currValueElem = document.getElementById(idStr.substr(0, idStr.length - 6) + "Value");
+    var nameStp = idStr.substr(0, idStr.length - 6);
+    // console.log(nameStp + "Value");
+    // var currValueElem = document.getElementById(nameStp + "Value");
     // console.log(currValueElem);
     // currValueElem.innerHTML = e.target.value;
 
-    updateValueTest(idStr.substr(0, idStr.length - 6) + "Value", e.target.value)
+    var alias = "NONE";
+    if (nameStp == "Brightnes") {
+        alias = "BRI";
+    }
+    if (nameStp == "Speed") {
+        alias = "SPD";
+    }
+    if (nameStp == "Density") {
+        alias = "DEN";
+    }
+    if (alias != "NONE") {
+        var data = new FormData();
+        data.append(alias, e.target.value);
+        actionSend(data);
+    }
+
+    updateValueText(nameStp + "Value", e.target.value)
 }
 
-function updateValueTest(name, value) {
-    var currValueElem = document.getElementById(name);
-    // console.log(currValueElem);
-    currValueElem.innerHTML = value;
-}
+const effectSelVar = document.getElementById("effectSelecter")
+
+const url = "/action.html";
+
+effectSelVar.addEventListener("change", changeEffect);
+
+function changeEffect() {
+    var effectSelValue = effectSelVar.value;
+    var effectSelIndex = effectSelVar.selectedIndex;
+    console.log("Effect: " + effectSelValue + "=" + effectSelIndex);
+
+    var data = new FormData();
+    data.append("MOD", effectSelIndex);
+
+    actionSend(data);
+
+    // const http = new XMLHttpRequest();
+    // http.open("POST", url, true);
+    // http.onreadystatechange = function() {//Call a function when the state changes.
+    //     if (http.readyState == 4) {
+    //         console.log(http.responseText);
+    //     }
+    // }
+    // http.send(data);
+}			
+	
+
+const buttonOn = document.getElementById("fid-2");
+buttonOn.addEventListener("click", e => {
+    // console.log("Button ON clicked.");
+
+    var data = new FormData();
+    data.append("PWR", "ON");
+
+    actionSend(data);
+
+    // const http = new XMLHttpRequest();
+    // http.open("POST", url, true);
+    // http.onreadystatechange = function() {//Call a function when the state changes.
+    //     if (http.readyState == 4) {
+    //         console.log(http.responseText);
+    //     }
+    // }
+    // http.send(data);
+});
+
+const buttonOff = document.getElementById("fid-1");
+buttonOff.addEventListener("click", e => {
+    // console.log("Button OFF clicked.");
+
+    var data = new FormData();
+    data.append("PWR", "OFF");
+
+    actionSend(data);
+
+    // const http = new XMLHttpRequest();
+    // http.open("POST", url, true);
+    // http.onreadystatechange = function() {//Call a function when the state changes.
+    //     if (http.readyState == 4) {
+    //         console.log(http.responseText);
+    //     }
+    // }
+    // http.send(data);
+});
+
