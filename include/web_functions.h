@@ -16,18 +16,21 @@ extern the_lamp_state_t lamp_state;
 
 void http_server_init();
 
-void handleOpenPage(String page);
+bool handleFileRead(const String &path);
 
 void handleFilesystemInformation();
 void handleFileList();
+
 void handleNotFound();
-bool handleFileRead(String path);
-void handleFileUpload();
+
+void handleFileLoad();
+void handleFileSave();
 void handleFileDelete();
 void handleFileCreate();
+
 void handleAction();
 
-String getContentType(String filename);
+const char* getContentType(const String &filename);
 String formatBytes(size_t bytes);
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length);

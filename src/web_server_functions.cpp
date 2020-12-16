@@ -29,17 +29,20 @@ void http_server_init()
 			server.send(404, "text/plain", "FileNotFound");
 	});
 
-	server.on("/action.html", HTTP_GET, handleAction);
+	server.on("/action.html", HTTP_GET,  handleAction);
 	server.on("/action.html", HTTP_POST, handleAction);
 
 	server.on("/info", HTTP_GET, handleFilesystemInformation);
 	server.on("/list", HTTP_GET, handleFileList);
 
+	// //load editor
+	// server.on("/edit", HTTP_GET, []() {
+	// 	if (!handleFileRead("/edit.html"))
+	// 		server.send(404, "text/plain", "FileNotFound");
+	// });
+
 	//load editor
-	server.on("/edit", HTTP_GET, []() {
-		if (!handleFileRead("/edit.html"))
-			server.send(404, "text/plain", "FileNotFound");
-	});
+	server.on("/edit", HTTP_GET, handleFileLoad);
 
 	//create file
 	server.on("/edit", HTTP_PUT, handleFileCreate);
@@ -47,11 +50,12 @@ void http_server_init()
 	//delete file
 	server.on("/edit", HTTP_DELETE, handleFileDelete);
 
+	//upload file
 	//first callback is called after the request has ended with all parsed arguments
 	//second callback handles file uploads at that location
 	server.on("/edit", HTTP_POST, []() {
 		server.send(200, "text/plain", "");
-	}, handleFileUpload);
+	}, handleFileSave);
 
 	//called when the url is not defined here
 	//use it to load content from LittleFS
@@ -194,23 +198,29 @@ void handleNotFound()
 	}
 }
 
-bool handleFileRead(String path)
+bool handleFileRead(const String &path)
 {
 	//Serial.println("handleFileRead: " + path);
 	DPRINTLN("handleFileRead: " + path)
-	// if (path.endsWith("/"))
-	// 	path += "index.htm";
 	String contentType = getContentType(path);
 	String pathWithGz = path + ".gz";
-	if (LittleFS.exists(pathWithGz) || LittleFS.exists(path))
+	if (LittleFS.exists(path) || LittleFS.exists(pathWithGz))
 	{
+		File file;
 		if (LittleFS.exists(pathWithGz))
-			path += ".gz";
-		File file = LittleFS.open(path, "r");
-		// size_t sent = server.streamFile(file, contentType);
-		server.streamFile(file, contentType);
-		file.close();
-		return true;
+		{
+			file = LittleFS.open(pathWithGz, "r");
+		}
+		else
+		{
+			file = LittleFS.open(path, "r");
+		}
+		if (file)
+		{
+			server.streamFile(file, contentType);
+			file.close();
+			return true;
+		}
 	}
 	return false;
 }
@@ -284,48 +294,64 @@ void handleFileList()
 	server.send(200, "text/json", output);
 }
 
-void handleFileUpload()
+void handleFileSave()
 {
-	if (server.uri() != "/edit")
-		return;
 	HTTPUpload &upload = server.upload();
 	if (upload.status == UPLOAD_FILE_START)
 	{
 		String filename = upload.filename;
 		if (!filename.startsWith("/"))
 			filename = "/" + filename;
-		// Serial.print("handleFileUpload Name: ");
+		// Serial.print("handleFileSave Name: ");
 		// Serial.println(filename);
-		DPRINT("handleFileUpload Name: ")
+		DPRINT("handleFileSave Name: ")
 		DPRINTLN(filename)
 		fsUploadFile = LittleFS.open(filename, "w");
 		filename = String();
 	}
 	else if (upload.status == UPLOAD_FILE_WRITE)
 	{
-		// Serial.print("handleFileUpload Data: ");
+		// Serial.print("handleFileSave Data: ");
 		// Serial.println(upload.currentSize);
-		DPRINT("handleFileUpload Data: ")
+		DPRINT("handleFileSave Data: ")
 		DPRINTLN(upload.currentSize)
 		if (fsUploadFile)
 			fsUploadFile.write(upload.buf, upload.currentSize);
 	}
 	else if (upload.status == UPLOAD_FILE_END)
 	{
-		// Serial.print("handleFileUpload Size: ");
+		// Serial.print("handleFileSave Size: ");
 		// Serial.println(upload.totalSize);
-		DPRINT("handleFileUpload Size: ")
+		DPRINT("handleFileSave Size: ")
 		DPRINTLN(upload.totalSize)
 		if (fsUploadFile)
 			fsUploadFile.close();
 	}
 }
+void handleFileLoad()
+{
+	if (!server.hasArg("dir"))
+	{
+		server.send(500, "text/plain", "BAD ARGS");
+		return;
+	}
+	String path = server.arg("dir");
+	// Serial.println("handleFileLoad: " + path);
+	DPRINTLN("handleFileLoad: " + path);
+	if (!handleFileRead(path))
+		return server.send(404, "text/plain", "Something went wrong");
+	server.send(200, "text/plain", "");
+}
+
 
 void handleFileDelete()
 {
-	if (server.args() == 0)
-		return server.send(500, "text/plain", "BAD ARGS");
-	String path = server.arg(0);
+	if (!server.hasArg("dir"))
+	{
+		server.send(500, "text/plain", "BAD ARGS");
+		return;
+	}
+	String path = server.arg("dir");
 	// Serial.println("handleFileDelete: " + path);
 	DPRINTLN("handleFileDelete: " + path)
 	if (path == "/")
@@ -334,7 +360,6 @@ void handleFileDelete()
 		return server.send(404, "text/plain", "FileNotFound");
 	LittleFS.remove(path);
 	server.send(200, "text/plain", "");
-	path = String();
 }
 
 void handleFileCreate()
@@ -354,10 +379,9 @@ void handleFileCreate()
 	else
 		return server.send(500, "text/plain", "CREATE FAILED");
 	server.send(200, "text/plain", "");
-	path = String();
 }
 
-String getContentType(String filename)
+const char* getContentType(const String &filename)
 {
 	if (server.hasArg("download"))
 		return "application/octet-stream";
@@ -367,8 +391,18 @@ String getContentType(String filename)
 		return "text/html";
 	else if (filename.endsWith(".css"))
 		return "text/css";
+	else if (filename.endsWith(".js"))
+		return "application/javascript";
+	else if (filename.endsWith(".json"))
+		return "text/json";
+	else if (filename.endsWith(".ico"))
+		return "image/x-icon";
 	else if (filename.endsWith(".svg"))
 		return "image/svg+xml";
+	else if (filename.endsWith(".zip"))
+		return "application/x-zip";
+	else if (filename.endsWith(".gz"))
+		return "application/x-gzip";
 	else if (filename.endsWith(".woff"))
 		return "application/font-woff";
 	else if (filename.endsWith(".woff2"))
@@ -379,26 +413,16 @@ String getContentType(String filename)
 		return "application/vnd.ms-fontobject";
 	else if (filename.endsWith(".otf"))
 		return "application/x-font-opentype";
-	else if (filename.endsWith(".js"))
-		return "application/javascript";
 	else if (filename.endsWith(".png"))
 		return "image/png";
 	else if (filename.endsWith(".gif"))
 		return "image/gif";
 	else if (filename.endsWith(".jpg"))
 		return "image/jpeg";
-	else if (filename.endsWith(".ico"))
-		return "image/x-icon";
 	else if (filename.endsWith(".xml"))
 		return "text/xml";
 	else if (filename.endsWith(".pdf"))
 		return "application/x-pdf";
-	else if (filename.endsWith(".zip"))
-		return "application/x-zip";
-	else if (filename.endsWith(".json"))
-		return "text/html";
-	else if (filename.endsWith(".gz"))
-		return "application/x-gzip";
 	return "text/plain";
 }
 
