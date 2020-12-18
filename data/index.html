@@ -7,8 +7,8 @@
 	<meta name="description" content="MagicLamp">
 	<meta name="author" content="Michael Barskikh">
 	<title>MagicLamp control</title>
-	<link rel="stylesheet" type="text/css" href="./css/style.css">
-	<link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
+	<link href="./css/style.css" rel="stylesheet" type="text/css">
+	<link href="./favicon.ico" rel="icon" type="image/x-icon">
 </head>
 
 <body>
@@ -31,27 +31,27 @@
 				<p class="label">Effects:</p>
 				<select class="item_select" aria-label="Effects" id=effectSelecter>
 					<optgroup label="Simple">
-						<option value="EFF_CODE_SNOW">Snowfall</option>
-						<option value="EFF_CODE_BALLS">Balls</option>
-						<option value="EFF_CODE_FIRE">Fire</option>
-						<option value="EFF_CODE_SPARKLES">Sparkles</option>
-						<option value="EFF_CODE_MATRIX">The Matrix</option>
-						<option value="EFF_CODE_STARFALL">Starfall</option>
+						<option value="0">Snowfall</option>
+						<option value="1">Balls</option>
+						<option value="2">Fire</option>
+						<option value="3">Sparkles</option>
+						<option value="4">The Matrix</option>
+						<option value="5">Starfall</option>
 					</optgroup>
 					<optgroup label="Full screen 3D">
-						<option value="EFF_CODE_LAVA">Lava</option>
-						<option value="EFF_CODE_CLOUD">Cloud</option>
-						<option value="EFF_CODE_ZEBRA">Zebra</option>
-						<option value="EFF_CODE_FOREST">Forest</option>
-						<option value="EFF_CODE_OCEAN">Ocean</option>
-						<option value="EFF_CODE_PLASMA">Plasma</option>
-						<option value="EFF_CODE_PLUM">Plum</option>
-						<option value="EFF_CODE_RANDOM">Random</option>
-						<option value="EFF_CODE_RAINBOW">Rainbow</option>
-						<option value="EFF_CODE_RAINBOW_STRIPE">Rainbow stripe</option>
+						<option value="7">Lava</option>
+						<option value="8">Cloud</option>
+						<option value="9">Zebra</option>
+						<option value="10">Forest</option>
+						<option value="11">Ocean</option>
+						<option value="12">Plasma</option>
+						<option value="13">Plum</option>
+						<option value="14">Random</option>
+						<option value="15">Rainbow</option>
+						<option value="16">Rainbow stripe</option>
 					</optgroup>
 					<optgroup label="Games">
-						<option value="EFF_CODE_SNAKE">Snake</option>
+						<option value="6">Snake</option>
 					</optgroup>
 				</select>
 				<div class="container row form_toggle">
@@ -81,7 +81,7 @@
 			<div class="container row">
 				<p class="label">Speed</p>
 				<div class="slidercontainer">
-					<input type="range" min="1" max="64" value="32" step="1" class="slider" id="SpeedSlider">
+					<input type="range" min="1" max="32" value="16" step="1" class="slider" id="SpeedSlider">
 				</div>
 			</div>
 			<div class="container row">
@@ -106,10 +106,10 @@
 		</div>
 	</div>
 	<div class="flexbox-body footer">
-		<p class="copyright">Copyrigth &copy; 2020 by Michael</p>
+		<p class="copyright">Copyright &copy; 2020 by Michael</p>
 	</div>
 	
-	<script src="js/form_control.js"></script>
+	<script src="./js/form_control.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+const url = "/action.html";
+
 function actionSend(data) {
     const http = new XMLHttpRequest();
     http.open("POST", url, true);
@@ -10,18 +12,8 @@ function actionSend(data) {
 }
 function updateValueText(name, value) {
     var currValueElem = document.getElementById(name);
-    console.log(currValueElem);
+    // console.log(currValueElem);
     currValueElem.innerHTML = value;
-}
-
-var allSliders = document.getElementsByClassName("slider")
-// console.log(allSliders);
-for (var i = 0; i < allSliders.length; i++) {
-    // console.log(allSliders[i]);
-    allSliders[i].addEventListener("input", inputSlider);
-    var idStr = allSliders[i].id;
-    var nameStp = idStr.substr(0, idStr.length - 6);
-    updateValueText(nameStp + "Value", allSliders[i].value);
 }
 
 function inputSlider(e) {
@@ -54,68 +46,47 @@ function inputSlider(e) {
     updateValueText(nameStp + "Value", e.target.value)
 }
 
-const effectSelVar = document.getElementById("effectSelecter")
-
-const url = "/action.html";
-
-effectSelVar.addEventListener("change", changeEffect);
+var allSliders = document.getElementsByClassName("slider")
+// console.log(allSliders);
+for (var i = 0; i < allSliders.length; i++) {
+    // console.log(allSliders[i]);
+    allSliders[i].addEventListener("input", inputSlider);
+    var idStr = allSliders[i].id;
+    var nameStp = idStr.substr(0, idStr.length - 6);
+    updateValueText(nameStp + "Value", allSliders[i].value);
+}
 
 function changeEffect() {
     var effectSelValue = effectSelVar.value;
     var effectSelIndex = effectSelVar.selectedIndex;
-    console.log("Effect: " + effectSelValue + "=" + effectSelIndex);
+    // console.log("Effect: " + effectSelValue + "=" + effectSelIndex);
 
     var data = new FormData();
-    data.append("MOD", effectSelIndex);
+    data.append("MOD", effectSelValue);
 
     actionSend(data);
-
-    // const http = new XMLHttpRequest();
-    // http.open("POST", url, true);
-    // http.onreadystatechange = function() {//Call a function when the state changes.
-    //     if (http.readyState == 4) {
-    //         console.log(http.responseText);
-    //     }
-    // }
-    // http.send(data);
 }			
-	
 
-const buttonOn = document.getElementById("fid-2");
-buttonOn.addEventListener("click", e => {
-    // console.log("Button ON clicked.");
+const effectSelVar = document.getElementById("effectSelecter")
+effectSelVar.addEventListener("change", changeEffect);
 
-    var data = new FormData();
-    data.append("PWR", "ON");
+// const buttonOn = document.getElementById("fid-2");
+// buttonOn.addEventListener("click", e => {
+//     // console.log("Button ON clicked.");
 
-    actionSend(data);
+//     var data = new FormData();
+//     data.append("PWR", "ON");
 
-    // const http = new XMLHttpRequest();
-    // http.open("POST", url, true);
-    // http.onreadystatechange = function() {//Call a function when the state changes.
-    //     if (http.readyState == 4) {
-    //         console.log(http.responseText);
-    //     }
-    // }
-    // http.send(data);
-});
+//     actionSend(data);
+// });
 
-const buttonOff = document.getElementById("fid-1");
-buttonOff.addEventListener("click", e => {
-    // console.log("Button OFF clicked.");
+// const buttonOff = document.getElementById("fid-1");
+// buttonOff.addEventListener("click", e => {
+//     // console.log("Button OFF clicked.");
 
-    var data = new FormData();
-    data.append("PWR", "OFF");
+//     var data = new FormData();
+//     data.append("PWR", "OFF");
 
-    actionSend(data);
-
-    // const http = new XMLHttpRequest();
-    // http.open("POST", url, true);
-    // http.onreadystatechange = function() {//Call a function when the state changes.
-    //     if (http.readyState == 4) {
-    //         console.log(http.responseText);
-    //     }
-    // }
-    // http.send(data);
-});
+//     actionSend(data);
+// });
 
