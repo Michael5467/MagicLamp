@@ -111,10 +111,6 @@ void setup() {
     else {    
         DPRINT("WiFi manager ");
         wifiManager.setDebugOutput(false);
-#if (USE_BUTTON == 1)
-        if (digitalRead(BTN_PIN))
-            wifiManager.resetSettings();
-#endif
 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
     }
     DPRINT("Connected! IP address: ");
