@@ -101,6 +101,11 @@ void handleAction()
 	if (server.hasArg("STS"))
 	{
 		message += ">>> Status request...";
+		String opt = server.arg("STS");
+		if (opt == "RST")
+        setMode(&lamp_state, opt.toInt());
+		message += ">>> MOD changed";
+
 	}
 	if (server.hasArg("PWR"))
 	{
@@ -114,7 +119,8 @@ void handleAction()
 		{
 			lamp_state.state = true;
 			message += ">>> Power ON";
-		}		
+		}
+		changePower(&lamp_state);
 	}
 	if (server.hasArg("MOD")) 
 	{

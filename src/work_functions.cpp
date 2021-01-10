@@ -7,6 +7,65 @@
 
 #include "functions.h"
 
+void ResetEffectSettings(the_lamp_state_t *lamp_state) {
+    switch (lamp_state->effect) {
+        case EFF_CODE_SNOW:
+            break;
+        case EFF_CODE_BALLS:
+            lamp_state->scale = 4;
+            break;
+        case EFF_CODE_FIRE: 
+            break;
+        case EFF_CODE_SPARKLES:
+            lamp_state->scale = 5;
+            break;
+        case EFF_CODE_MATRIX:
+            lamp_state->scale = THE_MATRIX_DENSITY;
+            break;
+        case EFF_CODE_STARFALL:
+            // starfallRoutine(lamp_state);
+            starfallRoutine_new(lamp_state);
+            break;
+        case EFF_CODE_SNAKE:
+            snakeRoutine(lamp_state);
+            break;
+        case EFF_CODE_LAVA:
+            lavaNoise(lamp_state);
+            break;
+        case EFF_CODE_CLOUD:
+            cloudNoise(lamp_state);
+            break;
+        case EFF_CODE_ZEBRA:
+            zebraNoise(lamp_state);
+            break;
+        case EFF_CODE_FOREST:
+            forestNoise(lamp_state);
+            break;
+        case EFF_CODE_OCEAN:
+            oceanNoise(lamp_state);
+            break;
+        case EFF_CODE_PLASMA:
+            plasmaNoise(lamp_state);
+            break;
+        case EFF_CODE_PLUM:
+            plumNoise(lamp_state);
+            break;
+        case EFF_CODE_RANDOM:
+            randomNoise(lamp_state);
+            break;
+        case EFF_CODE_RAINBOW:
+            rainbowNoise(lamp_state);
+            break;
+        case EFF_CODE_RAINBOW_STRIPE:
+            rainbowStripeNoise(lamp_state);
+            break;
+    }
+
+    setBrightness(lamp_state, BRIGHTNESS);
+    setEffectsSpeed(lamp_state, EFFECT_SPEED);
+    updateMode(lamp_state);
+}
+
 void changePower(the_lamp_state_t *lamp_state) {
     if (lamp_state->state) {
         SelectEffect(lamp_state);

@@ -82,9 +82,9 @@ typedef struct {
 } post_command_t;
 
 typedef struct {
-  boolean  state = false;
-  uint8_t  hour  = 0;
-  uint8_t  min   = 0;
+    boolean  state = false;
+    uint8_t  hour  = 0;
+    uint8_t  min   = 0;
 } alarm_t;
 
 // Functions
@@ -93,6 +93,7 @@ void changePower(the_lamp_state_t *lamp_state);
 int32_t parse_request(the_lamp_state_t *lamp_state, get_command_t *command);
 void ServerLoop(WiFiServer *server, the_lamp_state_t *lamp_state);
 void SelectEffect(the_lamp_state_t *lamp_state);
+void ResetEffectSettings(the_lamp_state_t *lamp_state);
 
 void updateMode(the_lamp_state_t *lamp_state);
 void setMode(the_lamp_state_t *lamp_state, uint8_t Value);
