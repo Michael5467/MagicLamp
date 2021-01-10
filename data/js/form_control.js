@@ -3,7 +3,8 @@ const url = "/action.html";
 function actionSend(data) {
     const http = new XMLHttpRequest();
     http.open("POST", url, true);
-    http.onreadystatechange = function() {//Call a function when the state changes.
+    http.onreadystatechange = function() {
+        //Call a function when the state changes.
         if (http.readyState == 4) {
             console.log(http.responseText);
         }
@@ -46,7 +47,7 @@ function inputSlider(e) {
     updateValueText(nameStp + "Value", e.target.value)
 }
 
-var allSliders = document.getElementsByClassName("slider")
+var allSliders = document.getElementsByClassName("slider");
 // console.log(allSliders);
 for (var i = 0; i < allSliders.length; i++) {
     // console.log(allSliders[i]);
@@ -67,7 +68,7 @@ function changeEffect() {
     actionSend(data);
 }			
 
-const effectSelVar = document.getElementById("effectSelecter")
+const effectSelVar = document.getElementById("effectSelecter");
 effectSelVar.addEventListener("change", changeEffect);
 
 // const buttonOn = document.getElementById("fid-2");
@@ -90,3 +91,11 @@ effectSelVar.addEventListener("change", changeEffect);
 //     actionSend(data);
 // });
 
+resetEffectSettings(e) {
+    var data = new FormData();
+    data.append("STS", "RST");
+    actionSend(data);
+}
+
+const indReset = document.getElementById("index_reset");
+indReset.addEventListener("click", resetEffectSettings);
