@@ -24,7 +24,6 @@
 #include "json_functions.h"
 #include "Michael_MinimalTimer.h"
 
-snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
 local_date_time_t date_time;
 the_lamp_state_t lamp_state;
 
@@ -78,13 +77,12 @@ void setup() {
     lamp_state.effect       = START_EFFECT;
     lamp_state.brightness   = BRIGHTNESS;
     lamp_state.speed        = EFFECT_SPEED;
-    lamp_state.scale        = 5;
-    lamp_state.IP           = "";
+    lamp_state.scale        = SNOW_DENSE;
+    lamp_state.IP.clear();
     lamp_state.loadingFlag  = false;
     lamp_state.date_time    = &date_time;
     lamp_state.effectTimer  = &Effect_Timer;
     lamp_state.leds         = leds;
-    lamp_state.effect_snow  = &effect_snow;
 
     // loadConfiguration("/config.json", lamp_state);
 
@@ -136,8 +134,6 @@ void setup() {
 }
 
 void loop() {
-    // ServerLoop(&server, &lamp_state);
-
     // webSocket.loop();
 
     server.handleClient();

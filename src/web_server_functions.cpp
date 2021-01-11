@@ -102,8 +102,10 @@ void handleAction()
 	{
 		message += ">>> Status request...";
 		String opt = server.arg("STS");
-		if (opt == "RST")
-        setMode(&lamp_state, opt.toInt());
+		if (opt == "RST") 
+		{
+			ResetEffectSettings(&lamp_state);
+		}
 		message += ">>> MOD changed";
 
 	}
@@ -156,7 +158,7 @@ void handleAction()
             case (EFF_CODE_MATRIX):
                 break;
             case (EFF_CODE_STARFALL):
-                raw = 5 * raw;
+                // raw = 5 * raw;
                 break;
             case (EFF_CODE_SNAKE):
                 break;

@@ -30,13 +30,6 @@
 #define SNOW_COLOR_STEP   0x101010       // unit gradient of color
 // #define SNOW_EFFECT_SPEED EFFECT_SPEED // speed by default
 
-typedef struct {
-    uint8_t  density;
-    uint32_t speed;
-    CRGB     color;
-    uint8_t  color_step;
-} snow_parameters_t;
-
     // "Balls"
 #define BALLS_MAX_AMOUNT    32  // Maximum amount of balls
 #define BALLS_AMOUNT         5  // Amount of balls
@@ -48,9 +41,9 @@ typedef struct {
     // "Fire"
 #define FIRE_SPARKLES 1        // ON/OFF emitting coals
 #define FIRE_HUE_ADD  0        // Adding a color to fire  (in range [0:230] - changes the whole color of the fire)
-    // "Flare"
+    // "Sparkles"
 #define FLARE_DENSITY           5  // density
-#define FLARE_COLOR_STEP     0x18  // unit gradient of color (0x101010)
+#define FLARE_COLOR_STEP     0x18  // (!) unit gradient of color (0x101010)
 #define FLARE_COLOR_STEP_LIB   48
 //random color fading flash
     // "The Matrix"

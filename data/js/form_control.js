@@ -11,6 +11,19 @@ function actionSend(data) {
     }
     http.send(data);
 }
+
+function actionGet(data) {
+    const http = new XMLHttpRequest();
+    http.open("GET", url, true);
+    http.onreadystatechange = function() {
+        //Call a function when the state changes.
+        if (http.readyState == 4) {
+            console.log(http.responseText);
+        }
+    }
+    http.send(data);
+}
+
 function updateValueText(name, value) {
     var currValueElem = document.getElementById(name);
     // console.log(currValueElem);
@@ -91,7 +104,7 @@ effectSelVar.addEventListener("change", changeEffect);
 //     actionSend(data);
 // });
 
-resetEffectSettings(e) {
+function resetEffectSettings(e) {
     var data = new FormData();
     data.append("STS", "RST");
     actionSend(data);
