@@ -24,7 +24,6 @@ void ResetEffectSettings(the_lamp_state_t *lamp_state) {
             lamp_state->scale = THE_MATRIX_DENSITY;
             break;
         case EFF_CODE_STARFALL:
-            starfallRoutine(lamp_state);
             lamp_state->scale = METEOR_DENSITY;
             break;
         case EFF_CODE_SNAKE:
@@ -66,6 +65,9 @@ void ResetEffectSettings(the_lamp_state_t *lamp_state) {
 }
 
 void changePower(the_lamp_state_t *lamp_state) {
+    DPRINT("changePower: lamp_state->state=");
+    DPRINTLN(lamp_state->state);
+    
     if (lamp_state->state) {
         SelectEffect(lamp_state);
         for (int i = 0; i < BRIGHTNESS; i += 8) {
@@ -150,6 +152,8 @@ void updateMode(the_lamp_state_t *lamp_state) {
     lamp_state->loadingFlag = true;
     FastLED.clear();
     FastLED.show();
+
+    DPRINT("updateMode: done");
 }
 
 void setMode(the_lamp_state_t *lamp_state, uint8_t Value) {
