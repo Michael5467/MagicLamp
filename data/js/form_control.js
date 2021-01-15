@@ -3,7 +3,7 @@ const url = "/action.html";
 function actionSend(data) {
     const http = new XMLHttpRequest();
     http.open("POST", url, true);
-    http.onreadystatechange = function() {
+    http.onreadystatechange = function () {
         //Call a function when the state changes.
         if (http.readyState == 4) {
             console.log(http.responseText);
@@ -12,13 +12,17 @@ function actionSend(data) {
     http.send(data);
 }
 
-function actionGet(data) {
+function actionGet(data, callback) {
     const http = new XMLHttpRequest();
-    http.open("GET", url, true);
-    http.onreadystatechange = function() {
+    http.open("POST", url, true);
+    // http.responseType = 'json';
+    http.onreadystatechange = function () {
+        console.log("actionGet:onreadystatechange");
         //Call a function when the state changes.
         if (http.readyState == 4) {
+            console.log("actionGet:readyState == 4");
             console.log(http.responseText);
+            callback(http.response);
         }
     }
     http.send(data);
@@ -57,18 +61,31 @@ function inputSlider(e) {
         actionSend(data);
     }
 
-    updateValueText(nameStp + "Value", e.target.value)
+    updateValueText(nameStp + "Value", e.target.value);
 }
+
+function updateSlidersText() {
+    for (var i = 0; i < allSliders.length; i++) {
+        var idStr = allSliders[i].id;
+        var nameStp = idStr.substr(0, idStr.length - 6);
+        updateValueText(nameStp + "Value", allSliders[i].value);
+    }
+}
+
+const briSlider = document.getElementById("BrightnesSlider");
+const spdSlider = document.getElementById("SpeedSlider");
+const denSlider = document.getElementById("DensitySlider");
 
 var allSliders = document.getElementsByClassName("slider");
 // console.log(allSliders);
 for (var i = 0; i < allSliders.length; i++) {
     // console.log(allSliders[i]);
     allSliders[i].addEventListener("input", inputSlider);
-    var idStr = allSliders[i].id;
-    var nameStp = idStr.substr(0, idStr.length - 6);
-    updateValueText(nameStp + "Value", allSliders[i].value);
+    // var idStr = allSliders[i].id;
+    // var nameStp = idStr.substr(0, idStr.length - 6);
+    // updateValueText(nameStp + "Value", allSliders[i].value);
 }
+// updateSlidersText();
 
 function changeEffect() {
     var effectSelValue = effectSelVar.value;
@@ -79,30 +96,30 @@ function changeEffect() {
     data.append("MOD", effectSelValue);
 
     actionSend(data);
-}			
+}
 
 const effectSelVar = document.getElementById("effectSelecter");
 effectSelVar.addEventListener("change", changeEffect);
 
-// const buttonOn = document.getElementById("fid-2");
-// buttonOn.addEventListener("click", e => {
-//     // console.log("Button ON clicked.");
+const buttonOn = document.getElementById("fid-2");
+buttonOn.addEventListener("click", e => {
+    // console.log("Button ON clicked.");
 
-//     var data = new FormData();
-//     data.append("PWR", "ON");
+    var data = new FormData();
+    data.append("PWR", "ON");
 
-//     actionSend(data);
-// });
+    actionSend(data);
+});
 
-// const buttonOff = document.getElementById("fid-1");
-// buttonOff.addEventListener("click", e => {
-//     // console.log("Button OFF clicked.");
+const buttonOff = document.getElementById("fid-1");
+buttonOff.addEventListener("click", e => {
+    // console.log("Button OFF clicked.");
 
-//     var data = new FormData();
-//     data.append("PWR", "OFF");
+    var data = new FormData();
+    data.append("PWR", "OFF");
 
-//     actionSend(data);
-// });
+    actionSend(data);
+});
 
 function resetEffectSettings(e) {
     var data = new FormData();
@@ -112,3 +129,40 @@ function resetEffectSettings(e) {
 
 const indReset = document.getElementById("index_reset");
 indReset.addEventListener("click", resetEffectSettings);
+
+function applySettings(cfgJSON) {
+    console.log("applySettings:");
+    console.log(cfgJSON);
+    console.log("--->");
+    jsonResponse = JSON.parse(cfgJSON, function (key, value) {
+        if (key == 'date')
+            return new Date(value);
+        return value;
+    });
+    console.log(jsonResponse)
+    console.log("===>");
+    for (key in jsonResponse) {
+        console.log(key, ":", jsonResponse[key]);
+    }
+
+    if (jsonResponse.STATE == 0)
+        buttonOff.checked = true;
+    else
+        buttonOn.checked = true;
+    effectSelVar.value = jsonResponse.MOD;
+    briSlider.value = jsonResponse.BRI;
+    spdSlider.value = jsonResponse.SPD;
+    denSlider.value = jsonResponse.DEN;
+    updateSlidersText();
+}
+
+function refreshSettings(e) {
+    var data = new FormData();
+    data.append("STS", "GET");
+    actionGet(data, applySettings);
+}
+
+const indRefresh = document.getElementById("index_refresh");
+indRefresh.addEventListener("click", refreshSettings);
+
+refreshSettings();

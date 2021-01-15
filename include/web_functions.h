@@ -29,6 +29,7 @@ void handleFileDelete();
 void handleFileCreate();
 
 void handleAction();
+void SendLampState(the_lamp_state_t *lamp_state);
 
 const char* getContentType(const String &filename);
 String formatBytes(size_t bytes);

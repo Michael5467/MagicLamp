@@ -104,14 +104,20 @@ void handleAction()
 		String opt = server.arg("STS");
 		if (opt == "RST") 
 		{
+			message += ">>> opt == RST";
 			ResetEffectSettings(&lamp_state);
 		}
-		message += ">>> MOD changed";
+		if (opt == "GET") 
+		{
+			message += ">>> opt == GET";
+			SendLampState(&lamp_state);
+		}
+		message += ">>> STS done";
 
 	}
 	if (server.hasArg("PWR"))
 	{
-		String opt = server.arg("dir");
+		String opt = server.arg("PWR");
 		if (opt == "0" || opt == "OFF")
 		{
 			lamp_state.state = false;
@@ -150,6 +156,7 @@ void handleAction()
 	{
 		String opt = server.arg("DEN");
 		uint32_t raw = opt.toInt();
+		lamp_state.scale_raw = raw;
         switch (lamp_state.effect) {
             case (EFF_CODE_SNOW):
             case (EFF_CODE_BALLS):
@@ -176,11 +183,42 @@ void handleAction()
                 break;
         }
         lamp_state.scale = raw;
+		DPRINT("Set Density: value=");
+		DPRINTLN(raw);
         updateMode(&lamp_state);
 		message += ">>> DEN changed";
 	}
 
 	server.send(200, "text/plain", message);
+}
+
+void SendLampState(the_lamp_state_t *lamp_state)
+{
+	DPRINTLN("SendLampState")
+
+	String output = "{";
+	if (lamp_state->state)
+		output += "\"STATE\":1,";
+	else
+		output += "\"STATE\":0,";
+
+	output += "\"MOD\":";
+	output += lamp_state->effect;
+	output += ",";
+
+	output += "\"BRI\":";
+	output += lamp_state->brightness_raw;
+	output += ",";
+
+	output += "\"SPD\":";
+	output += lamp_state->speed_raw;
+	output += ",";
+
+	output += "\"DEN\":";
+	output += lamp_state->scale_raw;
+
+	output += "}";
+	server.send(200, "text/json", output);
 }
 
 void handleNotFound()
