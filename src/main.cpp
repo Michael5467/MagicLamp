@@ -36,10 +36,9 @@ const char *accesspointSSID = AP_SSID;
 const char *accesspointPass = AP_PASS;
 
 // Set web server port number
-// WiFiServer server(HTTP_PORT);
-ESP8266WebServer server(HTTP_PORT);
-// WebSocketsServer webSocket = WebSocketsServer(WEB_SOKET_PORT);
-// WebSocketsServer webSocket(WEB_SOKET_PORT);
+ESP8266WebServer server(LAMP_HTTP_PORT);
+// WebSocketsServer webSocket = WebSocketsServer(LAMP_WEB_SOKET_PORT);
+// WebSocketsServer webSocket(LAMP_WEB_SOKET_PORT);
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -64,7 +63,7 @@ void setup() {
     DPRINTLNF("\n\n\nNodeMCU v3\n");
 
     // Mount filesystem
-    DPRINT("Inizializing FS...")
+    DPRINT("Inizializing FS... ")
     if (LittleFS.begin()) {
         DPRINTLN("done.")
     }
@@ -73,16 +72,22 @@ void setup() {
     }
 
     // Initial lamp state
-    lamp_state.state        = true;
-    lamp_state.effect       = START_EFFECT;
-    lamp_state.brightness   = BRIGHTNESS;
-    lamp_state.speed        = EFFECT_SPEED;
-    lamp_state.scale        = SNOW_DENSE;
+    lamp_state.state          = true;
+    lamp_state.effect         = START_EFFECT;
+    lamp_state.brightness     = BRIGHTNESS;
+    lamp_state.brightness_raw = (BRIGHTNESS+1) >> 4;
+    lamp_state.speed          = EFFECT_SPEED;
+    lamp_state.speed_raw      = ((512-EFFECT_SPEED) >> 4) +1;
+    lamp_state.scale          = SNOW_DENSE;
+    if (START_EFFECT <= EFF_CODE_SNAKE )
+        lamp_state.scale_raw  = lamp_state.scale;
+    else
+        lamp_state.scale_raw  = lamp_state.scale / 10;
     lamp_state.IP.clear();
-    lamp_state.loadingFlag  = false;
-    lamp_state.date_time    = &date_time;
-    lamp_state.effectTimer  = &Effect_Timer;
-    lamp_state.leds         = leds;
+    lamp_state.loadingFlag    = false;
+    lamp_state.date_time      = &date_time;
+    lamp_state.effectTimer    = &Effect_Timer;
+    lamp_state.leds           = leds;
 
     // loadConfiguration("/config.json", lamp_state);
 
