@@ -60,7 +60,9 @@ void setup() {
     // Serial port setup
     Serial.begin(74880);
     // Serial.begin(115200);
-    DPRINTLNF("\n\n\nNodeMCU v3\n");
+    Serial.println("\n\n\n+------------+");
+    Serial.println("| NodeMCU v3 |");
+    Serial.println("+------------+\n");
 
     // Mount filesystem
     DPRINT("Inizializing FS... ")
@@ -103,21 +105,21 @@ void setup() {
 
     // WIFI
     if (ESP_MODE == 0) {
-        DPRINT("Connecting to ");
-        DPRINTLN(autoConnectSSID);
+        Serial.print("Connecting to ");
+        Serial.print(autoConnectSSID);
         WiFi.begin(autoConnectSSID, autoConnectPass);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
-            DPRINT(".");
+            Serial.print(".");
         }
     }
     else {    
-        DPRINT("WiFi manager ");
+        Serial.print("WiFi manager ");
         wifiManager.setDebugOutput(false);
 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
     }
-    DPRINT("Connected! IP address: ");
-    DPRINTLN(WiFi.localIP());
+    Serial.print("connected!\nIP address: ");
+    Serial.println(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
     // HTTP server
@@ -144,26 +146,10 @@ void loop() {
     server.handleClient();
 
     // Working with matrix
-#ifdef DEBUG_STEP
-    if (lamp_state.debug) {
-        if (lamp_state.step) {
-            SelectEffect(&lamp_state);  // Current effect drawing
-            FastLED.show();             // Show matrix
-            lamp_state.step = false;
-        }
-    }
-    else {
-        if (lamp_state.state && Effect_Timer.isReady()) {
-            SelectEffect(&lamp_state);  // Current effect drawing
-            FastLED.show();             // Show matrix
-        }
-    }
-#else
     if (lamp_state.state && Effect_Timer.isReady()) {
         SelectEffect(&lamp_state);  // Current effect drawing
         FastLED.show();             // Show matrix
     }
-#endif
 
     // // Dawn check
     // if (Clock_Timer.isReady()) {
