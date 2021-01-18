@@ -1,10 +1,11 @@
 {
     "product": "MagicLamp",
-    "version": 0.1,
+    "version": 1.3,
     "releaseDate": "2020-12-07T00:00:00.000Z",
+    "name": "Lamp",
     "state": true,
     "debug": false,
-    "effect": 5,
+    "effect": 0,
     "awake_alarm": [
         {
             "state": false,
