@@ -8,7 +8,8 @@
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
-
+#include <ESP8266SSDP.h>
+#include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 
 #include <NTPClient.h>
@@ -39,6 +40,8 @@ const char *accesspointPass = AP_PASS;
 ESP8266WebServer server(LAMP_HTTP_PORT);
 // WebSocketsServer webSocket = WebSocketsServer(LAMP_WEB_SOKET_PORT);
 // WebSocketsServer webSocket(LAMP_WEB_SOKET_PORT);
+
+// MDNSResponder MDNS;
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -122,10 +125,43 @@ void setup() {
     Serial.println(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
-    // HTTP server
+    if (MDNS.begin("MagicLamp")) {
+        Serial.println("MDNS responder started");
+        MDNS.addService("http", "tcp", 80);
+        // MDNS.addService("ws", "tcp", 81);
+    } else {
+        Serial.println("MDNS.begin failed");
+    }
+
+    // HTTP server config
     http_server_init();
+    // // SSDP descriptor
+    // server.on("/description.xml", HTTP_GET, []() {
+    //     DPRINTLN("/description.xml")
+    //     SSDP.schema(server.client());
+    // });
+    // DPRINTLN("SSDP Ready!");
+    // HTTP server start
     server.begin();
     DPRINTLN("HTTP server started")
+
+//     // SSDP service
+//     DPRINTLN("Starting SSDP...");
+//     // String setModelURL = "http://" + lamp_state.IP;
+//     // SSDP.setDeviceType("upnp:rootdevice");
+//     SSDP.setSchemaURL("description.xml");
+//     SSDP.setHTTPPort(80);
+//     SSDP.setName("esp8266");
+//     SSDP.setModelName("WeMosD1mini");
+// //    SSDP.setSerialNumber(String(ESP.getChipId(),HEX));
+//     SSDP.setSerialNumber("0123456789");
+//     SSDP.setURL("index.html");
+//     SSDP.setModelNumber("000000000001");
+//     SSDP.setModelURL("http://myesp.html");
+//     SSDP.setManufacturer("by Michael");
+//     SSDP.setManufacturerURL("http://myesp.html");
+//     SSDP.begin();
+
 
     // // WEB socket
 	// webSocket.begin();
@@ -141,6 +177,7 @@ void setup() {
 }
 
 void loop() {
+    MDNS.update();
     // webSocket.loop();
 
     server.handleClient();
