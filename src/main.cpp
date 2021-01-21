@@ -59,11 +59,11 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 alarm_t awake_alarm_arr[7];
 alarm_t sleep_alarm;
 
-void configModeCallback (WiFiManager *myWiFiManager)
+void configModeCallback(WiFiManager *myWiFiManager)
 {
-    Serial.println("Entered config mode");
-    Serial.println(WiFi.softAPIP());
-    Serial.println(myWiFiManager->getConfigPortalSSID());
+    DPRINTLN("Entered config mode");
+    DPRINTLN(WiFi.softAPIP());
+    DPRINTLN(myWiFiManager->getConfigPortalSSID());
 }
 
 void setup() {
