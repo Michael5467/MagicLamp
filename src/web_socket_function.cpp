@@ -16,8 +16,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
 
     case WStype_CONNECTED:
     {
-        IPAddress ip = webSocket.remoteIP(num);
 #ifdef DEBUG_PRINT
+        IPAddress ip = webSocket.remoteIP(num);
         Serial.printf("[%0x] Connected from %d.%d.%d.%d url: %s\r\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 #endif
 

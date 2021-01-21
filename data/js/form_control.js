@@ -72,6 +72,38 @@ function updateSlidersText() {
     }
 }
 
+function applySettings(cfgJSON) {
+    console.log("applySettings:");
+    console.log(cfgJSON);
+    console.log("--->");
+    jsonResponse = JSON.parse(cfgJSON, function (key, value) {
+        if (key == 'date')
+            return new Date(value);
+        return value;
+    });
+    console.log(jsonResponse)
+    console.log("===>");
+    for (key in jsonResponse) {
+        console.log(key, ":", jsonResponse[key]);
+    }
+
+    if (jsonResponse.STATE == 0)
+        buttonOff.checked = true;
+    else
+        buttonOn.checked = true;
+    effectSelVar.value = jsonResponse.MOD;
+    briSlider.value = jsonResponse.BRI;
+    spdSlider.value = jsonResponse.SPD;
+    denSlider.value = jsonResponse.DEN;
+    updateSlidersText();
+}
+
+function refreshSettings(e) {
+    var data = new FormData();
+    data.append("STS", "GET");
+    actionGet(data, applySettings);
+}
+
 const briSlider = document.getElementById("BrightnesSlider");
 const spdSlider = document.getElementById("SpeedSlider");
 const denSlider = document.getElementById("DensitySlider");
@@ -125,42 +157,11 @@ function resetEffectSettings(e) {
     var data = new FormData();
     data.append("STS", "RST");
     actionSend(data);
+    refreshSettings();
 }
 
 const indReset = document.getElementById("index_reset");
 indReset.addEventListener("click", resetEffectSettings);
-
-function applySettings(cfgJSON) {
-    console.log("applySettings:");
-    console.log(cfgJSON);
-    console.log("--->");
-    jsonResponse = JSON.parse(cfgJSON, function (key, value) {
-        if (key == 'date')
-            return new Date(value);
-        return value;
-    });
-    console.log(jsonResponse)
-    console.log("===>");
-    for (key in jsonResponse) {
-        console.log(key, ":", jsonResponse[key]);
-    }
-
-    if (jsonResponse.STATE == 0)
-        buttonOff.checked = true;
-    else
-        buttonOn.checked = true;
-    effectSelVar.value = jsonResponse.MOD;
-    briSlider.value = jsonResponse.BRI;
-    spdSlider.value = jsonResponse.SPD;
-    denSlider.value = jsonResponse.DEN;
-    updateSlidersText();
-}
-
-function refreshSettings(e) {
-    var data = new FormData();
-    data.append("STS", "GET");
-    actionGet(data, applySettings);
-}
 
 const indRefresh = document.getElementById("index_refresh");
 indRefresh.addEventListener("click", refreshSettings);

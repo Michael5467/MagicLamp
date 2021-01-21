@@ -153,7 +153,7 @@ void updateMode(the_lamp_state_t *lamp_state) {
     FastLED.clear();
     FastLED.show();
 
-    DPRINT("updateMode: done");
+    DPRINTLN("updateMode: done");
 }
 
 void setMode(the_lamp_state_t *lamp_state, uint8_t Value) {

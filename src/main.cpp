@@ -59,6 +59,13 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 alarm_t awake_alarm_arr[7];
 alarm_t sleep_alarm;
 
+void configModeCallback (WiFiManager *myWiFiManager)
+{
+    Serial.println("Entered config mode");
+    Serial.println(WiFi.softAPIP());
+    Serial.println(myWiFiManager->getConfigPortalSSID());
+}
+
 void setup() {
     // Serial port setup
     Serial.begin(74880);
@@ -110,6 +117,8 @@ void setup() {
     if (ESP_MODE == 0) {
         Serial.print("Connecting to ");
         Serial.print(autoConnectSSID);
+        WiFi.hostname("MagicLamp");
+        wifiManager.setAPCallback(configModeCallback);
         WiFi.begin(autoConnectSSID, autoConnectPass);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
@@ -125,13 +134,13 @@ void setup() {
     Serial.println(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
-    if (MDNS.begin("MagicLamp")) {
-        Serial.println("MDNS responder started");
-        MDNS.addService("http", "tcp", 80);
-        // MDNS.addService("ws", "tcp", 81);
-    } else {
-        Serial.println("MDNS.begin failed");
-    }
+    // if (MDNS.begin("MagicLamp")) {
+    //     Serial.println("MDNS responder started");
+    //     MDNS.addService("http", "tcp", 80);
+    //     // MDNS.addService("ws", "tcp", 81);
+    // } else {
+    //     Serial.println("MDNS.begin failed");
+    // }
 
     // HTTP server config
     http_server_init();
@@ -177,7 +186,8 @@ void setup() {
 }
 
 void loop() {
-    MDNS.update();
+    // MDNS.update();
+
     // webSocket.loop();
 
     server.handleClient();

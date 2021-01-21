@@ -1,7 +1,7 @@
 // DebugMacros.h
 
 // Example of use:
-// #define DEBUG_PRINT                 // <-----<<<< this line must appear before the include line
+#define DEBUG_PRINT                 // <-----<<<< this line must appear before the include line
 // #include "debug_macros.h"
 //
 
