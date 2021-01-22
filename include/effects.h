@@ -22,6 +22,7 @@
 #define EFF_CODE_RANDOM         14      // Random colors 3D
 #define EFF_CODE_RAINBOW        15      // Rainbow 3D
 #define EFF_CODE_RAINBOW_STRIPE 16      // Rainbow stripe 3D
+#define EFF_DAWN                31      // Dawn
 
 // Effects' configuration
     // "Snow"
