@@ -2,7 +2,7 @@ const url = "/action.html";
 
 function actionSend(data) {
     const http = new XMLHttpRequest();
-    http.open("POST", url, true);
+    http.open("POST", url, false);
     http.onreadystatechange = function () {
         //Call a function when the state changes.
         if (http.readyState == 4) {
@@ -14,7 +14,7 @@ function actionSend(data) {
 
 function actionGet(data, callback) {
     const http = new XMLHttpRequest();
-    http.open("POST", url, true);
+    http.open("POST", url, false);
     // http.responseType = 'json';
     http.onreadystatechange = function () {
         console.log("actionGet:onreadystatechange");

@@ -100,6 +100,7 @@ void setBrightness(the_lamp_state_t *lamp_state, uint8_t Value);
 void changeBrightness(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 void setEffectsSpeed(the_lamp_state_t *lamp_state, uint32_t Value);
 void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
+void convertRAW(the_lamp_state_t *lamp_state);
 
     // utility functions declaration
 void     printDecNum(uint32_t num);

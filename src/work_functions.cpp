@@ -62,6 +62,7 @@ void ResetEffectSettings(the_lamp_state_t *lamp_state) {
     setBrightness(lamp_state, BRIGHTNESS);
     setEffectsSpeed(lamp_state, EFFECT_SPEED);
     updateMode(lamp_state);
+    convertRAW(lamp_state);
 }
 
 void changePower(the_lamp_state_t *lamp_state) {
@@ -146,6 +147,16 @@ void SelectEffect(the_lamp_state_t *lamp_state) {
             rainbowStripeNoise(lamp_state);
             break;
     }
+}
+
+void convertRAW(the_lamp_state_t *lamp_state) {
+    lamp_state->brightness_raw = (lamp_state->brightness+1) >> 4;
+    lamp_state->speed_raw      = ((512-lamp_state->speed) >> 4) +1;
+    if (lamp_state->effect <= EFF_CODE_SNAKE )
+        lamp_state->scale_raw  = lamp_state->scale;
+    else
+        lamp_state->scale_raw  = lamp_state->scale / 10;
+    DPRINTLN("convertRAW: done");
 }
 
 void updateMode(the_lamp_state_t *lamp_state) {
