@@ -7,15 +7,15 @@
 
 // Matrix parameters
     // Geometry
-#define WIDTH            16             // matrix width (X coordinate)
-#define HEIGHT           16             // matrix height (Y coordinate)
+#define WIDTH            16 // 18             // matrix width (X coordinate)
+#define HEIGHT           16 // 11             // matrix height (Y coordinate)
 #define NUM_LEDS         WIDTH * HEIGHT // The number of LEDs in the matrix (in the strip)
 #define COLOR_ORDER      GRB            // Color order
 
     // Physical implementation
 #define MATRIX_TYPE      0              // Matrix type (by control): 0 - zigzag, 1 - parallel
-#define CONNECTION_ANGLE 1              // Connection angle: 0 - bottom left, 1 - top left, 2 - top right, 3 - bottom right
-#define STRIP_DIRECTION  3              // Strip direction from the corner: 0 - to the right, 1 - up, 2 - to the left, 3 - down
+#define CONNECTION_ANGLE 1 // 0               // Connection angle: 0 - bottom left, 1 - top left, 2 - top right, 3 - bottom right
+#define STRIP_DIRECTION  3 // 1               // Strip direction from the corner: 0 - to the right, 1 - up, 2 - to the left, 3 - down
 
     // Matrix configuration
 #if (CONNECTION_ANGLE == 0 && STRIP_DIRECTION == 0)

@@ -56,8 +56,6 @@ typedef struct {
     local_date_time_t *date_time   = NULL;
     M_MinimalTimer    *effectTimer = NULL; // Effect timer for rendering
     CRGB              *leds        = NULL;
-
-    snow_parameters_t *effect_snow = NULL;
 } the_lamp_state_t;
 
 typedef enum {
@@ -82,17 +80,16 @@ typedef struct {
 } post_command_t;
 
 typedef struct {
-  boolean  state = false;
-  uint8_t  hour  = 0;
-  uint8_t  min   = 0;
+    boolean  state = false;
+    uint8_t  hour  = 0;
+    uint8_t  min   = 0;
 } alarm_t;
 
 // Functions
     // work API
 void changePower(the_lamp_state_t *lamp_state);
-int32_t parse_request(the_lamp_state_t *lamp_state, get_command_t *command);
-void ServerLoop(WiFiServer *server, the_lamp_state_t *lamp_state);
 void SelectEffect(the_lamp_state_t *lamp_state);
+void ResetEffectSettings(the_lamp_state_t *lamp_state);
 
 void updateMode(the_lamp_state_t *lamp_state);
 void setMode(the_lamp_state_t *lamp_state, uint8_t Value);
@@ -103,6 +100,7 @@ void setBrightness(the_lamp_state_t *lamp_state, uint8_t Value);
 void changeBrightness(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 void setEffectsSpeed(the_lamp_state_t *lamp_state, uint32_t Value);
 void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
+void convertRAW(the_lamp_state_t *lamp_state);
 
     // utility functions declaration
 void     printDecNum(uint32_t num);
@@ -152,7 +150,6 @@ void fireRoutine(the_lamp_state_t *lamp_state);
 void sparklesRoutine(the_lamp_state_t *lamp_state);
 void matrixRoutine(the_lamp_state_t *lamp_state);
 void starfallRoutine(the_lamp_state_t *lamp_state);
-void starfallRoutine_new(the_lamp_state_t *lamp_state);
 
     // fullscreen effects
         // Three auxiliary functions for fullscreen effects

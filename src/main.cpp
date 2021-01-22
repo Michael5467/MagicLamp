@@ -1,12 +1,15 @@
 #include <Arduino.h>
 
+// #define DEBUG_ESP_HTTP_SERVER
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 
 //needed for library
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
-
+#include <ESP8266SSDP.h>
+#include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 
 #include <NTPClient.h>
@@ -16,11 +19,12 @@
 
 #include "project_config.h"
 #include "functions.h"
+#include "web_functions.h"
 #include "effects.h"
 #include "matrix.h"
+#include "json_functions.h"
 #include "Michael_MinimalTimer.h"
 
-snow_parameters_t effect_snow = {SNOW_DENSE, SNOW_COLOR, SNOW_COLOR_STEP};
 local_date_time_t date_time;
 the_lamp_state_t lamp_state;
 
@@ -33,7 +37,11 @@ const char *accesspointSSID = AP_SSID;
 const char *accesspointPass = AP_PASS;
 
 // Set web server port number
-WiFiServer server(HTTP_PORT);
+ESP8266WebServer server(LAMP_HTTP_PORT);
+// WebSocketsServer webSocket = WebSocketsServer(LAMP_WEB_SOKET_PORT);
+// WebSocketsServer webSocket(LAMP_WEB_SOKET_PORT);
+
+// MDNSResponder MDNS;
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -51,23 +59,49 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 alarm_t awake_alarm_arr[7];
 alarm_t sleep_alarm;
 
+void configModeCallback(WiFiManager *myWiFiManager)
+{
+    DPRINTLN("Entered config mode");
+    DPRINTLN(WiFi.softAPIP());
+    DPRINTLN(myWiFiManager->getConfigPortalSSID());
+}
+
 void setup() {
     // Serial port setup
     Serial.begin(74880);
-    DPRINTLN("NodeMCU v3...............................");
+    // Serial.begin(115200);
+    Serial.println("\n\n\n+------------+");
+    Serial.println("| NodeMCU v3 |");
+    Serial.println("+------------+\n");
+
+    // Mount filesystem
+    DPRINT("Inizializing FS... ")
+    if (LittleFS.begin()) {
+        DPRINTLN("done.")
+    }
+    else {
+        DPRINTLN("fail.")
+    }
 
     // Initial lamp state
-    lamp_state.state        = true;
-    lamp_state.effect       = START_EFFECT;
-    lamp_state.brightness   = BRIGHTNESS;
-    lamp_state.speed        = EFFECT_SPEED;
-    lamp_state.scale        = 5;
-    lamp_state.IP           = "";
-    lamp_state.loadingFlag  = false;
-    lamp_state.date_time    = &date_time;
-    lamp_state.effectTimer  = &Effect_Timer;
-    lamp_state.leds         = leds;
-    lamp_state.effect_snow  = &effect_snow;
+    lamp_state.state          = true;
+    lamp_state.effect         = START_EFFECT;
+    lamp_state.brightness     = BRIGHTNESS;
+    // lamp_state.brightness_raw = (BRIGHTNESS+1) >> 4;
+    lamp_state.speed          = EFFECT_SPEED;
+    // lamp_state.speed_raw      = ((512-EFFECT_SPEED) >> 4) +1;
+    lamp_state.scale          = SNOW_DENSE;
+    // if (START_EFFECT <= EFF_CODE_SNAKE )
+    //     lamp_state.scale_raw  = lamp_state.scale;
+    // else
+    //     lamp_state.scale_raw  = lamp_state.scale / 10;
+    lamp_state.IP.clear();
+    lamp_state.loadingFlag    = false;
+    lamp_state.date_time      = &date_time;
+    lamp_state.effectTimer    = &Effect_Timer;
+    lamp_state.leds           = leds;
+    convertRAW(&lamp_state);
+    // loadConfiguration("/config.json", lamp_state);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -81,29 +115,67 @@ void setup() {
 
     // WIFI
     if (ESP_MODE == 0) {
-        DPRINT("Connecting to ");
-        DPRINTLN(autoConnectSSID);
+        Serial.print("Connecting to ");
+        Serial.print(autoConnectSSID);
+        WiFi.hostname("MagicLamp");
+        wifiManager.setAPCallback(configModeCallback);
         WiFi.begin(autoConnectSSID, autoConnectPass);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
-            DPRINT(".");
+            Serial.print(".");
         }
     }
     else {    
-        DPRINT("WiFi manager ");
+        Serial.print("WiFi manager ");
         wifiManager.setDebugOutput(false);
-#if (USE_BUTTON == 1)
-        if (digitalRead(BTN_PIN))
-            wifiManager.resetSettings();
-#endif
 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
     }
-    DPRINT("Connected! IP address: ");
-    DPRINTLN(WiFi.localIP());
+    Serial.print("connected!\nIP address: ");
+    Serial.println(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
-    // HTTP server
+    // if (MDNS.begin("MagicLamp")) {
+    //     Serial.println("MDNS responder started");
+    //     MDNS.addService("http", "tcp", 80);
+    //     // MDNS.addService("ws", "tcp", 81);
+    // } else {
+    //     Serial.println("MDNS.begin failed");
+    // }
+
+    // HTTP server config
+    http_server_init();
+    // // SSDP descriptor
+    // server.on("/description.xml", HTTP_GET, []() {
+    //     DPRINTLN("/description.xml")
+    //     SSDP.schema(server.client());
+    // });
+    // DPRINTLN("SSDP Ready!");
+    // HTTP server start
     server.begin();
+    DPRINTLN("HTTP server started")
+
+//     // SSDP service
+//     DPRINTLN("Starting SSDP...");
+//     // String setModelURL = "http://" + lamp_state.IP;
+//     SSDP.setDeviceType("upnp:rootdevice");
+//     SSDP.setSchemaURL("description.xml");
+//     SSDP.setHTTPPort(80);
+//     SSDP.setName("MagicLamp");
+//     SSDP.setModelName("WeMosD1mini");
+// //    SSDP.setSerialNumber(String(ESP.getChipId(),HEX));
+//     SSDP.setSerialNumber("0123456789");
+//     SSDP.setURL("index.html");
+//     SSDP.setModelNumber("000000000001");
+//     SSDP.setModelURL("http://myesp.html");
+//     SSDP.setManufacturer("by Michael");
+//     SSDP.setManufacturerURL("http://myesp.html");
+//     SSDP.begin();
+
+
+    // // WEB socket
+	// webSocket.begin();
+	// webSocket.onEvent(webSocketEvent);
+    // DPRINTLN("Web socket server started")
 
     // NTP client
     timeClient.begin();
@@ -114,29 +186,17 @@ void setup() {
 }
 
 void loop() {
-    ServerLoop(&server, &lamp_state);
+    // MDNS.update();
+
+    // webSocket.loop();
+
+    server.handleClient();
 
     // Working with matrix
-#ifdef DEBUG_STEP
-    if (lamp_state.debug) {
-        if (lamp_state.step) {
-            SelectEffect(&lamp_state);  // Current effect drawing
-            FastLED.show();             // Show matrix
-            lamp_state.step = false;
-        }
-    }
-    else {
-        if (lamp_state.state && Effect_Timer.isReady()) {
-            SelectEffect(&lamp_state);  // Current effect drawing
-            FastLED.show();             // Show matrix
-        }
-    }
-#else
     if (lamp_state.state && Effect_Timer.isReady()) {
         SelectEffect(&lamp_state);  // Current effect drawing
         FastLED.show();             // Show matrix
     }
-#endif
 
     // // Dawn check
     // if (Clock_Timer.isReady()) {
@@ -167,8 +227,8 @@ void loop() {
 
     // Idle timer: for WDT and debug
     if (Idle_Timer.isReady()) {      
-        DPRINTLN("\nidleTimer.isReady()");
-        printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
+        // DPRINTLN("\nidleTimer.isReady()");
+        // printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
         ESP.wdtFeed();
     }
 }
