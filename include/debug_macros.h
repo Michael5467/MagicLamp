@@ -1,7 +1,7 @@
 // DebugMacros.h
 
 // Example of use:
-// #define DEBUG_PRINT                 // <-----<<<< this line must appear before the include line
+#define DEBUG_PRINT                 // <-----<<<< this line must appear before the include line
 // #include "debug_macros.h"
 //
 
@@ -24,8 +24,6 @@
 // Also, this works  #define INFO(...)  { Console->printf("INFO: "); Console->printf(__VA_ARGS__); }   >>>--->   where {} allows multiple lines of code.
 // See: http://forum.arduino.cc/index.php?topic=511393.msg3485833#new
 
-#define DEBUG_STEP
-
 #define DEBUG_PRINT
 
 //examples:
@@ -42,12 +40,6 @@
 #define DPRINT_FULL(...)   Serial.print(F(#__VA_ARGS__" = ")); Serial.print(__VA_ARGS__); Serial.print(F("; "));
 #define DPRINTLN_FULL(...) Serial.print(F(#__VA_ARGS__" = ")); Serial.println(__VA_ARGS__);
 
-#define SERIALWRITE(...)   Serial.write(__VA_ARGS__)
-
-#define DELAY(...)         delay(__VA_ARGS__)             // Delay function
-#define PINMODE(...)       pinMode(__VA_ARGS__)
-#define TOGGLEd13          PINB = 0x20                    //For the UNO only
-
 #else
 
 #define SERIALBEGIN(...)  
@@ -59,10 +51,10 @@
 #define DPRINT_FULL(...)    
 #define DPRINTLN_FULL(...)  
 
+#endif
+
 #define SERIALWRITE(...)   Serial.write(__VA_ARGS__)
 
-#define DELAY(...)        
-#define PINMODE(...)      
-#define TOGGLEd13      
-
-#endif
+#define DELAY(...)         delay(__VA_ARGS__)             // Delay function
+#define PINMODE(...)       pinMode(__VA_ARGS__)
+#define TOGGLEd13          PINB = 0x20                    //For the UNO only
