@@ -41,7 +41,7 @@ ESP8266WebServer server(LAMP_HTTP_PORT);
 // WebSocketsServer webSocket = WebSocketsServer(LAMP_WEB_SOKET_PORT);
 // WebSocketsServer webSocket(LAMP_WEB_SOKET_PORT);
 
-// MDNSResponder MDNS;
+MDNSResponder MDNS;
 
 boolean loadingFlag = true; // TODO: global variable, remove to local...
 
@@ -75,7 +75,7 @@ void setup() {
     Serial.println("+------------+\n");
 
     // Mount filesystem
-    DPRINT("Inizializing FS... ")
+    DPRINT("Inizializing FS: ")
     if (LittleFS.begin()) {
         DPRINTLN("done.")
     }
@@ -134,13 +134,13 @@ void setup() {
     Serial.println(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
-    // if (MDNS.begin("MagicLamp")) {
-    //     Serial.println("MDNS responder started");
-    //     MDNS.addService("http", "tcp", 80);
-    //     // MDNS.addService("ws", "tcp", 81);
-    // } else {
-    //     Serial.println("MDNS.begin failed");
-    // }
+    if (MDNS.begin("MagicLamp")) {
+        Serial.println("MDNS responder started");
+        MDNS.addService("http", "tcp", 80);
+        // MDNS.addService("ws", "tcp", 81);
+    } else {
+        Serial.println("MDNS.begin failed");
+    }
 
     // HTTP server config
     http_server_init();
@@ -149,13 +149,12 @@ void setup() {
     //     DPRINTLN("/description.xml")
     //     SSDP.schema(server.client());
     // });
-    // DPRINTLN("SSDP Ready!");
+    // DPRINTLN("SSDP Ready");
     // HTTP server start
     server.begin();
     DPRINTLN("HTTP server started")
 
 //     // SSDP service
-//     DPRINTLN("Starting SSDP...");
 //     // String setModelURL = "http://" + lamp_state.IP;
 //     SSDP.setDeviceType("upnp:rootdevice");
 //     SSDP.setSchemaURL("description.xml");
@@ -170,6 +169,7 @@ void setup() {
 //     SSDP.setManufacturer("by Michael");
 //     SSDP.setManufacturerURL("http://myesp.html");
 //     SSDP.begin();
+//     DPRINTLN("SSDP started");
 
 
     // // WEB socket
@@ -186,7 +186,7 @@ void setup() {
 }
 
 void loop() {
-    // MDNS.update();
+    MDNS.update();
 
     // webSocket.loop();
 
