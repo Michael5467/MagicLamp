@@ -44,7 +44,7 @@ void loadConfiguration(const char *filename, the_lamp_state_t &config)
 
     for (int i = 0; i < 7; i++)
     {
-        awake_alarm_arr[i].state = false;
+        awake_alarm_arr[i].state = alarm_off;
     }
     JsonArray array = root.getMember("awake_alarm");
     if (!array.isNull())
