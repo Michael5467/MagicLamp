@@ -14,9 +14,21 @@ enum class EEPROM_ADDRESSES: uint16_t
     alarms  = 0x14
 };
 
-enum class EEPROM_OFFSETS: uint16_t
+enum class EEPROM_EFFECT_OFFSETS: uint16_t
 {
-    alarm = 0x3
+    number     = 0x0,
+    brightness = 0x1,
+    speed      = 0x2,
+    scale      = 0x6,
+    SIZE       = 0x8
+};
+
+enum class EEPROM_ALARM_OFFSETS: uint16_t
+{
+    state = 0x0,
+    hour,
+    min,
+    SIZE
 };
 
 void openConfiguration();
