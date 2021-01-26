@@ -147,7 +147,7 @@ void handleAction()
 	if (server.hasArg("SPD")) 
 	{
 		String opt = server.arg("SPD");
-		uint32_t raw = opt.toInt();
+		uint8_t raw = opt.toInt();
         lamp_state.speed_raw = raw;
         setEffectsSpeed(&lamp_state, (512-((raw-1)<<4)));
 		message += ">>> SPD changed";
@@ -155,8 +155,8 @@ void handleAction()
 	if (server.hasArg("DEN")) 
 	{
 		String opt = server.arg("DEN");
-		uint32_t raw = opt.toInt();
-		lamp_state.scale_raw = raw;
+		uint16_t raw = opt.toInt();
+		lamp_state.scale_raw = (uint8_t)raw;
         switch (lamp_state.effect) {
             case (EFF_CODE_SNOW):
             case (EFF_CODE_BALLS):

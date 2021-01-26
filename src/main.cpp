@@ -89,21 +89,14 @@ void setup() {
     lamp_state.state          = true;
     lamp_state.effect         = START_EFFECT;
     lamp_state.brightness     = BRIGHTNESS;
-    // lamp_state.brightness_raw = (BRIGHTNESS+1) >> 4;
     lamp_state.speed          = EFFECT_SPEED;
-    // lamp_state.speed_raw      = ((512-EFFECT_SPEED) >> 4) +1;
     lamp_state.scale          = SNOW_DENSE;
-    // if (START_EFFECT <= EFF_CODE_SNAKE )
-    //     lamp_state.scale_raw  = lamp_state.scale;
-    // else
-    //     lamp_state.scale_raw  = lamp_state.scale / 10;
     lamp_state.IP.clear();
     lamp_state.loadingFlag    = false;
     lamp_state.date_time      = &date_time;
     lamp_state.effectTimer    = &Effect_Timer;
     lamp_state.leds           = leds;
     convertRAW(&lamp_state);
-    // loadConfiguration("/config.json", lamp_state);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
