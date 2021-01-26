@@ -40,7 +40,6 @@ typedef struct {
     uint16_t scale          = 0;     // Current effect scale
     uint8_t  scale_raw      = 0;     // Raw scale value (from GUI)
 
-
     String   IP             = "";    // IP
     boolean  loadingFlag    = false; // First-run/redrawing efffect flag
 
@@ -50,7 +49,7 @@ typedef struct {
 } the_lamp_state_t;
 
 // Lamp state machine
-typedef enum {
+typedef enum : uint8_t{
     FSM_IDLE=0,
     FSM_CHANGE_MODE=1
 } controlFSM_t;
@@ -72,17 +71,34 @@ typedef struct {
 } post_command_t;
 
 // Alarm possible state coding
-typedef enum {
-    alarm_off=0,
-    alarm_once=1,
-    alarm_weekly=2
+typedef enum : uint8_t {
+    alarm_off    = 0,
+    alarm_once   = 1,
+    alarm_weekly = 2
 } alarm_state_t;
 
 typedef struct {
     alarm_state_t state = alarm_off;
-    uint8_t  hour       = 0;
-    uint8_t  min        = 0;
+    uint8_t       hour  = 0;
+    uint8_t       min   = 0;
 } alarm_t;
+
+typedef union {
+    uint16_t version;
+    struct
+    {
+        uint8_t major;
+        uint8_t minor;
+    };
+} version_t;
+
+typedef struct {
+    uint8_t  number;
+    uint8_t  brightness;
+    uint32_t speed;
+    uint16_t scale;
+    // packed
+} effect_t;
 
 // Functions
     // work API
