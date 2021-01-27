@@ -5,30 +5,32 @@
 #include "functions.h"
 #include "eeprom_function.h"
 
-enum class EEPROM_ADDRESSES: uint16_t
+class EEPROM_ADDRESSES
 {
-    version = 0x0,
-    name    = 0x2,
-    state   = 0xB,
-    effect  = 0xC,
-    alarms  = 0x14
-};
+private:
+public:
+    static const uint16_t version = 0x0;
+    static const uint16_t name    = 0x2;
+    static const uint16_t state   = 0xB;
+    static const uint16_t effect  = 0xC;
+    static const uint16_t alarms  = 0x14;
 
-enum class EEPROM_EFFECT_OFFSETS: uint16_t
-{
-    number     = 0x0,
-    brightness = 0x1,
-    speed      = 0x2,
-    scale      = 0x6,
-    SIZE       = 0x8
-};
+    enum EFFECT_OFFSETS: uint16_t
+    {
+        effect_number      = 0x0,
+        effect_brightness  = 0x1,
+        effect_speed       = 0x2,
+        effect_scale       = 0x6,
+        EFFECT_SIZE        = 0x8
+    };
 
-enum class EEPROM_ALARM_OFFSETS: uint16_t
-{
-    state = 0x0,
-    hour,
-    min,
-    SIZE
+    enum ALARM_OFFSETS: uint16_t
+    {
+        alarm_state = 0x0,
+        alarm_hour,
+        alarm_min,
+        ALARM_SIZE
+    };
 };
 
 void openConfiguration();
