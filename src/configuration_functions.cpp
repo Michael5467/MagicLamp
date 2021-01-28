@@ -1,5 +1,25 @@
 #include "configuration_functions.h"
 
+effect_s getEffectFromLampState(the_lamp_state_t &lamp_state)
+{
+    effect_s effect;
+
+    effect.number     = lamp_state.effect;
+    effect.brightness = lamp_state.brightness;
+    effect.speed      = lamp_state.speed;
+    effect.scale      = lamp_state.scale;
+    return effect;
+}
+
+void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect)
+{
+    lamp_state.effect     = effect.number;
+    lamp_state.brightness = effect.brightness;
+    lamp_state.speed      = effect.speed;
+    lamp_state.scale      = effect.scale;
+    convertRAW(&lamp_state);
+}
+
 void openConfiguration()
 {
     eeprom_start(64);
@@ -36,9 +56,9 @@ boolean readState()
     return (boolean)eeprom_read_1B(EEPROM_ADDRESSES::state);
 }
 
-effect_t readEffect()
+effect_s readEffect()
 {
-    effect_t effect;
+    effect_s effect;
 
     effect.number     = eeprom_read_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number);
     effect.brightness = eeprom_read_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness);
@@ -47,10 +67,10 @@ effect_t readEffect()
     return effect;
 }
 
-alarm_t readAlarm(uint8_t day)
+alarm_s readAlarm(uint8_t day)
 {
     uint16_t day_base = (EEPROM_ADDRESSES::alarms) + 3 * (EEPROM_ADDRESSES::ALARM_SIZE);
-    alarm_t alarm;
+    alarm_s alarm;
 
     alarm.state = (alarm_state_t)eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_state);
     alarm.hour  =                eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_hour);
@@ -75,7 +95,7 @@ void writeState(boolean state)
     eeprom_commit();
 }
 
-void writeEffect(effect_t &effect)
+void writeEffect(effect_s &effect)
 {
     eeprom_write_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number,     effect.number);
     eeprom_write_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness, effect.brightness);
@@ -84,7 +104,7 @@ void writeEffect(effect_t &effect)
     eeprom_commit();
 }
 
-void writeAlarm(alarm_t alarm, uint8_t day)
+void writeAlarm(alarm_s alarm, uint8_t day)
 {
     uint16_t day_base = (EEPROM_ADDRESSES::alarms) + 3 * (EEPROM_ADDRESSES::ALARM_SIZE);
 

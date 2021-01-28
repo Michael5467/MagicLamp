@@ -21,6 +21,7 @@
 
 #include "project_config.h"
 #include "functions.h"
+#include "configuration_functions.h"
 #include "web_functions.h"
 #include "effects.h"
 #include "matrix.h"
@@ -45,7 +46,7 @@ ESP8266WebServer server(LAMP_HTTP_PORT);
 
 MDNSResponder MDNS;
 
-boolean loadingFlag = true; // TODO: global variable, remove to local...
+boolean loadingFlag = true; // TODO: remove from global variables...
 
 M_MinimalTimer Effect_Timer(EFFECT_SPEED);
 M_MinimalTimer Clock_Timer(CLOCK_TIME * 1000);
@@ -58,31 +59,25 @@ WiFiManager wifiManager;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 
-alarm_t awake_alarm_arr[7];
-alarm_t sleep_alarm;
-
-void configModeCallback(WiFiManager *myWiFiManager)
-{
-    DPRINTLN("Entered config mode");
-    DPRINTLN(WiFi.softAPIP());
-    DPRINTLN(myWiFiManager->getConfigPortalSSID());
-}
+alarm_s awake_alarm_arr[7];
+alarm_s sleep_alarm;
+lamp_config_s lamp_config;
 
 void setup() {
     // Serial port setup
     Serial.begin(74880);
     // Serial.begin(115200);
-    Serial.println("\n\n\n+------------+");
-    Serial.println("| NodeMCU v3 |");
-    Serial.println("+------------+\n");
+    Serial.println(F("\n\n\n+------------+"));
+    Serial.println(F("| NodeMCU v3 |"));
+    Serial.println(F("+------------+\n"));
 
     // Mount filesystem
-    DPRINT("Inizializing FS: ")
+    DPRINTF("Inizializing FS: ")
     if (LittleFS.begin()) {
-        DPRINTLN("done.")
+        DPRINTLNF("done.")
     }
     else {
-        DPRINTLN("fail.")
+        DPRINTLNF("fail.")
     }
 
     // Initial lamp state
@@ -110,10 +105,9 @@ void setup() {
 
     // WIFI
     if (ESP_MODE == 0) {
-        Serial.print("Connecting to ");
+        Serial.print(F("Connecting to "));
         Serial.print(autoConnectSSID);
-        WiFi.hostname("MagicLamp");
-        wifiManager.setAPCallback(configModeCallback);
+        WiFi.hostname(F("MagicLamp"));
         WiFi.begin(autoConnectSSID, autoConnectPass);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
@@ -121,33 +115,33 @@ void setup() {
         }
     }
     else {    
-        Serial.print("WiFi manager ");
+        Serial.print(F("WiFi manager"));
         wifiManager.setDebugOutput(false);
 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
     }
-    Serial.print("connected!\nIP address: ");
+    Serial.print(F("connected!\nIP address: "));
     Serial.println(WiFi.localIP());
     lamp_state.IP = WiFi.localIP().toString();
 
-    if (MDNS.begin("MagicLamp")) {
-        Serial.println("MDNS responder started");
+    if (MDNS.begin(F("MagicLamp"))) {
+        DPRINTLNF("MDNS responder started");
         MDNS.addService("http", "tcp", 80);
         // MDNS.addService("ws", "tcp", 81);
     } else {
-        Serial.println("MDNS.begin failed");
+        DPRINTLNF("MDNS.begin failed");
     }
 
     // HTTP server config
     http_server_init();
     // // SSDP descriptor
     // server.on("/description.xml", HTTP_GET, []() {
-    //     DPRINTLN("/description.xml")
+    //     DPRINTLNF("/description.xml")
     //     SSDP.schema(server.client());
     // });
-    // DPRINTLN("SSDP Ready");
+    // DPRINTLNF("SSDP Ready");
     // HTTP server start
     server.begin();
-    DPRINTLN("HTTP server started")
+    DPRINTLNF("HTTP server started")
 
 //     // SSDP service
 //     // String setModelURL = "http://" + lamp_state.IP;
@@ -164,23 +158,24 @@ void setup() {
 //     SSDP.setManufacturer("by Michael");
 //     SSDP.setManufacturerURL("http://myesp.html");
 //     SSDP.begin();
-//     DPRINTLN("SSDP started");
+//     DPRINTLNF("SSDP started");
 
 
     // // WEB socket
 	// webSocket.begin();
 	// webSocket.onEvent(webSocketEvent);
-    // DPRINTLN("Web socket server started")
+    // DPRINTLNF("Web socket server started")
 
     // NTP client
     timeClient.begin();
 
     // WDT
     ESP.wdtFeed();
-    updateMode(&lamp_state);
 
     // EEPROM
-    EEPROM.begin(512);
+    EEPROM.begin(64);
+
+    updateMode(&lamp_state);
 }
 
 void loop() {
@@ -203,13 +198,13 @@ void loop() {
     //     printDateTimeStruct(lamp_state.date_time);
     //     get_Millis = Clock_Timer.getMillis();
     //     DPRINTLN_FULL(get_Millis);
-    //     DPRINTLN("");
+    //     DPRINTLNF("");
     //     // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
 
     //     //lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
 
     //     printTime(lamp_state.date_time->local_time + (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000);
-    //     DPRINTLN("");
+    //     DPRINTLNF("");
     // }
 
     // NTP connection and date/time update
@@ -219,13 +214,13 @@ void loop() {
         } else {
             NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
         }
-        DPRINT("NTP_Timer _interval = ");
+        DPRINTF("NTP_Timer _interval = ");
         DPRINTLN(NTP_Timer.getInterval());
     }
 
     // Idle timer: for WDT and debug
     if (Idle_Timer.isReady()) {      
-        // DPRINTLN("\nidleTimer.isReady()");
+        // DPRINTLNF("\nidleTimer.isReady()");
         // printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
         ESP.wdtFeed();
     }

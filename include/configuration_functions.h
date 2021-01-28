@@ -34,6 +34,9 @@ struct EEPROM_ADDRESSES
     };
 };
 
+effect_s getEffectFromLampState(the_lamp_state_t &lamp_state);
+void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect);
+
 void openConfiguration();
 void saveConfiguration();
 void closeConfiguration();
@@ -41,13 +44,13 @@ void closeConfiguration();
 version_t readVersion();
 String    readHostName();
 boolean   readState();
-effect_t  readEffect();
-alarm_t   readAlarm(uint8_t day);
+effect_s  readEffect();
+alarm_s   readAlarm(uint8_t day);
 
 void writeVersion(version_t &version);
 void writeHostName(String &hostname);
 void writeState(boolean state);
-void writeEffect(effect_t &effect);
-void writeAlarm(alarm_t &alarm, uint8_t day);
+void writeEffect(effect_s &effect);
+void writeAlarm(alarm_s &alarm, uint8_t day);
 
 #endif // __INC_CONFIGURATION_FUNCTIONS_H

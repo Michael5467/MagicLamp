@@ -50,13 +50,7 @@ typedef struct
     CRGB              *leds        = NULL;
 } the_lamp_state_t;
 
-// Lamp state machine
-typedef enum : uint8_t
-{
-    FSM_IDLE        = 0,
-    FSM_CHANGE_MODE = 1
-} controlFSM_t;
-
+// Firmware version
 typedef union
 {
     uint16_t version;
@@ -67,15 +61,6 @@ typedef union
     };
 } version_t;
 
-typedef struct
-{
-    uint8_t  number;
-    uint8_t  brightness;
-    uint32_t speed;
-    uint16_t scale;
-    // packed
-} effect_t;
-
 // Alarm possible state coding
 typedef enum : uint8_t
 {
@@ -84,12 +69,31 @@ typedef enum : uint8_t
     alarm_weekly = 2
 } alarm_state_t;
 
-typedef struct
+#pragma pack(push, 1)
+struct alarm_s
 {
     alarm_state_t state;
     uint8_t       hour;
     uint8_t       min;
-} alarm_t;
+};
+
+struct effect_s
+{
+    uint8_t  number;
+    uint8_t  brightness;
+    uint32_t speed;
+    uint16_t scale;
+};
+
+struct lamp_config_s
+{
+    version_t version;
+    char      name[9];
+    boolean   state;
+    effect_s  effect;
+    alarm_s   alarm[7];
+};
+#pragma pack(pop)
 
 // Functions
 // work API
