@@ -27,9 +27,9 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state)
     result += ";";
     result += lamp_state->scale_raw;
 
-    DPRINT("lamp_state_2_string: {");
+    DPRINTF("lamp_state_2_string: {");
     DPRINT(result);
-    DPRINTLN("}");
+    DPRINTLNF("}");
 
     return result;
 }
@@ -43,33 +43,33 @@ void printDecNum(uint32_t num)
 //void printCurrentDateTime(local_date_time_t *date_time) {
 void printDateTimeStruct(local_date_time_t *date_time)
 {
-    DPRINTLN("printCurrentDateTime()");
-    DPRINT("local_millis = ");
+    DPRINTLNF("printCurrentDateTime()");
+    DPRINTF("local_millis = ");
     DPRINTLN(date_time->local_millis);
-    DPRINT("local_time = ");
+    DPRINTF("local_time = ");
     DPRINTLN(date_time->local_time);
-    // DPRINT("Current day: ");
+    // DPRINTF("Current day: ");
     // DPRINTLN(date_time->day);
-    DPRINT("Current time: ");
+    DPRINTF("Current time: ");
     DPRINT(hour(date_time->local_time));
-    DPRINT(":");
+    DPRINTF(":");
     DPRINT(minute(date_time->local_time));
-    DPRINT(":");
+    DPRINTF(":");
     DPRINTLN(second(date_time->local_time));
 }
 
 void printTime(time_t currentLocalTime)
 {
-    // DPRINTLN("printCurrentLocalTime()");
-    DPRINT("currentLocalTime = ");
+    // DPRINTLNF("printCurrentLocalTime()");
+    DPRINTF("currentLocalTime = ");
     DPRINTLN(currentLocalTime);
-    DPRINT("Current time: ");
+    DPRINTF("Current time: ");
     printDecNum(hour(currentLocalTime));
-    DPRINT(":");
+    DPRINTF(":");
     printDecNum(minute(currentLocalTime));
-    DPRINT(":");
+    DPRINTF(":");
     printDecNum(second(currentLocalTime));
-    DPRINTLN("");
+    DPRINTLNF("");
 }
 
 //////////////////////////////////////////////////////
