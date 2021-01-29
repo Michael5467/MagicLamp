@@ -48,9 +48,14 @@ effect_s  readEffect();
 alarm_s   readAlarm(uint8_t day);
 
 void writeVersion(version_t &version);
-void writeHostName(String &hostname);
+void writeHostName(const char *hostname);
 void writeState(boolean state);
 void writeEffect(effect_s &effect);
 void writeAlarm(alarm_s &alarm, uint8_t day);
+
+lamp_config_s readConfig();
+void writeConfig(lamp_config_s &config);
+
+void printConfig(lamp_config_s &config);
 
 #endif // __INC_CONFIGURATION_FUNCTIONS_H
