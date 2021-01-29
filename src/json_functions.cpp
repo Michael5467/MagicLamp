@@ -1,5 +1,8 @@
 #include "json_functions.h"
 
+alarm_s awake_alarm_arr[7];
+alarm_s sleep_alarm;
+
 void debugPrintVariant(const JsonVariant& object, const char* key)
 {
     JsonVariant variant = object.getMember("version");

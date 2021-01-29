@@ -30,6 +30,7 @@
 
 local_date_time_t date_time;
 the_lamp_state_t lamp_state;
+String lamp_IP = "";    // Lamp IP
 
 CRGB leds[NUM_LEDS];
 
@@ -59,8 +60,6 @@ WiFiManager wifiManager;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 
-alarm_s awake_alarm_arr[7];
-alarm_s sleep_alarm;
 lamp_config_s lamp_config;
 
 void setup() {
@@ -86,142 +85,145 @@ void setup() {
     lamp_state.brightness     = BRIGHTNESS;
     lamp_state.speed          = EFFECT_SPEED;
     lamp_state.scale          = SNOW_DENSE;
-    lamp_state.IP.clear();
     lamp_state.loadingFlag    = false;
     lamp_state.date_time      = &date_time;
     lamp_state.effectTimer    = &Effect_Timer;
     lamp_state.leds           = leds;
     convertRAW(&lamp_state);
 
-    // LED matrix: strip configuration and instantiation
-    FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
-    FastLED.setBrightness(lamp_state.brightness);
-    if (CURRENT_LIMIT > 0) 
-        FastLED.setMaxPowerInVoltsAndMilliamps(5, CURRENT_LIMIT);
-    FastLED.clear();
-    FastLED.show();
-
-    randomSeed(micros());
-
-    // WIFI
-    if (ESP_MODE == 0) {
-        Serial.print(F("Connecting to "));
-        Serial.print(autoConnectSSID);
-        WiFi.hostname(F("MagicLamp"));
-        WiFi.begin(autoConnectSSID, autoConnectPass);
-        while (WiFi.status() != WL_CONNECTED) {
-            delay(500);
-            Serial.print(".");
-        }
-    }
-    else {    
-        Serial.print(F("WiFi manager"));
-        wifiManager.setDebugOutput(false);
-		wifiManager.autoConnect(accesspointSSID, accesspointPass);
-    }
-    Serial.print(F("connected!\nIP address: "));
-    Serial.println(WiFi.localIP());
-    lamp_state.IP = WiFi.localIP().toString();
-
-    if (MDNS.begin(F("MagicLamp"))) {
-        DPRINTLNF("MDNS responder started");
-        MDNS.addService("http", "tcp", 80);
-        // MDNS.addService("ws", "tcp", 81);
-    } else {
-        DPRINTLNF("MDNS.begin failed");
-    }
-
-    // HTTP server config
-    http_server_init();
-    // // SSDP descriptor
-    // server.on("/description.xml", HTTP_GET, []() {
-    //     DPRINTLNF("/description.xml")
-    //     SSDP.schema(server.client());
-    // });
-    // DPRINTLNF("SSDP Ready");
-    // HTTP server start
-    server.begin();
-    DPRINTLNF("HTTP server started")
-
-//     // SSDP service
-//     // String setModelURL = "http://" + lamp_state.IP;
-//     SSDP.setDeviceType("upnp:rootdevice");
-//     SSDP.setSchemaURL("description.xml");
-//     SSDP.setHTTPPort(80);
-//     SSDP.setName("MagicLamp");
-//     SSDP.setModelName("WeMosD1mini");
-// //    SSDP.setSerialNumber(String(ESP.getChipId(),HEX));
-//     SSDP.setSerialNumber("0123456789");
-//     SSDP.setURL("index.html");
-//     SSDP.setModelNumber("000000000001");
-//     SSDP.setModelURL("http://myesp.html");
-//     SSDP.setManufacturer("by Michael");
-//     SSDP.setManufacturerURL("http://myesp.html");
-//     SSDP.begin();
-//     DPRINTLNF("SSDP started");
+    // Loda configuration from EEPROM
+    lamp_config = readConfig();
+    printConfig(lamp_config);
 
 
-    // // WEB socket
-	// webSocket.begin();
-	// webSocket.onEvent(webSocketEvent);
-    // DPRINTLNF("Web socket server started")
+//     // LED matrix: strip configuration and instantiation
+//     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+//     FastLED.setBrightness(lamp_state.brightness);
+//     if (CURRENT_LIMIT > 0) 
+//         FastLED.setMaxPowerInVoltsAndMilliamps(5, CURRENT_LIMIT);
+//     FastLED.clear();
+//     FastLED.show();
 
-    // NTP client
-    timeClient.begin();
+//     randomSeed(micros());
 
-    // WDT
-    ESP.wdtFeed();
+//     // WIFI
+//     if (ESP_MODE == 0) {
+//         Serial.print(F("Connecting to "));
+//         Serial.print(autoConnectSSID);
+//         WiFi.hostname(F("MagicLamp"));
+//         WiFi.begin(autoConnectSSID, autoConnectPass);
+//         while (WiFi.status() != WL_CONNECTED) {
+//             delay(500);
+//             Serial.print(".");
+//         }
+//     }
+//     else {    
+//         Serial.print(F("WiFi manager"));
+//         wifiManager.setDebugOutput(false);
+// 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
+//     }
+//     Serial.print(F("connected!\nIP address: "));
+//     Serial.println(WiFi.localIP());
+//     lamp_IP = WiFi.localIP().toString();
 
-    // EEPROM
-    EEPROM.begin(64);
+//     if (MDNS.begin(F("MagicLamp"))) {
+//         DPRINTLNF("MDNS responder started");
+//         MDNS.addService("http", "tcp", 80);
+//         // MDNS.addService("ws", "tcp", 81);
+//     } else {
+//         DPRINTLNF("MDNS.begin failed");
+//     }
+
+//     // HTTP server config
+//     http_server_init();
+//     // // SSDP descriptor
+//     // server.on("/description.xml", HTTP_GET, []() {
+//     //     DPRINTLNF("/description.xml")
+//     //     SSDP.schema(server.client());
+//     // });
+//     // DPRINTLNF("SSDP Ready");
+//     // HTTP server start
+//     server.begin();
+//     DPRINTLNF("HTTP server started")
+
+// //     // SSDP service
+// //     // String setModelURL = "http://" + lamp_IP;
+// //     SSDP.setDeviceType("upnp:rootdevice");
+// //     SSDP.setSchemaURL("description.xml");
+// //     SSDP.setHTTPPort(80);
+// //     SSDP.setName("MagicLamp");
+// //     SSDP.setModelName("WeMosD1mini");
+// // //    SSDP.setSerialNumber(String(ESP.getChipId(),HEX));
+// //     SSDP.setSerialNumber("0123456789");
+// //     SSDP.setURL("index.html");
+// //     SSDP.setModelNumber("000000000001");
+// //     SSDP.setModelURL("http://myesp.html");
+// //     SSDP.setManufacturer("by Michael");
+// //     SSDP.setManufacturerURL("http://myesp.html");
+// //     SSDP.begin();
+// //     DPRINTLNF("SSDP started");
+
+
+//     // // WEB socket
+// 	// webSocket.begin();
+// 	// webSocket.onEvent(webSocketEvent);
+//     // DPRINTLNF("Web socket server started")
+
+//     // NTP client
+//     timeClient.begin();
+
+//     // WDT
+//     ESP.wdtFeed();
 
     updateMode(&lamp_state);
 }
 
 void loop() {
-    MDNS.update();
+    delay(1000);
 
-    // webSocket.loop();
+    // MDNS.update();
 
-    server.handleClient();
+    // // webSocket.loop();
 
-    // Working with matrix
-    if (lamp_state.state && Effect_Timer.isReady()) {
-        SelectEffect(&lamp_state);  // Current effect drawing
-        FastLED.show();             // Show matrix
-    }
+    // server.handleClient();
 
-    // // Dawn check
-    // if (Clock_Timer.isReady()) {
-    //     uint32_t get_Millis;
-
-    //     printDateTimeStruct(lamp_state.date_time);
-    //     get_Millis = Clock_Timer.getMillis();
-    //     DPRINTLN_FULL(get_Millis);
-    //     DPRINTLNF("");
-    //     // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
-
-    //     //lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
-
-    //     printTime(lamp_state.date_time->local_time + (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000);
-    //     DPRINTLNF("");
+    // // Working with matrix
+    // if (lamp_state.state && Effect_Timer.isReady()) {
+    //     SelectEffect(&lamp_state);  // Current effect drawing
+    //     FastLED.show();             // Show matrix
     // }
 
-    // NTP connection and date/time update
-    if (NTP_Timer.isReady()) {      
-        if (NTP_Synchronization(&timeClient, lamp_state.date_time)) {
-            NTP_Timer.setInterval(NTP_INTERVAL);
-        } else {
-            NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
-        }
-        DPRINTF("NTP_Timer _interval = ");
-        DPRINTLN(NTP_Timer.getInterval());
-    }
+    // // // Dawn check
+    // // if (Clock_Timer.isReady()) {
+    // //     uint32_t get_Millis;
 
-    // Idle timer: for WDT and debug
-    if (Idle_Timer.isReady()) {      
-        // DPRINTLNF("\nidleTimer.isReady()");
-        // printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
-        ESP.wdtFeed();
-    }
+    // //     printDateTimeStruct(lamp_state.date_time);
+    // //     get_Millis = Clock_Timer.getMillis();
+    // //     DPRINTLN_FULL(get_Millis);
+    // //     DPRINTLNF("");
+    // //     // lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/1000;
+
+    // //     //lamp_state.date_time->local_time += (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000;
+
+    // //     printTime(lamp_state.date_time->local_time + (Clock_Timer.getMillis()-lamp_state.date_time->local_millis)/10000);
+    // //     DPRINTLNF("");
+    // // }
+
+    // // NTP connection and date/time update
+    // if (NTP_Timer.isReady()) {      
+    //     if (NTP_Synchronization(&timeClient, lamp_state.date_time)) {
+    //         NTP_Timer.setInterval(NTP_INTERVAL);
+    //     } else {
+    //         NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
+    //     }
+    //     DPRINTF("NTP_Timer _interval = ");
+    //     DPRINTLN(NTP_Timer.getInterval());
+    // }
+
+    // // Idle timer: for WDT and debug
+    // if (Idle_Timer.isReady()) {      
+    //     // DPRINTLNF("\nidleTimer.isReady()");
+    //     // printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
+    //     ESP.wdtFeed();
+    // }
 }

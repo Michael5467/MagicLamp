@@ -42,7 +42,6 @@ typedef struct
     uint16_t scale          = 0;     // Current effect scale
     uint8_t  scale_raw      = 0;     // Raw scale value (from GUI)
 
-    String   IP             = "";    // IP
     boolean  loadingFlag    = false; // First-run/redrawing efffect flag
 
     local_date_time_t *date_time   = NULL;
@@ -88,7 +87,7 @@ struct effect_s
 struct lamp_config_s
 {
     version_t version;
-    char      name[9];
+    char      name[32];
     boolean   state;
     effect_s  effect;
     alarm_s   alarm[7];
