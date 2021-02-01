@@ -11,9 +11,9 @@ struct EEPROM_ADDRESSES
     {
         version = 0x0,
         name    = 0x2,
-        state   = 0xB,
-        effect  = 0xC,
-        alarms  = 0x14
+        state   = 0x22,
+        effect  = 0x23,
+        alarms  = 0x2B
     };
 
     enum EFFECT_OFFSETS : uint16_t
@@ -42,7 +42,7 @@ void saveConfiguration();
 void closeConfiguration();
 
 version_t readVersion();
-String    readHostName();
+void      readHostName(char *str, uint8_t max_size);
 boolean   readState();
 effect_s  readEffect();
 alarm_s   readAlarm(uint8_t day);
@@ -53,9 +53,8 @@ void writeState(boolean state);
 void writeEffect(effect_s &effect);
 void writeAlarm(alarm_s &alarm, uint8_t day);
 
-lamp_config_s readConfig();
+void readConfig(lamp_config_s &config);
 void writeConfig(lamp_config_s &config);
-
 void printConfig(lamp_config_s &config);
 
 #endif // __INC_CONFIGURATION_FUNCTIONS_H

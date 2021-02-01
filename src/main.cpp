@@ -92,7 +92,7 @@ void setup() {
     convertRAW(&lamp_state);
 
     // Loda configuration from EEPROM
-    lamp_config = readConfig();
+    readConfig(lamp_config);
     printConfig(lamp_config);
 
 

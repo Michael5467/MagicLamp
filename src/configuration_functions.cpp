@@ -22,27 +22,18 @@ void printConfig(lamp_config_s &config)
     }
 }
 
-lamp_config_s readConfig()
+void readConfig(lamp_config_s &config)
 {
-    lamp_config_s config;
-
     openConfiguration();
     config.version = readVersion();
-
-    // String constName = "MagicLamp";
-    String constName = readHostName();
-    strcpy(config.name, constName.c_str());
-    // memcpy (config.name, cstr, 9);
-
+    readHostName(config.name, 32);
     config.state = readState();
     config.effect = readEffect();
     for (uint8_t i=0; i < 7; i++)
     {
         config.alarm[i] = readAlarm(i);
     }
-
     closeConfiguration();
-    return config;
 }
 
 void writeConfig(lamp_config_s &config)
@@ -103,12 +94,9 @@ version_t readVersion()
     return version;
 }
 
-String readHostName()
+void readHostName(char *str, uint8_t max_size = 32)
 {
-    String hostname = "";
-
-    hostname = eeprom_read_string(EEPROM_ADDRESSES::name, 32);
-    return hostname;
+    eeprom_read_string(EEPROM_ADDRESSES::name, str, max_size);
 }
 
 boolean readState()

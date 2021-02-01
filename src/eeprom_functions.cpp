@@ -81,23 +81,8 @@ void eeprom_write_4B(uint16_t address, int32_t data)
     DPRINTLN_FULL(*(p+3));
 }
 
-// String eeprom_read_string(uint16_t startAdress, uint16_t endAdress)
-// {
-//     String s = "";
-//     // Serial.println();
-//     for (uint16_t i = startAdress; i <= endAdress; i++)
-//     {
-//         char c = char(EEPROM.read(i));
-//         // Serial.print(c);
-//         s += c;
-//     }
-//     // Serial.println();
-//     return s;
-// }
-
-String eeprom_read_string(uint16_t address, uint8_t max_size = 32)
+void eeprom_read_string(uint16_t address, char *str, uint8_t max_size = 32)
 {
-    String s = "";
     uint16_t offset = 0;
     char c = 0;
 
@@ -107,12 +92,9 @@ String eeprom_read_string(uint16_t address, uint8_t max_size = 32)
         c = char(EEPROM.read(address + offset));
         DPRINT(c);
         DPRINTF(", ")
-        s += c;
+        *(str + offset) += c;
         offset++;
     } while (c && (offset < max_size));    
-
-    DPRINTLN(s.c_str())
-    return s;
 }
 
 void eeprom_write_string(uint16_t address, const char *str, uint8_t max_size = 32)

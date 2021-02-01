@@ -17,8 +17,7 @@ void eeprom_write_1B(uint16_t address, uint8_t data);
 void eeprom_write_2B(uint16_t address, uint16_t data);
 void eeprom_write_4B(uint16_t address, uint32_t data);
 
-// String eeprom_read_string(uint16_t startAdress, uint16_t endAdress);
-String eeprom_read_string(uint16_t address, uint8_t max_size);
-void   eeprom_write_string(uint16_t address, const char *str, uint8_t max_size);
+void eeprom_read_string(uint16_t address, char *str, uint8_t max_size);
+void eeprom_write_string(uint16_t address, const char *str, uint8_t max_size);
 
 #endif // __INC_EEPROM_FUNCTIONS_H
