@@ -66,7 +66,7 @@ void ResetEffectSettings(the_lamp_state_t *lamp_state) {
 }
 
 void changePower(the_lamp_state_t *lamp_state) {
-    DPRINT("changePower: lamp_state->state=");
+    DPRINTF("changePower: lamp_state->state=");
     DPRINTLN(lamp_state->state);
     
     if (lamp_state->state) {
@@ -150,13 +150,13 @@ void SelectEffect(the_lamp_state_t *lamp_state) {
 }
 
 void convertRAW(the_lamp_state_t *lamp_state) {
-    lamp_state->brightness_raw = (lamp_state->brightness+1) >> 4;
-    lamp_state->speed_raw      = ((512-lamp_state->speed) >> 4) +1;
+    lamp_state->brightness_raw = (uint8_t)(lamp_state->brightness+1) >> 4;
+    lamp_state->speed_raw      = (uint8_t)((512-lamp_state->speed) >> 4) +1;
     if (lamp_state->effect <= EFF_CODE_SNAKE )
-        lamp_state->scale_raw  = lamp_state->scale;
+        lamp_state->scale_raw  = (uint8_t)lamp_state->scale;
     else
-        lamp_state->scale_raw  = lamp_state->scale / 10;
-    DPRINTLN("convertRAW: done");
+        lamp_state->scale_raw  = (uint8_t)lamp_state->scale / 10;
+    DPRINTLNF("convertRAW: done");
 }
 
 void updateMode(the_lamp_state_t *lamp_state) {
@@ -164,35 +164,35 @@ void updateMode(the_lamp_state_t *lamp_state) {
     FastLED.clear();
     FastLED.show();
 
-    DPRINTLN("updateMode: done");
+    DPRINTLNF("updateMode: done");
 }
 
 void setMode(the_lamp_state_t *lamp_state, uint8_t Value) {
     lamp_state->effect = Value;
     updateMode(lamp_state);
 
-    DPRINT("setMode: lamp_state->effect=");
+    DPRINTF("setMode: lamp_state->effect=");
     DPRINTLN(lamp_state->effect);
 }
 
 void changeMode(the_lamp_state_t *lamp_state, int8_t ChangeValue) {
     setMode(lamp_state, ChangeParameterValue(lamp_state->effect, ChangeValue, MODES_AMOUNT-1, false));
 
-    DPRINT("changeMode: lamp_state->effect=");
+    DPRINTF("changeMode: lamp_state->effect=");
     DPRINTLN(lamp_state->effect);
 }
 
 void nextMode(the_lamp_state_t *lamp_state) {
     setMode(lamp_state, ChangeParameterValue(lamp_state->effect, +1, MODES_AMOUNT-1, false));
 
-    DPRINT("nextMode: lamp_state->effect=");
+    DPRINTF("nextMode: lamp_state->effect=");
     DPRINTLN(lamp_state->effect);
 }
 
 void prevMode(the_lamp_state_t *lamp_state) {
     setMode(lamp_state, ChangeParameterValue(lamp_state->effect, -1, MODES_AMOUNT-1, false));
 
-    DPRINT("prevMode: lamp_state->effect=");
+    DPRINTF("prevMode: lamp_state->effect=");
     DPRINTLN(lamp_state->effect);
 }
 
@@ -200,7 +200,7 @@ void setBrightness(the_lamp_state_t *lamp_state, uint8_t Value) {
     lamp_state->brightness = Value;
     FastLED.setBrightness(Value);
 
-    DPRINT("SetBrightness: brightness=");
+    DPRINTF("SetBrightness: brightness=");
     DPRINTLN(FastLED.getBrightness());
 }
 
@@ -209,7 +209,7 @@ void changeBrightness(the_lamp_state_t *lamp_state, int8_t ChangeValue) {
     lamp_state->brightness = brightness;
     FastLED.setBrightness(brightness);
 
-    DPRINT("BrightnessChange: brightness=");
+    DPRINTF("BrightnessChange: brightness=");
     DPRINTLN(brightness);
 }
 
@@ -218,7 +218,7 @@ void setEffectsSpeed(the_lamp_state_t *lamp_state, uint32_t Value) {
     lamp_state->effectTimer->setInterval((uint32_t)Value);
     lamp_state->effectTimer->reset();
 
-    DPRINT("SetEffectsSpeed: interval=");
+    DPRINTF("SetEffectsSpeed: interval=");
     DPRINTLN(Value);
 }
 
@@ -228,6 +228,6 @@ void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue) {
     lamp_state->effectTimer->setInterval((uint32_t)new_interval);
     lamp_state->effectTimer->reset();
 
-    DPRINT("EffectsSpeedChange: interval=");
+    DPRINTF("EffectsSpeedChange: interval=");
     DPRINTLN(new_interval);
 }

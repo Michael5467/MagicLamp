@@ -47,11 +47,11 @@ boolean CheckInternetAccess()
 
     WiFi.hostByName(NTP_ADDRESS, ntpServerIp, NTP_RESOLVE_TIMEOUT);
     if (ntpServerIp[0] <= 0) {
-        DPRINTLN("Internet connection is broken.");
+        DPRINTLNF("Internet connection is broken.");
         return false;
     }
     else {
-        DPRINTLN("Internet connection established!");
+        DPRINTLNF("Internet connection established!");
         return true;
     }
 }
