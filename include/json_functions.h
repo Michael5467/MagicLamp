@@ -8,8 +8,8 @@
 #include "functions.h"
 #include "debug_macros.h"
 
-extern alarm_t awake_alarm_arr[];
-extern alarm_t sleep_alarm;
+extern alarm_s awake_alarm_arr[];
+extern alarm_s sleep_alarm;
 
 void loadConfiguration(const char *filename, the_lamp_state_t &config);
 void saveConfiguration(const char *filename, const the_lamp_state_t &config);

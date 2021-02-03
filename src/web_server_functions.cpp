@@ -147,7 +147,7 @@ void handleAction()
 	if (server.hasArg("SPD")) 
 	{
 		String opt = server.arg("SPD");
-		uint32_t raw = opt.toInt();
+		uint8_t raw = opt.toInt();
         lamp_state.speed_raw = raw;
         setEffectsSpeed(&lamp_state, (512-((raw-1)<<4)));
 		message += ">>> SPD changed";
@@ -155,8 +155,8 @@ void handleAction()
 	if (server.hasArg("DEN")) 
 	{
 		String opt = server.arg("DEN");
-		uint32_t raw = opt.toInt();
-		lamp_state.scale_raw = raw;
+		uint16_t raw = opt.toInt();
+		lamp_state.scale_raw = (uint8_t)raw;
         switch (lamp_state.effect) {
             case (EFF_CODE_SNOW):
             case (EFF_CODE_BALLS):
@@ -183,7 +183,7 @@ void handleAction()
                 break;
         }
         lamp_state.scale = raw;
-		DPRINT("Set Density: value=");
+		DPRINTF("Set Density: value=");
 		DPRINTLN(raw);
         updateMode(&lamp_state);
 		message += ">>> DEN changed";
@@ -194,7 +194,7 @@ void handleAction()
 
 void SendLampState(the_lamp_state_t *lamp_state)
 {
-	DPRINTLN("SendLampState")
+	DPRINTLNF("SendLampState")
 
 	String output = "{";
 	if (lamp_state->state)
@@ -227,7 +227,7 @@ void handleNotFound()
 	if (!handleFileRead(server.uri()))
 	{
 		// otherwise, respond with a 404 (Not Found) error
-		DPRINTLN("handleNotFound")
+		DPRINTLNF("handleNotFound")
 		String message = "File Not Found\n\n";
 		message += "URI: ";
 		message += server.uri();
@@ -246,8 +246,8 @@ void handleNotFound()
 
 bool handleFileRead(const String &path)
 {
-	//Serial.println("handleFileRead: " + path);
-	DPRINTLN("handleFileRead: " + path)
+	DPRINTF("handleFileRead: ")
+	DPRINTLN(path)
 	String contentType = getContentType(path);
 	String pathWithGz = path + ".gz";
 	if (LittleFS.exists(path) || LittleFS.exists(pathWithGz))
@@ -273,7 +273,7 @@ bool handleFileRead(const String &path)
 
 void handleFilesystemInformation()
 {
-	DPRINTLN("handleFilesystemInformation")
+	DPRINTLNF("handleFilesystemInformation")
 
 	FSInfo fs_info;
 	LittleFS.info(fs_info);
@@ -316,8 +316,8 @@ void handleFileList()
 	}
 
 	String path = server.arg("dir");
-	// Serial.println("handleFileList: " + path);
-	DPRINTLN("handleFileList: " + path)
+	DPRINTLNF("handleFileList: ")
+	DPRINTLN(path)
 	Dir dir = LittleFS.openDir(path);
 	path = String();
 
@@ -350,7 +350,7 @@ void handleFileSave()
 			filename = "/" + filename;
 		// Serial.print("handleFileSave Name: ");
 		// Serial.println(filename);
-		DPRINT("handleFileSave Name: ")
+		DPRINTF("handleFileSave Name: ")
 		DPRINTLN(filename)
 		fsUploadFile = LittleFS.open(filename, "w");
 		filename = String();
@@ -359,7 +359,7 @@ void handleFileSave()
 	{
 		// Serial.print("handleFileSave Data: ");
 		// Serial.println(upload.currentSize);
-		DPRINT("handleFileSave Data: ")
+		DPRINTF("handleFileSave Data: ")
 		DPRINTLN(upload.currentSize)
 		if (fsUploadFile)
 			fsUploadFile.write(upload.buf, upload.currentSize);
@@ -368,7 +368,7 @@ void handleFileSave()
 	{
 		// Serial.print("handleFileSave Size: ");
 		// Serial.println(upload.totalSize);
-		DPRINT("handleFileSave Size: ")
+		DPRINTF("handleFileSave Size: ")
 		DPRINTLN(upload.totalSize)
 		if (fsUploadFile)
 			fsUploadFile.close();
@@ -382,8 +382,8 @@ void handleFileLoad()
 		return;
 	}
 	String path = server.arg("dir");
-	// Serial.println("handleFileLoad: " + path);
-	DPRINTLN("handleFileLoad: " + path);
+	DPRINTLNF("handleFileLoad: ");
+	DPRINTLN(path);
 	if (!handleFileRead(path))
 		return server.send(404, "text/plain", "Something went wrong");
 	server.send(200, "text/plain", "");
@@ -398,8 +398,8 @@ void handleFileDelete()
 		return;
 	}
 	String path = server.arg("dir");
-	// Serial.println("handleFileDelete: " + path);
-	DPRINTLN("handleFileDelete: " + path)
+	DPRINTLNF("handleFileDelete: ")
+	DPRINTLN(path)
 	if (path == "/")
 		return server.send(500, "text/plain", "BAD PATH");
 	if (!LittleFS.exists(path))
@@ -413,8 +413,8 @@ void handleFileCreate()
 	if (server.args() == 0)
 		return server.send(500, "text/plain", "BAD ARGS");
 	String path = server.arg(0);
-	// Serial.println("handleFileCreate: " + path);
-	DPRINTLN("handleFileCreate: " + path)
+	DPRINTLNF("handleFileCreate: ")
+	DPRINTLN(path)
 	if (path == "/")
 		return server.send(500, "text/plain", "BAD PATH");
 	if (LittleFS.exists(path))
