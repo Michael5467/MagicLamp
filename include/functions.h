@@ -115,6 +115,7 @@ void convertRAW(the_lamp_state_t *lamp_state);
 void printDecNum(uint32_t num);
 void printDateTimeStruct(local_date_time_t *date_time);
 void printTime(time_t currentLocalTime);
+void printString(const char *charArray);
 uint8_t convert_to_ISO8601(uint8_t EuropeanDay);
 uint8_t convert_from_ISO8601(uint8_t ISO8601Day);
 uint32_t str2int(char *str, uint8_t len);

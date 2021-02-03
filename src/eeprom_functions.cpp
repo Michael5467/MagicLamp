@@ -49,7 +49,7 @@ uint32_t eeprom_read_4B(uint16_t address)
     return data;
 }
 
-void eeprom_write_1B(uint16_t address, int8_t data)
+void eeprom_write_1B(uint16_t address, uint8_t data)
 {
     uint8_t *p = (uint8_t *)&data;
     EEPROM.write(address, *p);
@@ -57,7 +57,7 @@ void eeprom_write_1B(uint16_t address, int8_t data)
     DPRINTLN(*p);
 }
 
-void eeprom_write_2B(uint16_t address, int16_t data)
+void eeprom_write_2B(uint16_t address, uint16_t data)
 {
     uint8_t *p = (uint8_t *)&data;
     EEPROM.write(address, *p);
@@ -67,7 +67,7 @@ void eeprom_write_2B(uint16_t address, int16_t data)
     DPRINTLN_FULL(*(p+1));
 }
 
-void eeprom_write_4B(uint16_t address, int32_t data)
+void eeprom_write_4B(uint16_t address, uint32_t data)
 {
     uint8_t *p = (uint8_t *)&data;
     EEPROM.write(address, *p);
@@ -75,9 +75,9 @@ void eeprom_write_4B(uint16_t address, int32_t data)
     EEPROM.write(address + 2, *(p + 2));
     EEPROM.write(address + 3, *(p + 3));
     DPRINTF("eeprom_write_2B(): ");
-    DPRINTLN_FULL(*p);
-    DPRINTLN_FULL(*(p+1));
-    DPRINTLN_FULL(*(p+2));
+    DPRINT_FULL(*p);
+    DPRINT_FULL(*(p+1));
+    DPRINT_FULL(*(p+2));
     DPRINTLN_FULL(*(p+3));
 }
 
@@ -90,11 +90,15 @@ void eeprom_read_string(uint16_t address, char *str, uint8_t max_size = 32)
     do
     {
         c = char(EEPROM.read(address + offset));
-        DPRINT(c);
-        DPRINTF(", ")
+        if (c)
+        {
+            DPRINT(c);
+            DPRINTF(", ")
+        }
         *(str + offset) += c;
         offset++;
     } while (c && (offset < max_size));    
+    DPRINTLNF(" ");
 }
 
 void eeprom_write_string(uint16_t address, const char *str, uint8_t max_size = 32)
@@ -111,4 +115,5 @@ void eeprom_write_string(uint16_t address, const char *str, uint8_t max_size = 3
         EEPROM.write(address + offset, byte);
         offset++;
     } while (byte && (offset < max_size));    
+    DPRINTLNF(" ");
 }

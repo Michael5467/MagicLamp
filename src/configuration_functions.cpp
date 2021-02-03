@@ -1,14 +1,31 @@
 #include "configuration_functions.h"
 
+void printRawConfig(lamp_config_s *config)
+{
+    uint8_t *p = (uint8_t *)config;
+
+    DPRINTLNF("\nprintRawConfig()");
+    for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
+    {
+        DPRINT(*(p+i));
+        DPRINTF(", ");
+    }
+    DPRINTLNF("\n");
+}
+
 void printConfig(lamp_config_s &config)
 {
+    DPRINTLNF("\nprintConfig()");
     DPRINTF("Version = ");
     DPRINT(config.version.major);
     DPRINTF(".");
     DPRINTLN(config.version.minor);
-    DPRINTF("Name = {");
-    DPRINT(config.name);
-    DPRINTLNF("}");
+    // DPRINTF("Name = {");
+    // // DPRINT(config.name);
+    // String tmpStr = config.name;
+    // DPRINT(tmpStr.c_str());
+    // DPRINTLNF("}");
+    printString(config.name);
     DPRINTLN_FULL(config.state);
     DPRINTLN_FULL(config.effect.number);
     DPRINTLN_FULL(config.effect.brightness);
@@ -46,6 +63,31 @@ void writeConfig(lamp_config_s &config)
     for (uint8_t i=0; i < 7; i++)
     {
         writeAlarm(config.alarm[i], i);
+    }
+    saveConfiguration();
+    closeConfiguration();
+}
+
+void readRawConfig(lamp_config_s *config)
+{
+    uint8_t *p = (uint8_t *)config;
+    
+    openConfiguration();
+    for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
+    {
+        *(p+i) = eeprom_read_1B(EEPROM_ADDRESSES::BASE+i);
+    }
+    closeConfiguration();
+}
+
+void writeRawConfig(lamp_config_s *config)
+{
+    uint8_t *p = (uint8_t *)config;
+    
+    openConfiguration();
+    for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
+    {
+        eeprom_write_1B(EEPROM_ADDRESSES::BASE+i, *(p+i));
     }
     saveConfiguration();
     closeConfiguration();
@@ -90,7 +132,7 @@ version_t readVersion()
 {
     version_t version;
 
-    version.version = eeprom_read_2B((EEPROM_ADDRESSES::version));
+    version.version = eeprom_read_2B(EEPROM_ADDRESSES::version);
     return version;
 }
 
@@ -128,7 +170,7 @@ alarm_s readAlarm(uint8_t day)
 
 void writeVersion(version_t &version)
 {
-    eeprom_write_2B((EEPROM_ADDRESSES::version), version.version);
+    eeprom_write_2B(EEPROM_ADDRESSES::version, version.version);
 }
 
 void writeHostName(const char *hostname)
@@ -138,7 +180,7 @@ void writeHostName(const char *hostname)
 
 void writeState(boolean state)
 {
-    eeprom_write_1B((EEPROM_ADDRESSES::state), (uint8_t)state);
+    eeprom_write_1B(EEPROM_ADDRESSES::state, (uint8_t)state);
 }
 
 void writeEffect(effect_s &effect)
@@ -153,7 +195,7 @@ void writeAlarm(alarm_s &alarm, uint8_t day)
 {
     uint16_t day_base = (EEPROM_ADDRESSES::alarms) + day * (EEPROM_ADDRESSES::ALARM_SIZE);
 
-    eeprom_write_1B(day_base + (EEPROM_ADDRESSES::alarm_state), alarm.state);
-    eeprom_write_1B(day_base + (EEPROM_ADDRESSES::alarm_hour),  alarm.hour);
-    eeprom_write_1B(day_base + (EEPROM_ADDRESSES::alarm_min),   alarm.min);
+    eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_state, alarm.state);
+    eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_hour,  alarm.hour);
+    eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_min,   alarm.min);
 }

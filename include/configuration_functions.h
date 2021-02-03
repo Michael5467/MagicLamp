@@ -13,7 +13,8 @@ struct EEPROM_ADDRESSES
         name    = 0x2,
         state   = 0x22,
         effect  = 0x23,
-        alarms  = 0x2B
+        alarms  = 0x2B,
+        BASE    = 0x0       // Base address of the lamp's state structure in EEPROM (equal first variable 'version')
     };
 
     enum EFFECT_OFFSETS : uint16_t
@@ -55,6 +56,10 @@ void writeAlarm(alarm_s &alarm, uint8_t day);
 
 void readConfig(lamp_config_s &config);
 void writeConfig(lamp_config_s &config);
+void readRawConfig(lamp_config_s *config);
+void writeRawConfig(lamp_config_s *config);
+
 void printConfig(lamp_config_s &config);
+void printRawConfig(lamp_config_s *config);
 
 #endif // __INC_CONFIGURATION_FUNCTIONS_H

@@ -72,6 +72,19 @@ void printTime(time_t currentLocalTime)
     DPRINTLNF("");
 }
 
+void printString(const char *charArray)
+{
+    #ifdef DEBUG_PRINT
+        DPRINTF("Name = {");
+        String tmpStr = charArray;
+        DPRINT(tmpStr.c_str());
+        DPRINTF("}");
+
+        DPRINTF(" (length = ");
+        DPRINT(tmpStr.length());
+        DPRINTLNF(")");
+    #endif
+}
 //////////////////////////////////////////////////////
 // Internal functions, use they through 'API' only! //
 //////////////////////////////////////////////////////

@@ -91,9 +91,31 @@ void setup() {
     lamp_state.leds           = leds;
     convertRAW(&lamp_state);
 
-    // Loda configuration from EEPROM
-    readConfig(lamp_config);
+
+
     printConfig(lamp_config);
+    printRawConfig(&lamp_config);
+    // Load configuration from EEPROM
+    readRawConfig(&lamp_config);
+    printConfig(lamp_config);
+
+    lamp_config.version.major = 7;
+    lamp_config.version.minor = 9;
+    {
+        String defaultName = F("_Magic Lamp");
+        strcpy(lamp_config.name,  defaultName.c_str());
+    }
+    lamp_config.effect = getEffectFromLampState(lamp_state);
+    for (uint8_t i=0; i < 7; i++)
+    {
+        lamp_config.alarm[i].state = alarm_state_t::alarm_once;
+        lamp_config.alarm[i].hour  = i;
+        lamp_config.alarm[i].min   = 5 * i;
+    }
+    printConfig(lamp_config);
+    printRawConfig(&lamp_config);
+    writeRawConfig(&lamp_config);
+
 
 
 //     // LED matrix: strip configuration and instantiation
