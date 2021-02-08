@@ -71,6 +71,10 @@ body {
 	align-self: flex-end;
 }
 
+.row_space {
+	padding: 0px 0px 5px 10px;
+}
+
 .row_item {
 	flex-direction: row;
 	margin: 10px 30px 60px 90px;
@@ -163,6 +167,7 @@ body {
 .checkbox_label {
 	min-width: 100px;
 }
+
 .item_button {
 	min-width: 75px;
 }

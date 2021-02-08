@@ -31,17 +31,17 @@ void printConfig(lamp_config_s &config)
     DPRINTLN_FULL(config.effect.brightness);
     DPRINTLN_FULL(config.effect.speed);
     DPRINTLN_FULL(config.effect.scale);
-    for (uint8_t i=0; i < 7; i++)
-    {
-        DPRINTLN_FULL(config.alarm[i].state);
-        DPRINTLN_FULL(config.alarm[i].hour);
-        DPRINTLN_FULL(config.alarm[i].min);
-    }
+    // for (uint8_t i=0; i < 7; i++)
+    // {
+    //     DPRINTLN_FULL(config.alarm[i].state);
+    //     DPRINTLN_FULL(config.alarm[i].hour);
+    //     DPRINTLN_FULL(config.alarm[i].min);
+    // }
 }
 
 void readConfig(lamp_config_s &config)
 {
-    openConfiguration();
+    // openConfiguration();
     config.version = readVersion();
     readHostName(config.name, 32);
     config.state = readState();
@@ -50,12 +50,12 @@ void readConfig(lamp_config_s &config)
     {
         config.alarm[i] = readAlarm(i);
     }
-    closeConfiguration();
+    // closeConfiguration();
 }
 
 void writeConfig(lamp_config_s &config)
 {
-    openConfiguration();
+    // openConfiguration();
     writeVersion(config.version);
     writeHostName(config.name);
     writeState(config.state);
@@ -65,32 +65,32 @@ void writeConfig(lamp_config_s &config)
         writeAlarm(config.alarm[i], i);
     }
     saveConfiguration();
-    closeConfiguration();
+    // closeConfiguration();
 }
 
 void readRawConfig(lamp_config_s *config)
 {
     uint8_t *p = (uint8_t *)config;
     
-    openConfiguration();
+    // openConfiguration();
     for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
     {
         *(p+i) = eeprom_read_1B(EEPROM_ADDRESSES::BASE+i);
     }
-    closeConfiguration();
+    // closeConfiguration();
 }
 
 void writeRawConfig(lamp_config_s *config)
 {
     uint8_t *p = (uint8_t *)config;
     
-    openConfiguration();
+    // openConfiguration();
     for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
     {
         eeprom_write_1B(EEPROM_ADDRESSES::BASE+i, *(p+i));
     }
     saveConfiguration();
-    closeConfiguration();
+    // closeConfiguration();
 }
 
 effect_s getEffectFromLampState(the_lamp_state_t &lamp_state)

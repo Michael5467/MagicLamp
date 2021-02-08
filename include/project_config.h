@@ -8,6 +8,14 @@
 
 #include "debug_macros.h"
 
+#ifndef VERSION_MAJOR
+	#define VERSION_MAJOR  0
+#endif
+
+#ifndef VERSION_MINOR
+	#define VERSION_MINOR  0
+#endif
+
 // ESP32 config:
 // 0 - derect WIFI access
 // 1 - access point

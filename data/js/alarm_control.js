@@ -1,5 +1,6 @@
 var allCheckBoxElem = document.getElementsByClassName("item_checkbox")
 // console.log(allCheckBoxElem);
+
 for (var i = 0; i < allCheckBoxElem.length; i++) {
     // console.log(allCheckBoxElem[i]);
     allCheckBoxElem[i].addEventListener("click", clickOnFlag);
