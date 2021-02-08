@@ -113,6 +113,11 @@ void convertRAW(the_lamp_state_t *lamp_state);
 
     // utility functions declaration
 void printDecNum(uint32_t num);
+uint32_t getCurrentDateTime(the_lamp_state_t &lamp_state);
+uint32_t getCurrentDateTime(the_lamp_state_t &lamp_state, uint32_t localDateTime);
+String makeStringDateTime(uint32_t localDateTime);    // Make full date-time string; format see: https://www.w3.org/TR/NOTE-datetime
+String makeStringDate(uint32_t localDateTime);        // Make date-only string
+String makeStringTime(uint32_t localDateTime);        // Make time-only string
 void printDateTimeStruct(local_date_time_t *date_time);
 void printTime(time_t currentLocalTime);
 void printString(const char *charArray);

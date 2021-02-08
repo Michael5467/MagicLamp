@@ -30,6 +30,7 @@
 
 local_date_time_t date_time;
 the_lamp_state_t lamp_state;
+lamp_config_s lamp_config;
 String lamp_IP = "";    // Lamp IP
 
 CRGB leds[NUM_LEDS];
@@ -60,8 +61,6 @@ WiFiManager wifiManager;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 
-lamp_config_s lamp_config;
-
 void setup() {
     // Serial port setup
     Serial.begin(74880);
@@ -90,6 +89,34 @@ void setup() {
     lamp_state.effectTimer    = &Effect_Timer;
     lamp_state.leds           = leds;
     convertRAW(&lamp_state);
+
+    // Read configuration
+    openConfiguration();
+    readRawConfig(&lamp_config);
+    lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
+    if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
+        // If configuration is empty...
+        DPRINTLNF("Default config...");
+        lamp_config.version.major = VERSION_MAJOR;
+        lamp_config.version.minor = VERSION_MINOR;
+        String defaultName = F("MagicLamp");
+        strcpy(lamp_config.name, defaultName.c_str());
+        lamp_config.state = true;
+        lamp_config.effect = getEffectFromLampState(lamp_state);
+        for (uint8_t i=0; i < 7; i++)
+        {
+            lamp_config.alarm[i].state = alarm_state_t::alarm_off;
+            lamp_config.alarm[i].hour  = 7;
+            lamp_config.alarm[i].min   = 0;
+        }
+        writeRawConfig(&lamp_config);
+    }
+    else
+    {
+        DPRINTLNF("Restored config...");
+        setEffectToLampState(lamp_state, lamp_config.effect);
+    }
+    printConfig(lamp_config);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -209,6 +236,8 @@ void loop() {
         } else {
             NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
         }
+        // DPRINTF("RAW Time = ");
+        // DPRINTLN(timeClient.getFormattedTime());
         DPRINTF("NTP_Timer _interval = ");
         DPRINTLN(NTP_Timer.getInterval());
     }

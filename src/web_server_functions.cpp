@@ -115,6 +115,61 @@ void handleAction()
 		message += ">>> STS done";
 
 	}
+	if (server.hasArg("CFG"))
+	{
+		message += ">>> Config request...\n";
+
+		String opt = server.arg("CFG");
+		if (opt == "RST") 
+		{
+			message += ">>> opt == RST\n";
+			readHostName(lamp_config.name, 32);
+			message += ">>> restore name to: {";
+			message += lamp_config.name;
+			message += "}\n";
+		}
+		if (opt == "SET") 
+		{
+			DPRINTLNF(">>> opt == SET");
+			message += "\n>>> opt == SET";
+			if (server.hasArg("NAME"))
+			{
+				opt = server.arg("NAME");
+				message += "\n>>> NAME == {";
+				message += opt;
+				message += "}";
+				DPRINTLNF(">>> name from opt:");
+				printString(opt.c_str());
+				strcpy(lamp_config.name, opt.c_str());
+				DPRINTLNF(">>> readHostName:");
+				printString(lamp_config.name);
+
+				writeHostName(lamp_config.name);
+				saveConfiguration();
+			}
+		}
+		if (opt == "GET") 
+		{
+			DPRINTLNF("opt == GET");
+			message += "\n>>> opt == GET";
+
+			printString(lamp_config.name);
+
+			String output = "{";
+			output += "\"LN\":\"";
+			output += lamp_config.name;
+			output += ",";
+
+			String DateTimeStr = makeStringDateTime(getCurrentDateTime(lamp_state));
+			DPRINTLN(DateTimeStr);
+
+			output += "\"DATE\":\"";
+			output += DateTimeStr;
+			output += "\"}";
+			server.send(200, "text/json", output);
+		}
+		message += "\n>>> CFG done";
+	}
 	if (server.hasArg("PWR"))
 	{
 		String opt = server.arg("PWR");

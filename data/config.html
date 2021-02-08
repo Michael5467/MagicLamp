@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="MagicLamp">
+	<meta name="author" content="Michael Barskikh">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<title>MagicLamp control</title>
+	<link href="./css/style.css" rel="stylesheet" type="text/css">
+	<link href="./favicon.ico" rel="icon" type="image/x-icon">
+</head>
+
+<body>
+	<div class="flexbox-body header">
+		<div class="header_title">
+			<h1>Magic Lamp</h1>
+		</div>
+		<div class="header_menu">
+			<ul>
+                <li><a href="index.html">Main</a></li>
+				<li><a href="alarm.html">Alarms</a></li>
+				<li><a class="cm">Config</a></li>
+				<li><a href="#">Debug</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="flexbox-body middle">
+        <div class="container column">
+            <div class="container row row_space">
+                <label for="LampName" class="label">Name:</label>
+                <input type="text" name="LampName" pattern="[\da-zA-Z_][\da-zA-Z_\-#\.]{1,30}" id="lampName" maxlength="31">
+            </div>
+            <div class="container row">
+                <p class="label">Data:</p>
+                <p class="label" id="lampDate">0000-00-00</p>
+            </div>
+            <div class="container row">
+                <p class="label">Time:</p>
+                <p class="label" id="lampTime">00:00:00</p>
+            </div>
+            <div class="container row">
+                <p class="label">Debug:</p>
+                <p class="label" id="lampDebug">None...</p>
+            </div>
+        </div>
+        <div class="container column">
+            <div class="container row">
+                <button class="item item_button" id="config_apply">Apply</button>
+                <button class="item item_button" id="config_reset">Reset</button>
+            </div>
+        </div>
+	</div>
+	<div class="flexbox-body footer">
+		<p class="copyright">Copyright &copy; 2020 by Michael</p>
+	</div>
+
+    <script src="./js/config_control.js"></script>
+</body>
