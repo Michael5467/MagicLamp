@@ -3,6 +3,8 @@
 
 #include "functions.h"
 
+#define makeStringFromUINT(...) __VA_ARGS__ < 10 ? "0" + String(__VA_ARGS__) : String(__VA_ARGS__)
+
 // Prepare string with current state of the lamp.
 // Status format:
 // <state (power)>; <effect (mode)>; <brightness>; <speed>; <scale>
@@ -38,6 +40,62 @@ void printDecNum(uint32_t num)
 {
     DPRINT((num < 10) ? "0" : "");
     DPRINT(num);
+}
+
+uint32_t getCurrentDateTime(the_lamp_state_t &lamp_state)
+{
+    uint32_t curr_time = lamp_state.date_time->local_time + (millis()-lamp_state.date_time->local_millis)/10000;
+    return curr_time;
+}
+
+uint32_t getCurrentDateTime(the_lamp_state_t &lamp_state, uint32_t localDateTime)
+{
+    uint32_t curr_time = lamp_state.date_time->local_time + (localDateTime-lamp_state.date_time->local_millis)/10000;
+    return curr_time;
+}
+
+String makeStringDateTime(uint32_t localDateTime)
+{
+    // 2012-04-23T18:25:43.511Z
+    String DateTimeStr = "";
+
+    DateTimeStr += makeStringDate(localDateTime);
+    DateTimeStr += F("T");
+    DateTimeStr += makeStringTime(localDateTime);
+    DateTimeStr += F("Z");
+
+    return DateTimeStr;
+}
+
+String makeStringDate(uint32_t localDateTime)
+{
+    String DateStr = "";
+    uint8_t localMouth = month(localDateTime);
+    uint8_t localDay = day(localDateTime);
+
+    DateStr += year(localDateTime);
+    DateStr += F("-");
+    DateStr += makeStringFromUINT(localMouth);
+    DateStr += F("-");
+    DateStr += makeStringFromUINT(localDay);
+
+    return DateStr;
+}
+
+String makeStringTime(uint32_t localDateTime)
+{
+    String TimeStr = "";
+    uint8_t localHour = hour(localDateTime);
+    uint8_t localMin = minute(localDateTime);
+    uint8_t localSec = second(localDateTime);
+
+    TimeStr += makeStringFromUINT(localHour);
+    TimeStr += F(":");
+    TimeStr += makeStringFromUINT(localMin);
+    TimeStr += F(":");
+    TimeStr += makeStringFromUINT(localSec);
+
+    return TimeStr;
 }
 
 //void printCurrentDateTime(local_date_time_t *date_time) {

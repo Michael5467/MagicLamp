@@ -73,7 +73,7 @@ void eeprom_read_string(uint16_t address, char *str, uint8_t max_size = 32)
     do
     {
         c = char(EEPROM.read(address + offset));
-        *(str + offset) += c;
+        *(str + offset) = c;
         offset++;
     } while (c && (offset < max_size));    
 }

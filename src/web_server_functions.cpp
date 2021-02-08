@@ -117,31 +117,13 @@ void handleAction()
 	}
 	if (server.hasArg("CFG"))
 	{
-		DPRINTLNF(">>> Config request...");
 		message += ">>> Config request...\n";
-		printString(lamp_config.name);
+
 		String opt = server.arg("CFG");
 		if (opt == "RST") 
 		{
-			DPRINTLNF(">>> opt == RST");
 			message += ">>> opt == RST\n";
-			message += ">>> lamp_config.name == {";
-			message += lamp_config.name;
-			message += "}\n";
-
-			lamp_config_s new_cfg;
-			readRawConfig(&new_cfg);
-			printConfig(lamp_config);
-
-			DPRINTLNF(">>> before readHostName:");
-			printString(lamp_config.name);
-
 			readHostName(lamp_config.name, 32);
-
-			DPRINTLNF(">>> after readHostName:");
-			printString(lamp_config.name);
-
-
 			message += ">>> restore name to: {";
 			message += lamp_config.name;
 			message += "}\n";
@@ -168,10 +150,21 @@ void handleAction()
 		}
 		if (opt == "GET") 
 		{
+			DPRINTLNF("opt == GET");
 			message += "\n>>> opt == GET";
+
+			printString(lamp_config.name);
+
 			String output = "{";
 			output += "\"LN\":\"";
 			output += lamp_config.name;
+			output += ",";
+
+			String DateTimeStr = makeStringDateTime(getCurrentDateTime(lamp_state));
+			DPRINTLN(DateTimeStr);
+
+			output += "\"DATE\":\"";
+			output += DateTimeStr;
 			output += "\"}";
 			server.send(200, "text/json", output);
 		}

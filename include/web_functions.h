@@ -5,11 +5,13 @@
 #include <LittleFS.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
+#include <NTPClient.h>
 
 #include "debug_macros.h"
 #include "functions.h"
 #include "configuration_functions.h"
 
+extern NTPClient timeClient;
 extern ESP8266WebServer server;
 extern WebSocketsServer webSocket;
 extern the_lamp_state_t lamp_state;

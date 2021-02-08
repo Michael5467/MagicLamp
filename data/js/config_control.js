@@ -1,6 +1,9 @@
 const url = "/action.html";
 
 var lampName = document.getElementById("lampName");
+var lampDate = document.getElementById("lampDate");
+var lampTime = document.getElementById("lampTime");
+var lampDebug = document.getElementById("lampDebug");
 
 function actionSend(data) {
     const http = new XMLHttpRequest();
@@ -35,7 +38,7 @@ function getConfig(e) {
             console.log("applySettings:");
             console.log("--->");
             jsonResponse = JSON.parse(http.response, function (key, value) {
-                if (key == 'date')
+                if (key == "DATE")
                     return new Date(value);
                 return value;
             });
@@ -48,6 +51,9 @@ function getConfig(e) {
             console.log(jsonResponse.LN);
             console.log(lampName);
             lampName.value = jsonResponse.LN;
+            lampDebug.innerHTML = jsonResponse.DATE;
+            lampDate.innerHTML = jsonResponse.DATE.toDateString();
+            lampTime.innerHTML = jsonResponse.DATE.toTimeString();
         }
     }
     http.send(data);
@@ -71,6 +77,16 @@ const indApply = document.getElementById("config_apply");
 indApply.addEventListener("click", applyConfig);
 
 const indReset = document.getElementById("config_reset");
-indReset.addEventListener("click", resetConfig);
+indReset.addEventListener("click", getConfig);
 
 getConfig();
+
+// var date = new Date(2014, 11, 31, 12, 30, 0);
+// console.log(date);
+// console.log(lampDate);
+// console.log(lampTime);
+// console.log(date.toDateString());
+// console.log(date.toTimeString());
+
+// lampDate.innerHTML = date.toDateString();
+// lampTime.innerHTML = date.toTimeString();

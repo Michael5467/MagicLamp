@@ -236,6 +236,8 @@ void loop() {
         } else {
             NTP_Timer.setInterval(NTP_INITIAL_INTERVAL);
         }
+        // DPRINTF("RAW Time = ");
+        // DPRINTLN(timeClient.getFormattedTime());
         DPRINTF("NTP_Timer _interval = ");
         DPRINTLN(NTP_Timer.getInterval());
     }
