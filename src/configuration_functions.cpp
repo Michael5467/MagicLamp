@@ -1,5 +1,7 @@
 #include "configuration_functions.h"
 
+File cfg_file;
+
 void printRawConfig(lamp_config_s *config)
 {
     uint8_t *p = (uint8_t *)config;
@@ -64,32 +66,38 @@ void writeConfig(lamp_config_s &config)
     {
         writeAlarm(config.alarm[i], i);
     }
-    saveConfiguration();
+    // saveConfiguration();
     closeConfiguration();
 }
 
 void readRawConfig(lamp_config_s *config)
 {
-    uint8_t *p = (uint8_t *)config;
+    // uint8_t *p = (uint8_t *)config;
     
     openConfiguration();
-    for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
-    {
-        *(p+i) = eeprom_read_1B(EEPROM_ADDRESSES::BASE+i);
-    }
+    // cfg_file.seek(EEPROM_ADDRESSES::BASE, fs::SeekSet);
+    // for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
+    // {
+    //     // *(p+i) = eeprom_read_1B(EEPROM_ADDRESSES::BASE+i);
+    //     *(p+i) = cfg_file.read();
+    // }
+    cfg_file.read((uint8_t *)config, sizeof(lamp_config_s));
     closeConfiguration();
 }
 
 void writeRawConfig(lamp_config_s *config)
 {
-    uint8_t *p = (uint8_t *)config;
+    // uint8_t *p = (uint8_t *)config;
     
     openConfiguration();
-    for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
-    {
-        eeprom_write_1B(EEPROM_ADDRESSES::BASE+i, *(p+i));
-    }
-    saveConfiguration();
+    cfg_file.seek(EEPROM_ADDRESSES::BASE, fs::SeekSet);
+    // for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
+    // {
+    //     // eeprom_write_1B(EEPROM_ADDRESSES::BASE+i, *(p+i));
+    //     cfg_file.write(*(p+i));
+    // }
+    cfg_file.write((uint8_t *)config, sizeof(lamp_config_s));
+    // saveConfiguration();
     closeConfiguration();
 }
 
@@ -115,45 +123,75 @@ void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect)
 
 void openConfiguration()
 {
-    eeprom_start(64);
+    // eeprom_start(64);
+
+    if (!LittleFS.exists(CONFIG_FILE_NAME))
+    {
+        cfg_file = LittleFS.open(CONFIG_FILE_NAME, "w");
+        for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
+        {
+            cfg_file.write(0);
+        }
+        cfg_file.close();
+    }
+    cfg_file = LittleFS.open(CONFIG_FILE_NAME, "r");
 }
 
 void saveConfiguration()
 {
-    eeprom_commit();
+    // eeprom_commit();
+    cfg_file.flush();
 }
 
 void closeConfiguration()
 {
-    eeprom_end();
+    // eeprom_end();
+    cfg_file.close();
 }
 
 version_t readVersion()
 {
     version_t version;
 
-    version.version = eeprom_read_2B(EEPROM_ADDRESSES::version);
+    // version.version = eeprom_read_2B(EEPROM_ADDRESSES::version);
+    cfg_file.seek(EEPROM_ADDRESSES::version, fs::SeekSet);
+    cfg_file.read((uint8_t *) &version, 2);
+    // cfg_file.readBytes((uint8_t*) &version, 2);
     return version;
 }
 
 void readHostName(char *str, uint8_t max_size = 32)
 {
-    eeprom_read_string(EEPROM_ADDRESSES::name, str, max_size);
+    // eeprom_read_string(EEPROM_ADDRESSES::name, str, max_size);
+    cfg_file.seek(EEPROM_ADDRESSES::name, fs::SeekSet);
+    cfg_file.read((uint8_t *) str, max_size);
 }
 
 boolean readState()
 {
-    return (boolean)eeprom_read_1B(EEPROM_ADDRESSES::state);
+    // return (boolean)eeprom_read_1B(EEPROM_ADDRESSES::state);
+    cfg_file.seek(EEPROM_ADDRESSES::state, fs::SeekSet);
+    return (boolean)cfg_file.read();
 }
 
 effect_s readEffect()
 {
     effect_s effect;
 
-    effect.number     = eeprom_read_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number);
-    effect.brightness = eeprom_read_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness);
-    effect.speed      = eeprom_read_4B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_speed);
-    effect.scale      = eeprom_read_2B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale);
+    // effect.number     = eeprom_read_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number);
+    // effect.brightness = eeprom_read_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness);
+    // effect.speed      = eeprom_read_4B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_speed);
+    // effect.scale      = eeprom_read_2B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale);
+
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number);
+    cfg_file.read((uint8_t *) &effect.number, 1);
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness);
+    cfg_file.read((uint8_t *) &effect.brightness, 1);
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_speed);
+    cfg_file.read((uint8_t *) &effect.speed, 4);
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale);
+    cfg_file.read((uint8_t *) &effect.scale, 2);
+
     return effect;
 }
 
@@ -162,40 +200,70 @@ alarm_s readAlarm(uint8_t day)
     uint16_t day_base = (EEPROM_ADDRESSES::alarms) + day * (EEPROM_ADDRESSES::ALARM_SIZE);
     alarm_s alarm;
 
-    alarm.state = (alarm_state_t)eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_state);
-    alarm.hour  =                eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_hour);
-    alarm.min   =                eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_min);
+    // alarm.state = (alarm_state_t)eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_state);
+    // alarm.hour  =                eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_hour);
+    // alarm.min   =                eeprom_read_1B(day_base + EEPROM_ADDRESSES::alarm_min);
+
+    cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_state);
+    cfg_file.read((uint8_t *) &alarm.state, 1);
+    cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_hour);
+    cfg_file.read((uint8_t *) &alarm.hour, 1);
+    cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_min);
+    cfg_file.read((uint8_t *) &alarm.min, 1);
+
     return alarm;
 }
 
 void writeVersion(version_t &version)
 {
-    eeprom_write_2B(EEPROM_ADDRESSES::version, version.version);
+    // eeprom_write_2B(EEPROM_ADDRESSES::version, version.version);
+    cfg_file.seek(EEPROM_ADDRESSES::version, fs::SeekSet);
+    cfg_file.write((uint8_t *) &version, 2);
 }
 
-void writeHostName(const char *hostname)
+void writeHostName(const char *str)
 {
-    eeprom_write_string(EEPROM_ADDRESSES::name, hostname, 32);
+    // eeprom_write_string(EEPROM_ADDRESSES::name, str, 32);
+    cfg_file.seek(EEPROM_ADDRESSES::name, fs::SeekSet);
+    cfg_file.write((uint8_t *) str, 32);
 }
 
 void writeState(boolean state)
 {
-    eeprom_write_1B(EEPROM_ADDRESSES::state, (uint8_t)state);
+    // eeprom_write_1B(EEPROM_ADDRESSES::state, (uint8_t)state);
+    cfg_file.seek(EEPROM_ADDRESSES::state, fs::SeekSet);
+    cfg_file.write((uint8_t)state);
 }
 
 void writeEffect(effect_s &effect)
 {
-    eeprom_write_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number,     effect.number);
-    eeprom_write_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness, effect.brightness);
-    eeprom_write_4B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_speed,      effect.speed);
-    eeprom_write_2B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale,      effect.scale);
+    // eeprom_write_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number,     effect.number);
+    // eeprom_write_1B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness, effect.brightness);
+    // eeprom_write_4B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_speed,      effect.speed);
+    // eeprom_write_2B(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale,      effect.scale);
+
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number);
+    cfg_file.write((uint8_t *) &effect.number, 1);
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_brightness);
+    cfg_file.write((uint8_t *) &effect.brightness, 1);
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_speed);
+    cfg_file.write((uint8_t *) &effect.speed, 4);
+    cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale);
+    cfg_file.write((uint8_t *) &effect.scale, 2);
 }
 
 void writeAlarm(alarm_s &alarm, uint8_t day)
 {
     uint16_t day_base = (EEPROM_ADDRESSES::alarms) + day * (EEPROM_ADDRESSES::ALARM_SIZE);
 
-    eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_state, alarm.state);
-    eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_hour,  alarm.hour);
-    eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_min,   alarm.min);
+    // eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_state, alarm.state);
+    // eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_hour,  alarm.hour);
+    // eeprom_write_1B(day_base + EEPROM_ADDRESSES::alarm_min,   alarm.min);
+
+    cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_state);
+    cfg_file.write((uint8_t)alarm.state);
+    cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_hour);
+    cfg_file.write(alarm.hour);
+    cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_min);
+    cfg_file.write(alarm.min);
 }

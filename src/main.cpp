@@ -11,6 +11,7 @@
 #include <ESP8266SSDP.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
+#include <LittleFS.h>
 
 #include <NTPClient.h>
 #include <Timezone.h>

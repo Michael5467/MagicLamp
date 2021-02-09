@@ -40,6 +40,8 @@
 // WEB SOKET port (81 as default)
 #define LAMP_WEB_SOKET_PORT 81
 
+#define CONFIG_FILE_NAME F("config.bin")
+
 // Preset for FastLED library
 // #define FASTLED_INTERRUPT_RETRY_COUNT 0
 // #define FASTLED_ALLOW_INTERRUPTS 0

@@ -2,6 +2,8 @@
 #define __INC_CONFIGURATION_FUNCTIONS_H 
 
 #include <Arduino.h>
+#include <LittleFS.h>
+
 #include "functions.h"
 #include "eeprom_function.h"
 
@@ -49,7 +51,7 @@ effect_s  readEffect();
 alarm_s   readAlarm(uint8_t day);
 
 void writeVersion(version_t &version);
-void writeHostName(const char *hostname);
+void writeHostName(const char *str);
 void writeState(boolean state);
 void writeEffect(effect_s &effect);
 void writeAlarm(alarm_s &alarm, uint8_t day);
