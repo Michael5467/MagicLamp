@@ -42,15 +42,19 @@ function getConfig(e) {
                     return new Date(value);
                 return value;
             });
-            // console.log(jsonResponse)
-            // console.log("===>");
+            console.log(jsonResponse)
+            console.log("===>");
             for (key in jsonResponse) {
                 console.log("[", key, "] : {", jsonResponse[key], "}");
+                if (key == "LAMP_NAME")
+                    console.log("get LAMP_NAME key");
+                if (key == "DATE")
+                    console.log("get DATE key");
             }
 
-            console.log(jsonResponse.LN);
+            console.log(jsonResponse["LAMP_NAME"]);
             console.log(lampName);
-            lampName.value = jsonResponse.LN;
+            lampName.value = jsonResponse["LAMP_NAME"];
             lampDebug.innerHTML = jsonResponse.DATE;
             lampDate.innerHTML = jsonResponse.DATE.toDateString();
             lampTime.innerHTML = jsonResponse.DATE.toTimeString();

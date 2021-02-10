@@ -2,6 +2,24 @@
 
 File cfg_file;
 
+void emptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config)
+{
+    DPRINTLNF("Default config...");
+    lamp_config.version.major = VERSION_MAJOR;
+    lamp_config.version.minor = VERSION_MINOR;
+    lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
+    String defaultName = F("MagicLamp");
+    strcpy(lamp_config.name, defaultName.c_str());
+    lamp_config.state = true;
+    lamp_config.effect = getEffectFromLampState(lamp_state);
+    for (uint8_t i=0; i < 7; i++)
+    {
+        lamp_config.alarm[i].state = alarm_state_t::alarm_off;
+        lamp_config.alarm[i].hour  = 7;
+        lamp_config.alarm[i].min   = 0;
+    }
+}
+
 void printRawConfig(lamp_config_s *config)
 {
     uint8_t *p = (uint8_t *)config;

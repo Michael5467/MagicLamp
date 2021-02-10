@@ -62,7 +62,8 @@ String makeStringDateTime(uint32_t localDateTime)
     DateTimeStr += makeStringDate(localDateTime);
     DateTimeStr += F("T");
     DateTimeStr += makeStringTime(localDateTime);
-    DateTimeStr += F("Z");
+    DateTimeStr += F("+03:00");
+    // DateTimeStr += F("Z");
 
     return DateTimeStr;
 }

@@ -92,31 +92,32 @@ void setup() {
     convertRAW(&lamp_state);
 
     // Read configuration
-    openConfiguration();
-    readRawConfig(&lamp_config);
-    lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
-    if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
-        // If configuration is empty...
-        DPRINTLNF("Default config...");
-        lamp_config.version.major = VERSION_MAJOR;
-        lamp_config.version.minor = VERSION_MINOR;
-        String defaultName = F("MagicLamp");
-        strcpy(lamp_config.name, defaultName.c_str());
-        lamp_config.state = true;
-        lamp_config.effect = getEffectFromLampState(lamp_state);
-        for (uint8_t i=0; i < 7; i++)
-        {
-            lamp_config.alarm[i].state = alarm_state_t::alarm_off;
-            lamp_config.alarm[i].hour  = 7;
-            lamp_config.alarm[i].min   = 0;
-        }
-        writeRawConfig(&lamp_config);
-    }
-    else
-    {
-        DPRINTLNF("Restored config...");
-        setEffectToLampState(lamp_state, lamp_config.effect);
-    }
+    emptyConfig(lamp_state, lamp_config);
+    // openConfiguration();
+    // readRawConfig(&lamp_config);
+    // lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
+    // if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
+    //     // If configuration is empty...
+    //     DPRINTLNF("Default config...");
+    //     lamp_config.version.major = VERSION_MAJOR;
+    //     lamp_config.version.minor = VERSION_MINOR;
+    //     String defaultName = F("MagicLamp");
+    //     strcpy(lamp_config.name, defaultName.c_str());
+    //     lamp_config.state = true;
+    //     lamp_config.effect = getEffectFromLampState(lamp_state);
+    //     for (uint8_t i=0; i < 7; i++)
+    //     {
+    //         lamp_config.alarm[i].state = alarm_state_t::alarm_off;
+    //         lamp_config.alarm[i].hour  = 7;
+    //         lamp_config.alarm[i].min   = 0;
+    //     }
+    //     writeRawConfig(&lamp_config);
+    // }
+    // else
+    // {
+    //     DPRINTLNF("Restored config...");
+    //     setEffectToLampState(lamp_state, lamp_config.effect);
+    // }
     printConfig(lamp_config);
 
     // LED matrix: strip configuration and instantiation

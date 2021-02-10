@@ -156,9 +156,9 @@ void handleAction()
 			printString(lamp_config.name);
 
 			String output = "{";
-			output += "\"LN\":\"";
+			output += "\"LAMP_NAME\":\"";
 			output += lamp_config.name;
-			output += ",";
+			output += "\",";
 
 			String DateTimeStr = makeStringDateTime(getCurrentDateTime(lamp_state));
 			DPRINTLN(DateTimeStr);
