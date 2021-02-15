@@ -33,7 +33,7 @@ void printRawConfig(lamp_config_s *config)
     DPRINTLNF("\n");
 }
 
-void printConfig(lamp_config_s &config)
+void printConfig(lamp_config_s &config, boolean printAlarm)
 {
     DPRINTLNF("\nprintConfig()");
     DPRINTF("Version = ");
@@ -51,12 +51,16 @@ void printConfig(lamp_config_s &config)
     DPRINTLN_FULL(config.effect.brightness);
     DPRINTLN_FULL(config.effect.speed);
     DPRINTLN_FULL(config.effect.scale);
-    // for (uint8_t i=0; i < 7; i++)
-    // {
-    //     DPRINTLN_FULL(config.alarm[i].state);
-    //     DPRINTLN_FULL(config.alarm[i].hour);
-    //     DPRINTLN_FULL(config.alarm[i].min);
-    // }
+
+    if (printAlarm)
+    {
+        for (uint8_t i=0; i < 7; i++)
+        {
+            DPRINTLN_FULL(config.alarm[i].state);
+            DPRINTLN_FULL(config.alarm[i].hour);
+            DPRINTLN_FULL(config.alarm[i].min);
+        }
+    }
 }
 
 void readConfig(lamp_config_s &config)

@@ -3,8 +3,6 @@
 
 #include "functions.h"
 
-#define makeStringFromUINT(...) __VA_ARGS__ < 10 ? "0" + String(__VA_ARGS__) : String(__VA_ARGS__)
-
 // Prepare string with current state of the lamp.
 // Status format:
 // <state (power)>; <effect (mode)>; <brightness>; <speed>; <scale>
@@ -38,8 +36,9 @@ String lamp_state_2_string(the_lamp_state_t *lamp_state)
 
 void printDecNum(uint32_t num)
 {
-    DPRINT((num < 10) ? "0" : "");
-    DPRINT(num);
+    DPRINT(makeStringFromUINT(num));
+    // DPRINT((num < 10) ? "0" : "");
+    // DPRINT(num);
 }
 
 uint32_t getCurrentDateTime(the_lamp_state_t &lamp_state)
@@ -110,11 +109,12 @@ void printDateTimeStruct(local_date_time_t *date_time)
     // DPRINTF("Current day: ");
     // DPRINTLN(date_time->day);
     DPRINTF("Current time: ");
-    DPRINT(hour(date_time->local_time));
+    printDecNum(hour(date_time->local_time));
     DPRINTF(":");
-    DPRINT(minute(date_time->local_time));
+    printDecNum(minute(date_time->local_time));
     DPRINTF(":");
-    DPRINTLN(second(date_time->local_time));
+    printDecNum(second(date_time->local_time));
+    DPRINTLNF(" ");
 }
 
 void printTime(time_t currentLocalTime)
@@ -148,6 +148,26 @@ void printString(const char *charArray)
 // Internal functions, use they through 'API' only! //
 //////////////////////////////////////////////////////
 
+// Convert unsigned integer to string with leading zero
+// Input parameters:
+//    value - current value: unsigned 32-bit integer
+// Output value:
+//    String with leading zero
+String makeStringFromUINT(uint32_t value)
+{
+    // makeStringFromUINT(...) __VA_ARGS__ < 10 ? "0" + String(__VA_ARGS__) : String(__VA_ARGS__)
+    String str = "0";
+    if (value < 10)
+    {
+        str += value;
+    }
+    else
+    {
+        str = value;
+    }
+    return str;
+}
+
 // The Time library uses day of the week in the European numbering (days numbered from Sunday).
 // So we have to convert it into the standard russian form (also compatible with ISO-8601).
 uint8_t convert_to_ISO8601(uint8_t EuropeanDay)
@@ -172,7 +192,7 @@ uint8_t convert_from_ISO8601(uint8_t ISO8601Day)
     return thisDay;
 }
 
-uint32_t str2int(char *str, uint8_t len)
+uint32_t str2int(const char *str, uint8_t len)
 {
     uint32_t res = 0;
 

@@ -46,15 +46,15 @@ function getConfig(e) {
             console.log("===>");
             for (key in jsonResponse) {
                 console.log("[", key, "] : {", jsonResponse[key], "}");
-                if (key == "LAMP_NAME")
+                if (key == "NAME")
                     console.log("get LAMP_NAME key");
                 if (key == "DATE")
                     console.log("get DATE key");
             }
 
-            console.log(jsonResponse["LAMP_NAME"]);
+            console.log(jsonResponse["NAME"]);
             console.log(lampName);
-            lampName.value = jsonResponse["LAMP_NAME"];
+            lampName.value = jsonResponse.NAME;
             lampDebug.innerHTML = jsonResponse.DATE;
             lampDate.innerHTML = jsonResponse.DATE.toDateString();
             lampTime.innerHTML = jsonResponse.DATE.toTimeString();

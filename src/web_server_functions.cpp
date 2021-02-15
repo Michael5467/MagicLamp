@@ -156,7 +156,7 @@ void handleAction()
 			printString(lamp_config.name);
 
 			String output = "{";
-			output += "\"LAMP_NAME\":\"";
+			output += "\"NAME\":\"";
 			output += lamp_config.name;
 			output += "\",";
 
@@ -169,6 +169,125 @@ void handleAction()
 			server.send(200, "text/json", output);
 		}
 		message += "\n>>> CFG done";
+	}
+	if (server.hasArg("ALR"))
+	{
+		message += ">>> Alarm request...\n";
+		DPRINTLNF(">>> Alarm request...");
+
+		String opt = server.arg("ALR");
+		if (opt == "GET") 
+		{
+			DPRINTLNF("opt == GET");
+			message += "\n>>> opt == GET";
+
+			printConfig(lamp_config, true);
+
+			String output = "{";
+			output += "\"ALARMS\": [";
+			// output += lamp_config.name;
+			for (uint8_t i=0; i < 7; i++)
+			{
+				output += "{";
+				output += "\"ON\":";
+				output += (uint8_t)lamp_config.alarm[i].state;
+				output += ",";
+				output += "\"HOUR\":";
+				output += lamp_config.alarm[i].hour;
+				output += ",";
+				output += "\"MIN\":";
+				output += lamp_config.alarm[i].min;
+				output += "}";
+				if (i < 6)
+				{
+					output += ", ";
+				}
+			}
+			output += "] }";
+
+			server.send(200, "text/json", output);
+		}
+		if (opt == "SET") 
+		{
+			DPRINTLNF("opt == SET");
+			message += "\n>>> opt == SET";
+
+			int8_t _dayIndex = -1;
+			int8_t _status = -1;
+			int8_t _hour = -1;
+			int8_t _minute = -1;
+
+			if (server.hasArg("day"))
+			{
+				DPRINTLNF("arg == day");
+
+				opt = server.arg("day");
+				message += "\n>>> day == {";
+				message += opt;
+				message += "}";
+
+				_dayIndex = opt.toInt();
+			}
+			if (server.hasArg("time"))
+			{
+				DPRINTLNF("arg == time");
+
+				opt = server.arg("time");
+				message += "\n>>> time == {";
+				message += opt;
+				message += "}";
+
+				_hour = str2int(opt.c_str(), 2);
+				_minute = str2int(opt.c_str()+3, 2);
+			}
+			if (server.hasArg("hour"))
+			{
+				DPRINTLNF("arg == hour");
+
+				opt = server.arg("hour");
+				message += "\n>>> hour == {";
+				message += opt;
+				message += "}";
+
+				_hour = opt.toInt();
+			}
+			if (server.hasArg("min"))
+			{
+				DPRINTLNF("arg == min");
+
+				opt = server.arg("min");
+				message += "\n>>> min == {";
+				message += opt;
+				message += "}";
+
+				_minute = opt.toInt();
+			}
+			if (server.hasArg("status"))
+			{
+				DPRINTLNF("arg == status");
+
+				opt = server.arg("status");
+				message += "\n>>> status == {";
+				message += opt;
+				message += "}";
+
+				_status = opt.toInt();
+			}
+
+			if ((_dayIndex != -1) && (_hour != -1) && (_minute != -1))
+			{
+				DPRINTLN_FULL(_dayIndex);
+				DPRINTLN_FULL(_status);
+				DPRINTLN_FULL(_hour);
+				DPRINTLN_FULL(_minute);
+				DPRINTLNF(" ");
+
+				lamp_config.alarm[_dayIndex].state = (alarm_state_t)_status;
+				lamp_config.alarm[_dayIndex].hour = _hour;
+				lamp_config.alarm[_dayIndex].min = _minute;
+			}
+
+		}
 	}
 	if (server.hasArg("PWR"))
 	{

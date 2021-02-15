@@ -62,7 +62,7 @@ void writeConfig(lamp_config_s &config);
 void readRawConfig(lamp_config_s *config);
 void writeRawConfig(lamp_config_s *config);
 
-void printConfig(lamp_config_s &config);
+void printConfig(lamp_config_s &config, boolean printAlarm = false);
 void printRawConfig(lamp_config_s *config);
 
 #endif // __INC_CONFIGURATION_FUNCTIONS_H
