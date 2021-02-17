@@ -65,7 +65,7 @@ void printConfig(lamp_config_s &config, boolean printAlarm)
 
 void readConfig(lamp_config_s &config)
 {
-    openConfiguration();
+    openConfiguration("r");
     config.version = readVersion();
     readHostName(config.name, 32);
     config.state = readState();
@@ -79,7 +79,7 @@ void readConfig(lamp_config_s &config)
 
 void writeConfig(lamp_config_s &config)
 {
-    openConfiguration();
+    openConfiguration("w");
     writeVersion(config.version);
     writeHostName(config.name);
     writeState(config.state);
@@ -96,7 +96,7 @@ void readRawConfig(lamp_config_s *config)
 {
     // uint8_t *p = (uint8_t *)config;
     
-    openConfiguration();
+    openConfiguration("r");
     // cfg_file.seek(EEPROM_ADDRESSES::BASE, fs::SeekSet);
     // for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
     // {
@@ -110,8 +110,22 @@ void readRawConfig(lamp_config_s *config)
 void writeRawConfig(lamp_config_s *config)
 {
     // uint8_t *p = (uint8_t *)config;
-    
-    openConfiguration();
+
+    DPRINTLNF("\nwriteRawConfig()");
+
+    openConfiguration("w");
+    // cfg_file = LittleFS.open(CONFIG_FILE_NAME, "w");
+
+    DPRINTLNF("ready to write...");
+
+    // DPRINTLNF("Debug read file:");
+    // DPRINTLN(sizeof(lamp_config_s));
+
+    // char buffer[1024];
+    // cfg_file.read((uint8_t *)buffer, sizeof(lamp_config_s));
+
+
+
     cfg_file.seek(EEPROM_ADDRESSES::BASE, fs::SeekSet);
     // for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
     // {
@@ -143,20 +157,28 @@ void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect)
     convertRAW(&lamp_state);
 }
 
-void openConfiguration()
+void openConfiguration(const char* mode)
 {
     // eeprom_start(64);
 
+    DPRINTLNF("openConfiguration():");
     if (!LittleFS.exists(CONFIG_FILE_NAME))
     {
+        DPRINTLNF("CONFIG_FILE_NAME is not exist");
         cfg_file = LittleFS.open(CONFIG_FILE_NAME, "w");
         for (uint8_t i=0; i < sizeof(lamp_config_s); i++)
         {
             cfg_file.write(0);
         }
         cfg_file.close();
+        DPRINTLNF("CONFIG_FILE_NAME is sreated");
     }
-    cfg_file = LittleFS.open(CONFIG_FILE_NAME, "r");
+    else
+    {
+        DPRINTLNF("CONFIG_FILE_NAME is exist");
+    }
+    cfg_file = LittleFS.open(CONFIG_FILE_NAME, mode);
+    DPRINTLNF("CONFIG_FILE_NAME is opened for readind");
 }
 
 void saveConfiguration()

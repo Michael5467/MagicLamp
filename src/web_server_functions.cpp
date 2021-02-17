@@ -560,6 +560,15 @@ void handleFileLoad()
 	DPRINTLN(path);
 	if (!handleFileRead(path))
 		return server.send(404, "text/plain", "Something went wrong");
+	else 
+	{
+		DPRINTLNF("Debug read file:");
+		DPRINTLN(sizeof(lamp_config_s));
+
+		char buffer[1024];
+		cfg_file.read((uint8_t *)buffer, sizeof(lamp_config_s));
+		printRawConfig((lamp_config_s *)buffer);
+	}
 	server.send(200, "text/plain", "");
 }
 

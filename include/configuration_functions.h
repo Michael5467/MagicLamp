@@ -37,11 +37,13 @@ struct EEPROM_ADDRESSES
     };
 };
 
+extern File cfg_file;
+
 void emptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config);
 effect_s getEffectFromLampState(the_lamp_state_t &lamp_state);
 void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect);
 
-void openConfiguration();
+void openConfiguration(const char* mode);
 void saveConfiguration();
 void closeConfiguration();
 
