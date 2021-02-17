@@ -144,8 +144,9 @@ void handleAction()
 				DPRINTLNF(">>> readHostName:");
 				printString(lamp_config.name);
 
-				writeHostName(lamp_config.name);
-				saveConfiguration();
+				// writeHostName(lamp_config.name);
+				lamp_config.dirty = true;
+				resetLamp();
 			}
 		}
 		if (opt == "GET") 
@@ -277,16 +278,27 @@ void handleAction()
 			if ((_dayIndex != -1) && (_hour != -1) && (_minute != -1))
 			{
 				DPRINTLN_FULL(_dayIndex);
-				DPRINTLN_FULL(_status);
 				DPRINTLN_FULL(_hour);
 				DPRINTLN_FULL(_minute);
 				DPRINTLNF(" ");
 
-				lamp_config.alarm[_dayIndex].state = (alarm_state_t)_status;
 				lamp_config.alarm[_dayIndex].hour = _hour;
 				lamp_config.alarm[_dayIndex].min = _minute;
-			}
+				lamp_config.dirty = true;
 
+				printConfig(lamp_config, true);
+			}
+			if ((_dayIndex != -1) && (_status != -1))
+			{
+				DPRINTLN_FULL(_dayIndex);
+				DPRINTLN_FULL(_status);
+				DPRINTLNF(" ");
+
+				lamp_config.alarm[_dayIndex].state = (alarm_state_t)_status;
+				lamp_config.dirty = true;
+
+				printConfig(lamp_config, true);
+			}
 		}
 	}
 	if (server.hasArg("PWR"))

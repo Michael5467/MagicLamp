@@ -2,6 +2,14 @@
 #include <Timezone.h>
 
 #include "functions.h"
+#include "configuration_functions.h"
+
+// Save configuration if needed and reset board
+void resetLamp()
+{
+    writeRawConfig(&lamp_config);
+    ESP.restart();
+}
 
 // Prepare string with current state of the lamp.
 // Status format:

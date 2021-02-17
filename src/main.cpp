@@ -93,7 +93,6 @@ void setup() {
 
     // Read configuration
     emptyConfig(lamp_state, lamp_config);
-    // openConfiguration();
     readRawConfig(&lamp_config);
     lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
     if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
@@ -111,6 +110,7 @@ void setup() {
             lamp_config.alarm[i].hour  = 7;
             lamp_config.alarm[i].min   = 0;
         }
+        lamp_config.dirty = false;
         writeRawConfig(&lamp_config);
     }
     else
@@ -248,6 +248,16 @@ void loop() {
     if (Idle_Timer.isReady()) {      
         // DPRINTLNF("\nidleTimer.isReady()");
         // printTime(lamp_state.date_time->local_time + (Idle_Timer.getMillis()-lamp_state.date_time->local_millis)/1000);
+
+        if (lamp_config.dirty)
+        {
+            writeRawConfig(&lamp_config);
+            lamp_config.dirty = false;
+
+            DPRINTF("lamp_config is updated!");
+            printConfig(lamp_config, true);
+        }
+        
         ESP.wdtFeed();
     }
 }

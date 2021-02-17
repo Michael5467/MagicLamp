@@ -91,8 +91,12 @@ struct lamp_config_s
     boolean   state;
     effect_s  effect;
     alarm_s   alarm[7];
+    boolean   dirty;
 };
 #pragma pack(pop)
+
+extern the_lamp_state_t lamp_state;
+extern lamp_config_s lamp_config;
 
 // Functions
     // work API
@@ -112,6 +116,7 @@ void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 void convertRAW(the_lamp_state_t *lamp_state);
 
     // utility functions declaration
+void resetLamp();
 String makeStringFromUINT(uint32_t value);
 void printDecNum(uint32_t num);
 uint32_t getCurrentDateTime(the_lamp_state_t &lamp_state);
