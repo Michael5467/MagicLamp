@@ -92,9 +92,11 @@ void setup() {
     convertRAW(&lamp_state);
 
     // Read configuration
-    emptyConfig(lamp_state, lamp_config);
+    // lamp_config = getEmptyConfig(lamp_state);
+    getEmptyConfig(lamp_state, lamp_config);
     readRawConfig(&lamp_config);
     lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
+
     if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
         // If configuration is empty...
         DPRINTLNF("Default config...");
@@ -103,14 +105,16 @@ void setup() {
         String defaultName = F("MagicLamp");
         strcpy(lamp_config.name, defaultName.c_str());
         lamp_config.state = true;
-        lamp_config.effect = getEffectFromLampState(lamp_state);
+
+        // lamp_config.effect = getEffectFromLampState(lamp_state);
+        getEffectFromLampState(lamp_state, lamp_config.effect);
+
         for (uint8_t i=0; i < 7; i++)
         {
             lamp_config.alarm[i].state = alarm_state_t::alarm_off;
             lamp_config.alarm[i].hour  = 7;
             lamp_config.alarm[i].min   = 0;
         }
-        lamp_config.dirty = false;
         writeRawConfig(&lamp_config);
     }
     else
