@@ -1,5 +1,7 @@
 const url = "/action.html";
 
+var debugP = document.getElementById("debugP");
+
 var allCheckBoxElem = document.getElementsByClassName("item_checkbox")
 // console.log(allCheckBoxElem);
 
@@ -90,6 +92,21 @@ function applyAlarms(cfgJSON) {
 
         allCheckBoxElem[i].checked = alarm.ON;
         disTimeElem(dayName + "Time", !alarm.ON);
+        if (alarm.HOUR <10) {
+            _h = `0${alarm.HOUR}`;
+        }
+        else {
+            _h = `${alarm.HOUR}`;
+        }
+        if (alarm.MIN <10) {
+            _m = `0${alarm.MIN}`;
+        }
+        else {
+            _m = `${alarm.MIN}`;
+        }
+
+        allInputTimeElem[i].value = `${_h}:${_m}`;
+        debugP.innerHTML = debugP.innerHTML + "<br>" + `${i} = ${alarm.HOUR}:${alarm.MIN}`;
     }
 }
 
