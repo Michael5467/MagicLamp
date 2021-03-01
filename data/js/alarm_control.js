@@ -1,7 +1,5 @@
 const url = "/action.html";
 
-var debugP = document.getElementById("debugP");
-
 var allCheckBoxElem = document.getElementsByClassName("item_checkbox")
 // console.log(allCheckBoxElem);
 
@@ -54,8 +52,6 @@ function changeAlarm(target) {
     data.append("day", dayIndex);
     data.append("status", +allCheckBoxElem[dayIndex].checked);
     data.append("time", target.value);
-    // data.append("hour", target.valueAsDate.getHours());
-    // data.append("min", target.valueAsDate.getMinutes());
     actionSend(data);
 }
 
@@ -104,9 +100,7 @@ function applyAlarms(cfgJSON) {
         else {
             _m = `${alarm.MIN}`;
         }
-
         allInputTimeElem[i].value = `${_h}:${_m}`;
-        debugP.innerHTML = debugP.innerHTML + "<br>" + `${i} = ${alarm.HOUR}:${alarm.MIN}`;
     }
 }
 
