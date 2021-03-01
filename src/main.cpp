@@ -92,29 +92,13 @@ void setup() {
     convertRAW(&lamp_state);
 
     // Read configuration
-    // lamp_config = getEmptyConfig(lamp_state);
-    getEmptyConfig(lamp_state, lamp_config);
     readRawConfig(&lamp_config);
     lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
 
     if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
         // If configuration is empty...
-        DPRINTLNF("Default config...");
-        lamp_config.version.major = VERSION_MAJOR;
-        lamp_config.version.minor = VERSION_MINOR;
-        String defaultName = F("MagicLamp");
-        strcpy(lamp_config.name, defaultName.c_str());
-        lamp_config.state = true;
-
-        // lamp_config.effect = getEffectFromLampState(lamp_state);
-        getEffectFromLampState(lamp_state, lamp_config.effect);
-
-        for (uint8_t i=0; i < 7; i++)
-        {
-            lamp_config.alarm[i].state = alarm_state_t::alarm_off;
-            lamp_config.alarm[i].hour  = 7;
-            lamp_config.alarm[i].min   = 0;
-        }
+        DPRINTLNF("Write default config...");
+        getEmptyConfig(lamp_state, lamp_config);
         writeRawConfig(&lamp_config);
     }
     else
@@ -122,7 +106,7 @@ void setup() {
         DPRINTLNF("Restored config...");
         setEffectToLampState(lamp_state, lamp_config.effect);
     }
-    printConfig(lamp_config);
+    printConfig(lamp_config, true);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -170,7 +154,7 @@ void setup() {
     //     SSDP.schema(server.client());
     // });
     // DPRINTLNF("SSDP Ready");
-    // HTTP server start
+    // HTTP server startalarm_control_2
     server.begin();
     DPRINTLNF("HTTP server started")
 
@@ -255,8 +239,8 @@ void loop() {
 
         if (lamp_config.dirty)
         {
-            writeRawConfig(&lamp_config);
             lamp_config.dirty = false;
+            writeRawConfig(&lamp_config);
 
             DPRINTF("lamp_config is updated!");
             printConfig(lamp_config, true);

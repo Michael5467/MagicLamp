@@ -3,8 +3,6 @@
 // lamp_config_s getEmptyConfig(the_lamp_state_t &lamp_state)
 void getEmptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config)
 {
-    // lamp_config_s lamp_config;
-
     DPRINTLNF("Default config...");
     lamp_config.version.major = VERSION_MAJOR;
     lamp_config.version.minor = VERSION_MINOR;
@@ -12,7 +10,6 @@ void getEmptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config)
     String defaultName = F("MagicLamp");
     strcpy(lamp_config.name, defaultName.c_str());
     lamp_config.state = true;
-    // lamp_config.effect = getEffectFromLampState(lamp_state);
     getEffectFromLampState(lamp_state, lamp_config.effect);
     for (uint8_t i=0; i < 7; i++)
     {
@@ -21,8 +18,6 @@ void getEmptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config)
         lamp_config.alarm[i].min   = 0;
     }
     lamp_config.dirty = false;
-
-    // return lamp_config;
 }
 
 void printRawConfig(lamp_config_s *config)
@@ -110,21 +105,11 @@ void writeRawConfig(lamp_config_s *config)
 }
 
 void getEffectFromLampState(the_lamp_state_t &lamp_state, effect_s &effect)
-// effect_s getEffectFromLampState(the_lamp_state_t &lamp_state)
 {
-    // effect_s effect;
-
     effect.number     = lamp_state.effect;
     effect.brightness = lamp_state.brightness;
     effect.speed      = lamp_state.speed;
     effect.scale      = lamp_state.scale;
-    // effect.test_effect.number1 = 1;
-    // effect.test_effect.number1 = 2;
-
-    DPRINT("getEffectFromLampState(): ")
-    DPRINTLN((uint32_t) &effect);
-
-    // return effect;
 }
 
 void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect)
@@ -193,8 +178,6 @@ boolean readState()
 
 void readEffect(effect_s &effect)
 {
-    // effect_s effect;
-
     File cfg_file = openConfiguration("r");
     cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_number);
     cfg_file.read((uint8_t *) &effect.number, 1);
@@ -205,14 +188,11 @@ void readEffect(effect_s &effect)
     cfg_file.seek(EEPROM_ADDRESSES::effect + EEPROM_ADDRESSES::effect_scale);
     cfg_file.read((uint8_t *) &effect.scale, 2);
     closeConfiguration(cfg_file);
-
-    // return effect;
 }
 
 void readAlarm(uint8_t day, alarm_s &alarm)
 {
     uint16_t day_base = (EEPROM_ADDRESSES::alarms) + day * (EEPROM_ADDRESSES::ALARM_SIZE);
-    // alarm_s alarm;
 
     File cfg_file = openConfiguration("r");
     cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_state);
@@ -222,8 +202,6 @@ void readAlarm(uint8_t day, alarm_s &alarm)
     cfg_file.seek(day_base + EEPROM_ADDRESSES::alarm_min);
     cfg_file.read((uint8_t *) &alarm.min, 1);
     closeConfiguration(cfg_file);
-
-    // return alarm;
 }
 
 void writeVersion(version_t &version)
