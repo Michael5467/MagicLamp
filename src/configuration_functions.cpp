@@ -1,6 +1,5 @@
 #include "configuration_functions.h"
 
-// lamp_config_s getEmptyConfig(the_lamp_state_t &lamp_state)
 void getEmptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config)
 {
     DPRINTLNF("Default config...");

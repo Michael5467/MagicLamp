@@ -37,9 +37,7 @@ struct EEPROM_ADDRESSES
     };
 };
 
-// lamp_config_s getEmptyConfig(the_lamp_state_t &lamp_state);
 void getEmptyConfig(the_lamp_state_t &lamp_state, lamp_config_s &lamp_config);
-// effect_s getEffectFromLampState(the_lamp_state_t &lamp_state);
 void getEffectFromLampState(the_lamp_state_t &lamp_state, effect_s &effect);
 void setEffectToLampState(the_lamp_state_t &lamp_state, effect_s &effect);
 
@@ -51,9 +49,7 @@ void closeConfiguration(File cfg_file);
 void      readVersion(version_t &version);
 void      readHostName(char *str, uint8_t max_size);
 boolean   readState();
-// effect_s  readEffect();
 void      readEffect(effect_s &effect);
-// alarm_s   readAlarm(uint8_t day);
 void      readAlarm(uint8_t day, alarm_s &alarm);
 
 void writeVersion(version_t &version);

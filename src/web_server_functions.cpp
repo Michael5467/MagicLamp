@@ -577,11 +577,11 @@ void handleFileLoad()
 		DPRINTLNF("Debug read file:");
 		DPRINTLN(sizeof(lamp_config_s));
 
-		char buffer[1024];
-		File cfg_file = openConfiguration("r");
-		cfg_file.read((uint8_t *)buffer, sizeof(lamp_config_s));
-		closeConfiguration(cfg_file);
-		printRawConfig((lamp_config_s *)buffer);
+		// char buffer[1024];
+		// File cfg_file = openConfiguration("r");
+		// cfg_file.read((uint8_t *)buffer, sizeof(lamp_config_s));
+		// closeConfiguration(cfg_file);
+		// printRawConfig((lamp_config_s *)buffer);
 	}
 	server.send(200, "text/plain", "");
 }

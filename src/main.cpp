@@ -62,6 +62,8 @@ WiFiManager wifiManager;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 
+GButton touch(BTN_PIN, LOW_PULL, NORM_OPEN);
+
 void setup() {
     // Serial port setup
     Serial.begin(74880);
@@ -69,6 +71,9 @@ void setup() {
     Serial.println(F("\n\n\n+------------+"));
     Serial.println(F("| NodeMCU v3 |"));
     Serial.println(F("+------------+\n"));
+
+    touch.setStepTimeout(100);
+    touch.setClickTimeout(500);
 
     // Mount filesystem
     DPRINTF("Inizializing FS: ")
@@ -92,13 +97,27 @@ void setup() {
     convertRAW(&lamp_state);
 
     // Read configuration
+    getEmptyConfig(lamp_state, lamp_config);
     readRawConfig(&lamp_config);
     lamp_config.name[31] = 0;   // Hard 'end of string' for string function safety.
 
     if ((lamp_config.version.major != VERSION_MAJOR) && (lamp_config.version.minor != VERSION_MINOR)) {
         // If configuration is empty...
-        DPRINTLNF("Write default config...");
-        getEmptyConfig(lamp_state, lamp_config);
+        DPRINTLNF("Default config...");
+        lamp_config.version.major = VERSION_MAJOR;
+        lamp_config.version.minor = VERSION_MINOR;
+        String defaultName = F("MagicLamp");
+        strcpy(lamp_config.name, defaultName.c_str());
+        lamp_config.state = true;
+
+        getEffectFromLampState(lamp_state, lamp_config.effect);
+
+        for (uint8_t i=0; i < 7; i++)
+        {
+            lamp_config.alarm[i].state = alarm_state_t::alarm_off;
+            lamp_config.alarm[i].hour  = 7;
+            lamp_config.alarm[i].min   = 0;
+        }
         writeRawConfig(&lamp_config);
     }
     else
@@ -106,7 +125,7 @@ void setup() {
         DPRINTLNF("Restored config...");
         setEffectToLampState(lamp_state, lamp_config.effect);
     }
-    printConfig(lamp_config, true);
+    printConfig(lamp_config);
 
     // LED matrix: strip configuration and instantiation
     FastLED.addLeds<WS2812, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -130,6 +149,11 @@ void setup() {
         }
     }
     else {    
+        if (digitalRead(BTN_PIN))
+        {
+            wifiManager.resetSettings();
+        }
+
         Serial.print(F("WiFi manager"));
         wifiManager.setDebugOutput(false);
 		wifiManager.autoConnect(accesspointSSID, accesspointPass);
@@ -154,7 +178,7 @@ void setup() {
     //     SSDP.schema(server.client());
     // });
     // DPRINTLNF("SSDP Ready");
-    // HTTP server startalarm_control_2
+    // HTTP server start
     server.begin();
     DPRINTLNF("HTTP server started")
 
