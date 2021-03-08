@@ -24,7 +24,7 @@
 // Also, this works  #define INFO(...)  { Console->printf("INFO: "); Console->printf(__VA_ARGS__); }   >>>--->   where {} allows multiple lines of code.
 // See: http://forum.arduino.cc/index.php?topic=511393.msg3485833#new
 
-#define DEBUG_PRINT
+// #define DEBUG_PRINT
 
 //examples:
 //#define DPRINT(args...)  Serial.print(args)             //OR use the following syntax:

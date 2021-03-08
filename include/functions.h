@@ -17,6 +17,7 @@
 #include "project_config.h"
 #include "effects.h"
 #include "matrix.h"
+#include "GyverButton.h"
 
 typedef struct
 {
@@ -116,6 +117,7 @@ void changeEffectsSpeed(the_lamp_state_t *lamp_state, int8_t ChangeValue);
 void convertRAW(the_lamp_state_t *lamp_state);
 
     // utility functions declaration
+void buttonTick(GButton &button);
 void resetLamp();
 String makeStringFromUINT(uint32_t value);
 void printDecNum(uint32_t num);

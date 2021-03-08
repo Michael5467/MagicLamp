@@ -4,6 +4,44 @@
 #include "functions.h"
 #include "configuration_functions.h"
 
+uint8_t value = 0;
+
+void buttonTick(GButton &button)
+{
+    button.tick(); // обязательная функция отработки. Должна постоянно опрашиваться
+
+    if (button.isClick())
+        Serial.println("Click"); // проверка на один клик
+    if (button.isSingle())
+        Serial.println("Single"); // проверка на один клик
+    if (button.isDouble())
+        Serial.println("Double"); // проверка на двойной клик
+    if (button.isTriple())
+        Serial.println("Triple"); // проверка на тройной клик
+
+    if (button.hasClicks())                 // проверка на наличие нажатий
+    {
+        Serial.println(F("hasClicks:"));
+        Serial.println(button.getClicks()); // получить (и вывести) число нажатий
+    }
+
+    if (button.isPress())
+        Serial.println("Press"); // нажатие на кнопку (+ дебаунс)
+    if (button.isRelease())
+        Serial.println("Release"); // отпускание кнопки (+ дебаунс)
+    if (button.isHolded())
+        Serial.println("Holded"); // проверка на удержание
+    if (button.isHold())
+        Serial.println("Holding"); // проверка на удержание
+
+    if (button.isStep())
+    {                          // если кнопка была удержана (это для инкремента)
+        value++;               // увеличивать/уменьшать переменную value с шагом и интервалом
+        Serial.println(F("isStep:"));
+        Serial.println(value); // для примера выведем в порт
+    }
+}
+
 // Save configuration if needed and reset board
 void resetLamp()
 {

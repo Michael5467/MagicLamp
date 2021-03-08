@@ -33,6 +33,8 @@ local_date_time_t date_time;
 the_lamp_state_t lamp_state;
 lamp_config_s lamp_config;
 String lamp_IP = "";    // Lamp IP
+String SSID = "";
+String PASSWORD = "";
 
 CRGB leds[NUM_LEDS];
 
@@ -62,7 +64,9 @@ WiFiManager wifiManager;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, 0, NTP_INTERVAL);
 
-GButton touch(BTN_PIN, LOW_PULL, NORM_OPEN);
+GButton button(BTN_PIN, LOW_PULL, NORM_OPEN);
+uint8_t hold_value = 0;
+boolean hold_state = false;
 
 void setup() {
     // Serial port setup
@@ -72,8 +76,8 @@ void setup() {
     Serial.println(F("| NodeMCU v3 |"));
     Serial.println(F("+------------+\n"));
 
-    touch.setStepTimeout(100);
-    touch.setClickTimeout(500);
+    button.setStepTimeout(100);
+    button.setClickTimeout(500);
 
     // Mount filesystem
     DPRINTF("Inizializing FS: ")
@@ -149,14 +153,31 @@ void setup() {
         }
     }
     else {    
+        Serial.print(F("WiFi manager: "));
+
         if (digitalRead(BTN_PIN))
         {
             wifiManager.resetSettings();
         }
 
-        Serial.print(F("WiFi manager"));
-        wifiManager.setDebugOutput(false);
-		wifiManager.autoConnect(accesspointSSID, accesspointPass);
+        if (wifiManager.getWiFiIsSaved()) {
+            SSID = wifiManager.getWiFiSSID();
+            PASSWORD = wifiManager.getWiFiPass();
+            DPRINTLNF("\n-----------------------------------");
+            DPRINTLN(SSID);
+            DPRINTLN(PASSWORD);
+            DPRINTLNF("-----------------------------------\n");
+            WiFi.hostname(F("MagicLamp"));
+            WiFi.begin(SSID.c_str(), PASSWORD.c_str());
+            while (WiFi.status() != WL_CONNECTED) {
+                delay(500);
+                Serial.print(".");
+            }
+        }
+        else {
+            wifiManager.setDebugOutput(false);
+            wifiManager.autoConnect(accesspointSSID, accesspointPass);
+        }
     }
     Serial.print(F("connected!\nIP address: "));
     Serial.println(WiFi.localIP());
@@ -218,6 +239,37 @@ void loop() {
     MDNS.update();
 
     // webSocket.loop();
+
+    // buttonTick(button);
+    button.tick();
+    if (button.isStep())
+    {
+        hold_value++;
+        DPRINTLNF("isStep:");
+        DPRINTLN(hold_value); // для примера выведем в порт
+    }
+    if (button.isRelease())
+    {
+        DPRINTLNF("isRelease");
+        hold_value = 0;
+        lamp_state.state = hold_state;
+        if (lamp_state.state)
+        {
+            updateMode(&lamp_state);
+        }
+    }
+    if (hold_value == 8)
+    {
+        hold_value++;
+        hold_state = lamp_state.state;
+        lamp_state.state = false;
+        fillAllbyColor(lamp_state.leds, CRGB::HotPink);
+        FastLED.show();
+    }
+    if (hold_value == 24)
+    {
+        ESP.restart();
+    }
 
     server.handleClient();
 
